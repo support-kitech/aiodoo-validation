@@ -9,15 +9,16 @@ from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.enums import StageStatus, ValidationStage
 from aiodoo_validation.domain.stage import PlaceholderStageResult
 from aiodoo_validation.inference.stub_runner import StubInferenceRunner
+from aiodoo_validation.oracles import OracleEngine
 from aiodoo_validation.ports import (
     ArtifactResolverPort,
     BenchmarkEnginePort,
     CertificationEnginePort,
     InferenceRunnerPort,
+    OracleRunnerPort,
     ProfileEnginePort,
     ReportGeneratorPort,
     ScoringEnginePort,
-    ValidationRunnerPort,
 )
 from aiodoo_validation.profiles import ProfileEngine
 from aiodoo_validation.resolution.stub_resolver import StubArtifactResolver
@@ -30,18 +31,6 @@ def _stub_result(stage: ValidationStage, *, message: str, **data: object) -> Pla
         message=message,
         data=MappingProxyType(dict(data)),
     )
-
-
-class StubValidationRunner:
-    """Placeholder validation/oracle runner."""
-
-    def run_validation(self, context: RunContext) -> PlaceholderStageResult:
-        return _stub_result(
-            ValidationStage.RUN_VALIDATION,
-            message="stub validation execution",
-            checks_planned=0,
-            stub=True,
-        )
 
 
 class StubScoringEngine:
@@ -101,7 +90,7 @@ class StubPipelineComponents:
     artifact_resolver: ArtifactResolverPort
     profile_engine: ProfileEnginePort
     inference_runner: InferenceRunnerPort
-    validation_runner: ValidationRunnerPort
+    oracle_runner: OracleRunnerPort
     scoring_engine: ScoringEnginePort
     benchmark_engine: BenchmarkEnginePort
     certification_engine: CertificationEnginePort
@@ -113,7 +102,7 @@ class StubPipelineComponents:
             artifact_resolver=StubArtifactResolver(),
             profile_engine=ProfileEngine.create_default(),
             inference_runner=StubInferenceRunner.create(),
-            validation_runner=StubValidationRunner(),
+            oracle_runner=OracleEngine.create_default(),
             scoring_engine=StubScoringEngine(),
             benchmark_engine=StubBenchmarkEngine(),
             certification_engine=StubCertificationEngine(),

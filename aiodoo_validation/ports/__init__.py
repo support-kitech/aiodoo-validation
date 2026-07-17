@@ -8,6 +8,7 @@ from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.stage import PlaceholderStageResult
 from aiodoo_validation.ports.artifact_resolver import ArtifactResolverPort
 from aiodoo_validation.ports.inference_runner import InferenceRunnerPort
+from aiodoo_validation.ports.oracle_runner import OracleRunnerPort
 from aiodoo_validation.ports.profile_engine import ProfileEnginePort
 
 __all__ = [
@@ -15,6 +16,7 @@ __all__ = [
     "BenchmarkEnginePort",
     "CertificationEnginePort",
     "InferenceRunnerPort",
+    "OracleRunnerPort",
     "ProfileEnginePort",
     "ReportGeneratorPort",
     "ScoringEnginePort",
@@ -23,7 +25,12 @@ __all__ = [
 
 
 class ValidationRunnerPort(Protocol):
-    """Execute validation/oracle phase (Phase 5+)."""
+    """
+    Legacy stub port for RUN_VALIDATION (Phase 0–4).
+
+    Phase 5 uses ``OracleRunnerPort`` for real oracle orchestration.
+    Retained for compatibility with residual stub wiring.
+    """
 
     def run_validation(self, context: RunContext) -> PlaceholderStageResult: ...
 

@@ -194,3 +194,20 @@ aiodoo_validation/
 - Phase docs accurate; this audit doc added for freeze record
 
 **Architecture is frozen for Phase 4 implementation.**
+
+---
+
+## Historical Annotation (Post Phase 4 — do not rewrite history)
+
+> **Note (Phase 4 completion):** Responsibilities formerly owned by
+> `domain/v1_scope.py` (v1 adapter/model allowlists, rejected adapter types)
+> now live in `profiles/coding/policy.py`. The module `domain/v1_scope.py`
+> was removed during Phase 4 when coding policy migrated into the Coding Profile.
+>
+> References to `domain/v1_scope.py` in sections 4–7 above are historical
+> (accurate as of the post Phase 0–3 audit). They describe the pre–Phase 4
+> state and are intentionally retained as the freeze record.
+>
+> Coding profile ↔ artifact compatibility formerly in `resolution/compatibility.py`
+> and coding adapter policy formerly split across resolution/inference now live
+> under `profiles/coding/`.

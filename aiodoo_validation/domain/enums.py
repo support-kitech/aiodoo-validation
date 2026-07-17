@@ -128,3 +128,17 @@ class ProfileErrorCode(StrEnum):
     CAPABILITY_MISMATCH = "capability_mismatch"
     CONFIGURATION_ERROR = "configuration_error"
     PROFILE_CONSTRUCTION_FAILURE = "profile_construction_failure"
+
+
+class OracleErrorCode(StrEnum):
+    """Structured oracle framework error codes."""
+
+    ORACLE_NOT_FOUND = "oracle_not_found"
+    UNKNOWN_ORACLE = "unknown_oracle"
+    REGISTRATION_FAILURE = "registration_failure"
+    EXECUTION_FAILURE = "execution_failure"
+    CONFIGURATION_FAILURE = "configuration_failure"
+    PROFILE_MISMATCH = "profile_mismatch"
+    CAPABILITY_MISMATCH = "capability_mismatch"
+    MISSING_PLAN = "missing_plan"
+    MISSING_PROFILE = "missing_profile"

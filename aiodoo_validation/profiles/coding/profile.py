@@ -1,4 +1,4 @@
-"""Coding validation profile (Phase 4)."""
+"""Coding validation profile (Phase 4+)."""
 
 from __future__ import annotations
 
@@ -7,7 +7,10 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Any
 
-from aiodoo_validation.domain.profile import ResolvedProfile
+from aiodoo_validation.domain.artifacts import ArtifactBundle
+from aiodoo_validation.domain.context import RunContext
+from aiodoo_validation.domain.profile import ProfileError, ResolvedProfile
+from aiodoo_validation.profiles.coding.compatibility import validate_coding_artifact_compatibility
 from aiodoo_validation.profiles.coding.policy import (
     PROFILE_NAME,
     SUPPORTED_ADAPTER_TYPES,
@@ -16,7 +19,56 @@ from aiodoo_validation.profiles.coding.policy import (
     SUPPORTED_PROTOCOL_MAJORS,
     SUPPORTED_RUNTIMES,
 )
-from aiodoo_validation.validation_plan import PipelineStagePlaceholder, ProfileCapabilities
+from aiodoo_validation.validation_plan import (
+    PipelineStagePlaceholder,
+    ProfileCapabilities,
+    ValidationPlan,
+)
+
+CODING_ORACLE_PIPELINE: tuple[PipelineStagePlaceholder, ...] = (
+    PipelineStagePlaceholder(
+        stage_id="coding.oracle.metadata",
+        name="Metadata Oracle",
+        enabled=True,
+        phase="oracle",
+    ),
+    PipelineStagePlaceholder(
+        stage_id="coding.oracle.manifest",
+        name="Manifest Oracle",
+        enabled=True,
+        phase="oracle",
+    ),
+    PipelineStagePlaceholder(
+        stage_id="coding.oracle.python",
+        name="Python Oracle",
+        enabled=True,
+        phase="oracle",
+    ),
+    PipelineStagePlaceholder(
+        stage_id="coding.oracle.xml",
+        name="XML Oracle",
+        enabled=True,
+        phase="oracle",
+    ),
+    PipelineStagePlaceholder(
+        stage_id="coding.oracle.security",
+        name="Security Oracle",
+        enabled=True,
+        phase="oracle",
+    ),
+    PipelineStagePlaceholder(
+        stage_id="coding.oracle.module_structure",
+        name="Module Structure Oracle",
+        enabled=True,
+        phase="oracle",
+    ),
+    PipelineStagePlaceholder(
+        stage_id="coding.oracle.quality",
+        name="Future Quality Oracle",
+        enabled=False,
+        phase="oracle",
+    ),
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -41,21 +93,14 @@ class CodingProfile(ResolvedProfile):
     capabilities: ProfileCapabilities = field(
         default_factory=lambda: ProfileCapabilities(
             supports_inference=True,
-            supports_oracles=False,
+            supports_oracles=True,
             supports_scoring=False,
             supports_benchmark=False,
             supports_certification=False,
         )
     )
-    validation_strategy: str = "coding-v1-metadata-only"
-    oracle_pipeline: tuple[PipelineStagePlaceholder, ...] = (
-        PipelineStagePlaceholder(
-            stage_id="coding.oracle.placeholder",
-            name="Oracle pipeline placeholder",
-            enabled=False,
-            phase="oracle",
-        ),
-    )
+    validation_strategy: str = "coding-v1-oracle-placeholders"
+    oracle_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_ORACLE_PIPELINE
     scoring_pipeline: tuple[PipelineStagePlaceholder, ...] = (
         PipelineStagePlaceholder(
             stage_id="coding.scoring.placeholder",
@@ -88,3 +133,18 @@ class CodingProfile(ResolvedProfile):
             profile_name=PROFILE_NAME,
             metadata=MappingProxyType({"odoo_versions": odoo_versions}),
         )
+
+    def validate_compatibility(self, bundle: ArtifactBundle) -> tuple[ProfileError, ...]:
+        """Validate resolved artifacts against coding profile policy."""
+        return validate_coding_artifact_compatibility(bundle)
+
+    def build_validation_plan(
+        self,
+        *,
+        bundle: ArtifactBundle,
+        context: RunContext,
+    ) -> ValidationPlan:
+        """Construct an immutable ValidationPlan for this profile."""
+        from aiodoo_validation.profiles.coding.plan_builder import build_coding_validation_plan
+
+        return build_coding_validation_plan(self, bundle=bundle, context=context)

@@ -12,6 +12,7 @@ from uuid import uuid4
 from aiodoo_validation.domain.artifacts import ArtifactBundle
 from aiodoo_validation.domain.enums import ExecutionTier, ExitStatus, StageStatus, ValidationStage
 from aiodoo_validation.domain.inference import InferenceSession
+from aiodoo_validation.domain.oracle import OracleExecutionResult
 from aiodoo_validation.domain.profile import ResolvedProfile
 from aiodoo_validation.domain.request import SUPPORTED_PROTOCOL_MAJOR, ValidationRequest
 from aiodoo_validation.domain.stage import PlaceholderStageResult, StageRecord
@@ -44,6 +45,7 @@ class RunContext:
     validation_profile: ResolvedProfile | None = None
     validation_plan: ValidationPlan | None = None
     inference_session: InferenceSession | None = None
+    oracle_execution: OracleExecutionResult | None = None
     exit_status: ExitStatus | None = None
 
     @staticmethod
@@ -91,6 +93,9 @@ class RunContext:
 
     def with_inference_session(self, session: InferenceSession) -> RunContext:
         return replace(self, inference_session=session)
+
+    def with_oracle_execution(self, execution: OracleExecutionResult) -> RunContext:
+        return replace(self, oracle_execution=execution)
 
     def with_exit_status(self, status: ExitStatus) -> RunContext:
         return replace(self, exit_status=status)

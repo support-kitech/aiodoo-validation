@@ -243,7 +243,7 @@ def test_engine_inference_failure_does_not_crash() -> None:
         artifact_resolver=FilesystemArtifactResolver.create_default(),
         profile_engine=components.profile_engine,
         inference_runner=RealInferenceRunner(runtime=failing_runtime),
-        validation_runner=components.validation_runner,
+        oracle_runner=components.oracle_runner,
         scoring_engine=components.scoring_engine,
         benchmark_engine=components.benchmark_engine,
         certification_engine=components.certification_engine,

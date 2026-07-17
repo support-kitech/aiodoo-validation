@@ -9,6 +9,7 @@ from typing import TypeVar
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.enums import ExitStatus, StageStatus, ValidationStage
 from aiodoo_validation.domain.inference import InferenceInitializationOutcome
+from aiodoo_validation.domain.oracle import OracleExecutionOutcome
 from aiodoo_validation.domain.profile import ProfileResolutionOutcome
 from aiodoo_validation.domain.request import ValidationRequest
 from aiodoo_validation.domain.resolution import ArtifactResolutionOutcome
@@ -27,10 +28,10 @@ from aiodoo_validation.ports import (
     BenchmarkEnginePort,
     CertificationEnginePort,
     InferenceRunnerPort,
+    OracleRunnerPort,
     ProfileEnginePort,
     ReportGeneratorPort,
     ScoringEnginePort,
-    ValidationRunnerPort,
 )
 from aiodoo_validation.resolution.filesystem import FilesystemArtifactResolver
 from aiodoo_validation.stubs import StubPipelineComponents
@@ -57,8 +58,9 @@ class ValidationEngine:
     """
     Production validation orchestrator skeleton.
 
-    Executes the complete lifecycle using injected ports. Phase 4 adds profile
-    resolution while validation stages remain stubbed.
+    Executes the complete lifecycle using injected ports. Phase 5 wires the
+    Oracle Framework through ``OracleRunnerPort`` while scoring and later
+    stages remain stubbed.
     """
 
     def __init__(
@@ -67,7 +69,7 @@ class ValidationEngine:
         artifact_resolver: ArtifactResolverPort,
         profile_engine: ProfileEnginePort,
         inference_runner: InferenceRunnerPort,
-        validation_runner: ValidationRunnerPort,
+        oracle_runner: OracleRunnerPort,
         scoring_engine: ScoringEnginePort,
         benchmark_engine: BenchmarkEnginePort,
         certification_engine: CertificationEnginePort,
@@ -76,7 +78,7 @@ class ValidationEngine:
         self._artifact_resolver = artifact_resolver
         self._profile_engine = profile_engine
         self._inference_runner = inference_runner
-        self._validation_runner = validation_runner
+        self._oracle_runner = oracle_runner
         self._scoring_engine = scoring_engine
         self._benchmark_engine = benchmark_engine
         self._certification_engine = certification_engine
@@ -90,7 +92,7 @@ class ValidationEngine:
             artifact_resolver=stubs.artifact_resolver,
             profile_engine=stubs.profile_engine,
             inference_runner=stubs.inference_runner,
-            validation_runner=stubs.validation_runner,
+            oracle_runner=stubs.oracle_runner,
             scoring_engine=stubs.scoring_engine,
             benchmark_engine=stubs.benchmark_engine,
             certification_engine=stubs.certification_engine,
@@ -105,7 +107,7 @@ class ValidationEngine:
             artifact_resolver=FilesystemArtifactResolver.create_default(),
             profile_engine=stubs.profile_engine,
             inference_runner=stubs.inference_runner,
-            validation_runner=stubs.validation_runner,
+            oracle_runner=stubs.oracle_runner,
             scoring_engine=stubs.scoring_engine,
             benchmark_engine=stubs.benchmark_engine,
             certification_engine=stubs.certification_engine,
@@ -120,7 +122,7 @@ class ValidationEngine:
             artifact_resolver=FilesystemArtifactResolver.create_default(),
             profile_engine=stubs.profile_engine,
             inference_runner=RealInferenceRunner(runtime=MockModelRuntime()),
-            validation_runner=stubs.validation_runner,
+            oracle_runner=stubs.oracle_runner,
             scoring_engine=stubs.scoring_engine,
             benchmark_engine=stubs.benchmark_engine,
             certification_engine=stubs.certification_engine,
@@ -180,6 +182,10 @@ class ValidationEngine:
                 context = self._run_inference_stage(context)
                 if context.exit_status is ExitStatus.FAILED:
                     return self._run_failed_exit(context)
+            elif stage == ValidationStage.RUN_VALIDATION:
+                context = self._run_oracle_stage(context)
+                if context.exit_status is ExitStatus.FAILED:
+                    return self._run_failed_exit(context)
             elif stage == ValidationStage.EXIT:
                 context = self._run_exit(context)
             else:
@@ -190,7 +196,6 @@ class ValidationEngine:
 
     def _executor_for(self, stage: ValidationStage) -> _StageExecutor:
         executors: dict[ValidationStage, _StageExecutor] = {
-            ValidationStage.RUN_VALIDATION: self._validation_runner.run_validation,
             ValidationStage.SCORING: self._scoring_engine.score,
             ValidationStage.BENCHMARK: self._benchmark_engine.benchmark,
             ValidationStage.CERTIFICATION: self._certification_engine.certify,
@@ -279,6 +284,26 @@ class ValidationEngine:
             updated = updated.with_error(f"{error.code.value}: {error.message}")
         return updated.with_exit_status(ExitStatus.FAILED)
 
+    def _run_oracle_stage(self, context: RunContext) -> RunContext:
+        outcome = self._oracle_runner.execute_oracles(context)
+        return self._apply_oracle_outcome(context, outcome)
+
+    def _apply_oracle_outcome(
+        self,
+        context: RunContext,
+        outcome: OracleExecutionOutcome,
+    ) -> RunContext:
+        result = outcome.to_stage_result()
+        updated = self._record_stage(context, ValidationStage.RUN_VALIDATION, result)
+        for warning in outcome.warnings:
+            updated = updated.with_warning(warning)
+        if outcome.success and outcome.execution is not None:
+            return updated.with_oracle_execution(outcome.execution)
+        for error in outcome.errors:
+            detail = f"{error.code.value}: {error.message}"
+            updated = updated.with_error(detail)
+        return updated.with_exit_status(ExitStatus.FAILED)
+
     def _run_exit(self, context: RunContext) -> RunContext:
         self._inference_runner.shutdown(context)
         exit_status = context.exit_status or ExitStatus.NOT_CERTIFIED
@@ -346,6 +371,7 @@ class ValidationEngine:
             ValidationStage.RESOLVE_ARTIFACTS,
             ValidationStage.RESOLVE_PROFILE,
             ValidationStage.INITIALIZE_INFERENCE,
+            ValidationStage.RUN_VALIDATION,
         ):
             raise PipelineError(f"Stage {stage.value} failed: {result.message}")
         return updated

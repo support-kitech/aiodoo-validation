@@ -1,6 +1,6 @@
-# Coding Validation Profile (Phase 4)
+# Coding Validation Profile (Phase 4+)
 
-**Status:** Phase 4 — profile selection and ValidationPlan metadata only (no validation execution)
+**Status:** Phase 4 complete; Phase 5 wires the declared oracle pipeline to placeholder oracles
 
 The **Coding Profile** is the first real validation profile. All coding-specific
 policy lives under `profiles/coding/`. The Validation Engine remains generic.
@@ -16,7 +16,9 @@ CodingProfile
     ↓ plan builder
 ValidationPlan
     ↓ attached to RunContext
-Inference Runner (unchanged generic port)
+Inference Runner
+    ↓
+Oracle Framework (executes plan.oracle_pipeline)
 ```
 
 The engine never branches on `"coding"`. It only calls `ProfileEnginePort.resolve_profile()`.
@@ -27,21 +29,44 @@ The engine never branches on `"coding"`. It only calls `ProfileEnginePort.resolv
 |-----------|----------------|
 | `ProfileEnginePort` | Resolve profile + build plan |
 | `ProfileResolver` | Map profile name → profile object |
-| `CodingProfile` | Coding metadata, capabilities, pipeline placeholders |
-| `ValidationPlan` | Immutable execution metadata (no execution) |
+| `CodingProfile` | Coding metadata, capabilities, oracle pipeline |
+| `ValidationPlan` | Immutable execution metadata |
 | `profiles/coding/compatibility.py` | Coding artifact/model/adapter policy |
 | `profiles/coding/policy.py` | Coding allowlists and rejected families |
 
+## ProfileEngine coupling note
+
+`ProfileEngine` retains a single `isinstance(CodingProfile)` dispatch for
+compatibility validation and plan construction. Coding-specific work is
+delegated to `CodingProfile.validate_compatibility()` and
+`CodingProfile.build_validation_plan()`. A broader profile-operations Protocol
+was intentionally **not** introduced — only one profile exists today, and
+premature abstraction would add complexity without architectural benefit.
+
+## Oracle pipeline (metadata owned by Coding Profile)
+
+```text
+Metadata Oracle
+  → Manifest Oracle
+  → Python Oracle
+  → XML Oracle
+  → Security Oracle
+  → Module Structure Oracle
+  → Future Quality Oracle (disabled)
+```
+
+Phase 5 executes enabled stages via the Oracle Framework as placeholders only.
+
 ## ValidationPlan
 
-`ValidationPlan` describes future execution without running validation:
+`ValidationPlan` describes execution without implementing rules:
 
 - Profile name and deterministic `plan_digest`
-- `ProfileCapabilities` (inference on; oracles/scoring/benchmark/certification off)
+- `ProfileCapabilities` (inference + oracles on; scoring/benchmark/certification off)
 - Supported artifact types and runtimes
-- Placeholder pipelines (oracle, scoring, benchmark, certification)
+- Oracle / scoring / benchmark / certification pipelines
 - `execution_order` and `validation_stages`
-- Frozen `configuration` snapshot (tier, protocol, Odoo versions, bundle digest)
+- Frozen `configuration` snapshot
 
 ## Compatibility ownership (post Phase 4)
 
@@ -50,8 +75,9 @@ The engine never branches on `"coding"`. It only calls `ProfileEnginePort.resolv
 | **Artifact Resolution** | Protocol, metadata integrity, paths, fingerprints, duplicates |
 | **Coding Profile** | Model family, adapter_type, coding policy, profile protocol scope |
 | **Inference Runtime** | Runtime load prerequisites (base + adapter artifacts, Qwen runtime scope) |
+| **Oracle Framework** | Executes plan oracles only — no coding policy ownership |
 
-Coding policy was moved **out of** resolution and inference into `profiles/coding/`.
+Coding policy lives under `profiles/coding/` (formerly `domain/v1_scope.py`).
 
 ## Rejected profiles and adapters
 
@@ -66,11 +92,11 @@ After successful `resolve_profile`:
 - `validation_profile: ResolvedProfile` (concrete `CodingProfile`)
 - `validation_plan: ValidationPlan`
 
-Downstream phases should consume these objects instead of re-reading `ValidationRequest` for profile semantics.
+After successful oracle execution (Phase 5):
+
+- `oracle_execution: OracleExecutionResult`
 
 ## Relationship with Inference Runner
 
 Inference validates **runtime** compatibility only (Qwen3-8B load prerequisites).
 Coding adapter **policy** is enforced by the profile stage before inference runs.
-
-No validation, oracle, scoring, benchmark, or certification logic executes in Phase 4.

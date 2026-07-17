@@ -8,8 +8,6 @@ from aiodoo_validation.domain.artifacts import ArtifactBundle
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.enums import ProfileErrorCode
 from aiodoo_validation.domain.profile import ProfileError, ProfileResolutionOutcome, ResolvedProfile
-from aiodoo_validation.profiles.coding.compatibility import validate_coding_artifact_compatibility
-from aiodoo_validation.profiles.coding.plan_builder import build_coding_validation_plan
 from aiodoo_validation.profiles.coding.profile import CodingProfile
 from aiodoo_validation.profiles.resolver import ProfileResolver
 from aiodoo_validation.validation_plan.plan import ValidationPlan
@@ -17,7 +15,15 @@ from aiodoo_validation.validation_plan.plan import ValidationPlan
 
 @dataclass(frozen=True, slots=True)
 class ProfileEngine:
-    """Resolve validation profiles and construct ValidationPlan metadata."""
+    """
+    Resolve validation profiles and construct ValidationPlan metadata.
+
+    Phase 4 refinement: coding-specific compatibility and plan construction
+    live on ``CodingProfile`` methods. ``ProfileEngine`` retains a single
+    ``isinstance(CodingProfile)`` dispatch because only the coding profile
+    exists today. A profile-operation Protocol would add indirection without
+    benefit until a second profile is introduced.
+    """
 
     resolver: ProfileResolver
 
@@ -67,10 +73,13 @@ class ProfileEngine:
             return ProfileResolutionOutcome(
                 success=False,
                 message="Profile resolution failed.",
-                errors=(resolve_error or ProfileError(
-                    code=ProfileErrorCode.PROFILE_CONSTRUCTION_FAILURE,
-                    message="Profile could not be constructed.",
-                ),),
+                errors=(
+                    resolve_error
+                    or ProfileError(
+                        code=ProfileErrorCode.PROFILE_CONSTRUCTION_FAILURE,
+                        message="Profile could not be constructed.",
+                    ),
+                ),
             )
 
         compatibility_errors = self._validate_compatibility(profile, bundle)
@@ -95,7 +104,7 @@ class ProfileEngine:
         bundle: ArtifactBundle,
     ) -> tuple[ProfileError, ...]:
         if isinstance(profile, CodingProfile):
-            return validate_coding_artifact_compatibility(bundle)
+            return profile.validate_compatibility(bundle)
         return (
             ProfileError(
                 code=ProfileErrorCode.PROFILE_CONSTRUCTION_FAILURE,
@@ -111,7 +120,7 @@ class ProfileEngine:
         context: RunContext,
     ) -> ValidationPlan:
         if isinstance(profile, CodingProfile):
-            return build_coding_validation_plan(profile, bundle=bundle, context=context)
+            return profile.build_validation_plan(bundle=bundle, context=context)
         raise ProfileError(
             code=ProfileErrorCode.PROFILE_CONSTRUCTION_FAILURE,
             message=f"Cannot build plan for profile {profile.profile_name!r}.",

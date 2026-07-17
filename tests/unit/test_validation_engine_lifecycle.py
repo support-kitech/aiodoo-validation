@@ -14,10 +14,6 @@ from aiodoo_validation.engine import PIPELINE_STAGE_ORDER, ValidationEngine
 from aiodoo_validation.exceptions import InvalidRequestError
 
 STUB_PORT_STAGES = (
-    ValidationStage.RESOLVE_ARTIFACTS,
-    ValidationStage.RESOLVE_PROFILE,
-    ValidationStage.INITIALIZE_INFERENCE,
-    ValidationStage.RUN_VALIDATION,
     ValidationStage.SCORING,
     ValidationStage.BENCHMARK,
     ValidationStage.CERTIFICATION,
@@ -67,12 +63,6 @@ def test_stub_engine_runs_complete_lifecycle() -> None:
         assert record.result is not None
 
     for stage in STUB_PORT_STAGES:
-        if stage in (
-            ValidationStage.RESOLVE_ARTIFACTS,
-            ValidationStage.RESOLVE_PROFILE,
-            ValidationStage.INITIALIZE_INFERENCE,
-        ):
-            continue
         assert result.run_context.placeholder_results[stage].data.get("stub") is True
 
     artifact_result = result.run_context.placeholder_results[ValidationStage.RESOLVE_ARTIFACTS]
@@ -90,6 +80,11 @@ def test_stub_engine_runs_complete_lifecycle() -> None:
     assert inference_result.status is StageStatus.SUCCEEDED
     assert result.run_context.inference_session is not None
     assert result.run_context.inference_session.runtime == "stub"
+
+    oracle_result = result.run_context.placeholder_results[ValidationStage.RUN_VALIDATION]
+    assert oracle_result.status is StageStatus.SUCCEEDED
+    assert result.run_context.oracle_execution is not None
+    assert result.run_context.oracle_execution.oracle_count == 6
 
     for stage in PIPELINE_STAGE_ORDER:
         assert stage in result.run_context.placeholder_results

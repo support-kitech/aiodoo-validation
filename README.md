@@ -17,24 +17,26 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
 | **Phase 2 — Artifact Resolution** | **Complete** |
 | **Phase 3 — Inference Runner** | **Complete** |
 | **Phase 4 — Coding Validation Profile** | **Complete** |
-| Phase 5+ | Not started |
+| **Phase 5 — Oracle Framework** | **Complete** |
+| Phase 6+ | Not started |
 
-## Current capabilities (Phase 0–4)
+## Current capabilities (Phase 0–5)
 
 - Production repository foundation (CI, lint, typing, tests, docs)
 - **Validation Engine** with full TDD lifecycle ordering (generic orchestration)
 - **Artifact Resolution** — filesystem and stub resolvers
-- **Coding Validation Profile** — profile selection, compatibility, ValidationPlan metadata
+- **Coding Validation Profile** — profile selection, compatibility, ValidationPlan
 - **Inference Runner** — mock (CI default) and optional Qwen runtime
-- Immutable **RunContext** with artifact bundle, profile, plan, and inference session
-- Stub ports for downstream engines (validation, scoring, benchmark, certification, report)
+- **Oracle Framework** — registry + placeholder oracle pipeline execution
+- Immutable **RunContext** with artifact bundle, profile, plan, inference session, oracle execution
+- Stub ports for scoring, benchmark, certification, report
 - Deterministic CPU-only tests — no GPU, no model downloads in CI
 
 ## Not yet implemented (deferred by design)
 
 | Component | Implementation Plan phase |
 |-----------|---------------------------|
-| Oracle Framework | Phase 5 |
+| Real oracle validation rules | Later phases (post placeholder) |
 | Scoring Engine | Phase 6 |
 | Benchmark Engine | Phase 7 |
 | Certification Engine | Phase 8 |
@@ -64,6 +66,7 @@ python3 -m aiodoo_validation   # stub lifecycle run
 - [Artifact Bundle (Phase 2)](docs/artifact_bundle.md)
 - [Inference Runner (Phase 3)](docs/inference_runner.md)
 - [Coding Validation Profile (Phase 4)](docs/coding_profile.md)
+- [Oracle Framework (Phase 5)](docs/oracle_framework.md)
 - [ADR template](docs/adr/0000-adr-template.md)
 
 ## License
