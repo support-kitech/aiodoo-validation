@@ -184,9 +184,7 @@ def test_reporting_does_not_import_upstream_execution() -> None:
                     "aiodoo_validation.certification",
                 }:
                     violations.append(f"{path.relative_to(ROOT)}: {module}")
-    assert not violations, "reporting must not import upstream execution:\n" + "\n".join(
-        violations
-    )
+    assert not violations, "reporting must not import upstream execution:\n" + "\n".join(violations)
 
 
 def test_cli_does_not_import_upstream_execution() -> None:

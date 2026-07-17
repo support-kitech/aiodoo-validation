@@ -225,9 +225,7 @@ class ReportGenerator:
             except Exception as exc:  # noqa: BLE001 — isolate template failures
                 wrapped = ReportError(
                     code=ReportErrorCode.EXECUTION_FAILURE,
-                    message=(
-                        f"Report template {template.metadata.template_id!r} failed: {exc}"
-                    ),
+                    message=(f"Report template {template.metadata.template_id!r} failed: {exc}"),
                     template_id=template.metadata.template_id,
                 )
                 errors.append(wrapped)

@@ -41,9 +41,7 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as exc:  # noqa: BLE001 — CLI must not crash on unexpected errors
         if config.debug:
             raise
-        sys.stdout.write(
-            ConsoleFormatter().format_error(f"Unexpected CLI error: {exc}")
-        )
+        sys.stdout.write(ConsoleFormatter().format_error(f"Unexpected CLI error: {exc}"))
         return EXIT_FAILED
 
 

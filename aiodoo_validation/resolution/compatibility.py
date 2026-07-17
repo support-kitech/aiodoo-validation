@@ -20,8 +20,7 @@ def validate_no_duplicate_locations(
                 ArtifactResolutionError(
                     code=ArtifactResolutionErrorCode.DUPLICATE_ARTIFACT,
                     message=(
-                        f"Duplicate artifact location for {descriptor.logical_ref!r} "
-                        f"and {prior!r}."
+                        f"Duplicate artifact location for {descriptor.logical_ref!r} and {prior!r}."
                     ),
                     field=descriptor.logical_ref,
                 )

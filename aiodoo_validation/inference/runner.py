@@ -91,10 +91,13 @@ class RealInferenceRunner:
             return InferenceInitializationOutcome(
                 success=False,
                 message="Inference initialization failed.",
-                errors=(path_error or InferenceError(
-                    code=InferenceErrorCode.MISSING_BUNDLE,
-                    message="Missing artifact load paths.",
-                ),),
+                errors=(
+                    path_error
+                    or InferenceError(
+                        code=InferenceErrorCode.MISSING_BUNDLE,
+                        message="Missing artifact load paths.",
+                    ),
+                ),
             )
 
         model_identifier = str(bundle.base_model.metadata.get("identifier", "qwen3-8b"))

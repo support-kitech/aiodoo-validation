@@ -115,9 +115,7 @@ class CertificationEngine:
                 ),
             )
 
-        benchmark_by_id = {
-            result.policy_id: result for result in benchmark_execution.results
-        }
+        benchmark_by_id = {result.policy_id: result for result in benchmark_execution.results}
         started = perf_counter()
         results: list[CertificationResult] = []
         errors: list[CertificationError] = []
@@ -170,9 +168,7 @@ class CertificationEngine:
                 )
                 continue
 
-            benchmark_result = benchmark_by_id.get(
-                policy.metadata.source_benchmark_policy_id
-            )
+            benchmark_result = benchmark_by_id.get(policy.metadata.source_benchmark_policy_id)
             if benchmark_result is None:
                 missing = CertificationError(
                     code=CertificationErrorCode.BENCHMARK_RESULT_MISSING,
@@ -224,9 +220,7 @@ class CertificationEngine:
             except Exception as exc:  # noqa: BLE001 — isolate policy failures
                 wrapped = CertificationError(
                     code=CertificationErrorCode.EXECUTION_FAILURE,
-                    message=(
-                        f"Certification policy {policy.metadata.policy_id!r} failed: {exc}"
-                    ),
+                    message=(f"Certification policy {policy.metadata.policy_id!r} failed: {exc}"),
                     policy_id=policy.metadata.policy_id,
                 )
                 errors.append(wrapped)
@@ -261,12 +255,8 @@ class CertificationEngine:
         success_count = sum(1 for item in results if item.success)
         failure_count = len(results) - success_count
         certified_count = sum(1 for item in results if item.success and item.certified)
-        successful_scores = tuple(
-            item.certification_score for item in results if item.success
-        )
-        aggregate = (
-            sum(successful_scores) / len(successful_scores) if successful_scores else None
-        )
+        successful_scores = tuple(item.certification_score for item in results if item.success)
+        aggregate = sum(successful_scores) / len(successful_scores) if successful_scores else None
         overall_certified = (
             failure_count == 0 and certified_count == len(results) and len(results) > 0
         )

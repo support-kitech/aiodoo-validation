@@ -13,7 +13,7 @@ from aiodoo_validation.domain.enums import StageStatus, ValidationStage
 
 @dataclass(frozen=True, slots=True)
 class PlaceholderStageResult:
-    """Stub result payload returned by Phase 0/1 stage implementations."""
+    """Immutable result payload returned by pipeline stage implementations."""
 
     stage: ValidationStage
     status: StageStatus

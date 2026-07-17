@@ -30,10 +30,10 @@ __all__ = [
 
 class ValidationRunnerPort(Protocol):
     """
-    Legacy stub port for RUN_VALIDATION (Phase 0–4).
+    Legacy port for RUN_VALIDATION stage implementations.
 
-    Phase 5 uses ``OracleRunnerPort`` for real oracle orchestration.
-    Retained for compatibility with residual stub wiring.
+    The active pipeline uses ``OracleRunnerPort`` for oracle orchestration.
+    Retained for backwards compatibility with external stub wiring.
     """
 
     def run_validation(self, context: RunContext) -> PlaceholderStageResult: ...

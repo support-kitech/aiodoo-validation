@@ -4,8 +4,17 @@
 
 [project]
 name = "aiodoo-validation"
-version = "0.0.0-dev"
+version = "1.0.0"
+description = "Canonical Evaluation & Certification Framework for AIODOO Models"
+readme = "README.md"
+license = { text = "Proprietary" }
 requires-python = ">=3.12"
+keywords = ["aiodoo", "validation", "evaluation", "certification", "llm"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
 
 [project.scripts]
 aiodoo-validation = "aiodoo_validation.cli.app:main"

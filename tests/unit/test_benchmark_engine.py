@@ -163,9 +163,7 @@ def test_disabled_quality_benchmark_is_skipped() -> None:
     context = _context_ready_for_benchmark()
     plan = context.validation_plan
     assert plan is not None
-    quality = next(
-        stage for stage in plan.benchmark_pipeline if stage.stage_id.endswith("quality")
-    )
+    quality = next(stage for stage in plan.benchmark_pipeline if stage.stage_id.endswith("quality"))
     assert quality.enabled is False
     outcome = BenchmarkEngine.create_default().benchmark(context)
     assert outcome.execution is not None

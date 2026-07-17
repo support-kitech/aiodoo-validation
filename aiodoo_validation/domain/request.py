@@ -25,8 +25,8 @@ class ValidationRequest:
     """
     Immutable validation request.
 
-    Fields align with frozen TDD request metadata. Paths are opaque strings in
-    Phase 0/1 — no artifact loading occurs.
+    Fields align with frozen TDD request metadata. Paths are opaque strings resolved
+    by the ArtifactResolver; no artifact loading occurs at request construction time.
     """
 
     profile_name: str

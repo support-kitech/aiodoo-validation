@@ -51,9 +51,7 @@ class PlaceholderFingerprintProvider:
             return None, None
         if expected == actual.value:
             return None, None
-        message = (
-            f"Fingerprint mismatch for {field}: expected {expected!r}, got {actual.value!r}."
-        )
+        message = f"Fingerprint mismatch for {field}: expected {expected!r}, got {actual.value!r}."
         if policy is FingerprintPolicy.STRICT:
             return (
                 ArtifactResolutionError(

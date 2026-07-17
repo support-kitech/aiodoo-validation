@@ -116,10 +116,14 @@ class FilesystemArtifactResolver:
                 warnings=tuple(warnings),
             )
 
-        descriptors = (base_model, adapter) if merged_model is None else (
-            base_model,
-            adapter,
-            merged_model,
+        descriptors = (
+            (base_model, adapter)
+            if merged_model is None
+            else (
+                base_model,
+                adapter,
+                merged_model,
+            )
         )
         errors.extend(validate_no_duplicate_locations(descriptors))
 
@@ -139,11 +143,13 @@ class FilesystemArtifactResolver:
             fingerprint_policy=policy,
             metadata={
                 "resolver": "filesystem",
-                **{ARTIFACT_PATHS_KEY: build_artifact_paths_metadata(
-                    base_model=request.base_model_ref,
-                    adapter=request.adapter_ref,
-                    merged_model=request.merged_model_ref,
-                )},
+                **{
+                    ARTIFACT_PATHS_KEY: build_artifact_paths_metadata(
+                        base_model=request.base_model_ref,
+                        adapter=request.adapter_ref,
+                        merged_model=request.merged_model_ref,
+                    )
+                },
             },
         )
         return ArtifactResolutionOutcome(

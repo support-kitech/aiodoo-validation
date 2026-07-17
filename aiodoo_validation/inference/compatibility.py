@@ -39,9 +39,7 @@ def validate_runtime_artifacts(bundle: ArtifactBundle) -> tuple[InferenceError, 
 
     base_meta = bundle.base_model.metadata
     model_family = _normalize(base_meta.get("model_family", ""))
-    model_identifier = _normalize(
-        base_meta.get("identifier", base_meta.get("model_id", ""))
-    )
+    model_identifier = _normalize(base_meta.get("identifier", base_meta.get("model_id", "")))
     if model_family and model_family not in SUPPORTED_RUNTIME_MODEL_FAMILIES:
         errors.append(
             InferenceError(

@@ -221,9 +221,7 @@ def test_capability_mismatch_fails() -> None:
         validation_stages=plan.validation_stages,
         configuration=plan.configuration,
     )
-    outcome = CertificationEngine.create_default().certify(
-        context.with_validation_plan(disabled)
-    )
+    outcome = CertificationEngine.create_default().certify(context.with_validation_plan(disabled))
     assert outcome.success is False
     assert outcome.errors[0].code is CertificationErrorCode.CAPABILITY_MISMATCH
 

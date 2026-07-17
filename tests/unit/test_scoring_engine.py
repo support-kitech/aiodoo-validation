@@ -156,9 +156,7 @@ def test_disabled_quality_score_policy_is_skipped() -> None:
     assert quality.enabled is False
     outcome = ScoringEngine.create_default().score(context)
     assert outcome.execution is not None
-    assert "coding.score.quality" not in {
-        result.policy_id for result in outcome.execution.results
-    }
+    assert "coding.score.quality" not in {result.policy_id for result in outcome.execution.results}
 
 
 def test_missing_oracle_results_fails_gracefully() -> None:

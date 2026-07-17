@@ -10,7 +10,7 @@ def negotiate_protocol(request: ValidationRequest) -> tuple[int, int]:
     """
     Negotiate Validation Protocol version for the request.
 
-    Only Validation Protocol V1 (major=1) exists in Phase 0/1.
+    Only Validation Protocol V1 (major=1) is supported.
     """
     if request.protocol_major != SUPPORTED_PROTOCOL_MAJOR:
         raise ProtocolError(

@@ -57,9 +57,7 @@ class ConsoleFormatter:
             if report_execution.overall_status is not None:
                 lines.append(f"  Overall status: {report_execution.overall_status}")
             for report in report_execution.results:
-                lines.append(
-                    f"  - {report.template_id}: {report.status} ({report.summary})"
-                )
+                lines.append(f"  - {report.template_id}: {report.status} ({report.summary})")
             lines.append("")
 
         lines.append(result.message)

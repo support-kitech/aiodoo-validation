@@ -204,8 +204,7 @@ class OracleEngine:
             return OracleError(
                 code=OracleErrorCode.CAPABILITY_MISMATCH,
                 message=(
-                    f"ValidationPlan for profile {plan.profile_name!r} "
-                    "does not support oracles."
+                    f"ValidationPlan for profile {plan.profile_name!r} does not support oracles."
                 ),
                 field="capabilities.supports_oracles",
             )

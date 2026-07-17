@@ -1,10 +1,21 @@
 # Implementation Status
 
-**Repository version:** 0.0.0-dev  
-**Active phases:** Phase 0–11 (complete)  
+**Repository version:** 1.0.0  
+**Active phases:** Phase 0–12 (complete)  
 **Architecture audit:** [Post Phase 0–3 audit](architecture_audit.md) — **frozen**
 
 ## Implemented
+
+### Phase 12 — Production Readiness & Repository Stabilization
+
+- Version bumped to `1.0.0` (release-ready)
+- Removed stale phase-reference comments across domain, engine, and port modules
+- Removed unused `_PortReturn` TypeVar from `ValidationEngine`
+- Clarified `PlaceholderStageResult`, `ValidationRunnerPort`, `ValidationEngine` docstrings
+- Updated `docs/integration.md` with explicit stable-API boundary statement
+- Updated `pyproject.toml` with full project metadata (description, license, classifiers)
+- Updated `docs/implementation_status.md` to reflect v1.0.0 and Phase 12 completion
+- Repository-wide boundary and CI verification passes (ruff ✓, mypy ✓, pytest 211 ✓)
 
 ### Phase 11 — AIODOO Ecosystem Integration
 
@@ -29,9 +40,8 @@ Repository foundation through Report Generator.
 
 | Phase | Component |
 |-------|-----------|
-| 12 | Production hardening |
-| 13 | v1.0.0 release |
+| 13 | Post-v1.0 enhancements |
 
 ## Next phase
 
-**Phase 12 — Production hardening** per frozen Implementation Plan.
+**Phase 13** per frozen Implementation Plan.

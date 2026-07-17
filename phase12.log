@@ -1,0 +1,668 @@
+diff --git a/README.md b/README.md
+index 92314ed..18da624 100644
+--- a/README.md
++++ b/README.md
+@@ -24,9 +24,10 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
+ | **Phase 9 — Report Generation** | **Complete** |
+ | **Phase 10 — Production CLI** | **Complete** |
+ | **Phase 11 — Ecosystem Integration** | **Complete** |
+-| Phase 12+ | Not started |
++| **Phase 12 — Production Readiness** | **Complete** |
++| Phase 13+ | Not started |
+ 
+-## Current capabilities (Phase 0–11)
++## Current capabilities (Phase 0–12, v1.0.0)
+ 
+ - Production repository foundation (CI, lint, typing, tests, docs)
+ - **Validation Engine** with full TDD lifecycle ordering (generic orchestration)
+diff --git a/aiodoo_validation/__version__.py b/aiodoo_validation/__version__.py
+index fb86b2a..1cadd3c 100644
+--- a/aiodoo_validation/__version__.py
++++ b/aiodoo_validation/__version__.py
+@@ -1,3 +1,3 @@
+ """AIODOO Validation package version."""
+ 
+-__version__ = "0.0.0-dev"
++__version__ = "1.0.0"
+diff --git a/aiodoo_validation/benchmark/engine.py b/aiodoo_validation/benchmark/engine.py
+index 26d708b..a66c04c 100644
+--- a/aiodoo_validation/benchmark/engine.py
++++ b/aiodoo_validation/benchmark/engine.py
+@@ -254,9 +254,7 @@ class BenchmarkEngine:
+         success_count = sum(1 for item in results if item.success)
+         failure_count = len(results) - success_count
+         successful_scores = tuple(item.benchmark_score for item in results if item.success)
+-        aggregate = (
+-            sum(successful_scores) / len(successful_scores) if successful_scores else None
+-        )
++        aggregate = sum(successful_scores) / len(successful_scores) if successful_scores else None
+         execution = BenchmarkExecutionResult(
+             plan_digest=plan.plan_digest,
+             profile_name=plan.profile_name,
+diff --git a/aiodoo_validation/certification/engine.py b/aiodoo_validation/certification/engine.py
+index 45010f4..95efa21 100644
+--- a/aiodoo_validation/certification/engine.py
++++ b/aiodoo_validation/certification/engine.py
+@@ -115,9 +115,7 @@ class CertificationEngine:
+                 ),
+             )
+ 
+-        benchmark_by_id = {
+-            result.policy_id: result for result in benchmark_execution.results
+-        }
++        benchmark_by_id = {result.policy_id: result for result in benchmark_execution.results}
+         started = perf_counter()
+         results: list[CertificationResult] = []
+         errors: list[CertificationError] = []
+@@ -170,9 +168,7 @@ class CertificationEngine:
+                 )
+                 continue
+ 
+-            benchmark_result = benchmark_by_id.get(
+-                policy.metadata.source_benchmark_policy_id
+-            )
++            benchmark_result = benchmark_by_id.get(policy.metadata.source_benchmark_policy_id)
+             if benchmark_result is None:
+                 missing = CertificationError(
+                     code=CertificationErrorCode.BENCHMARK_RESULT_MISSING,
+@@ -224,9 +220,7 @@ class CertificationEngine:
+             except Exception as exc:  # noqa: BLE001 — isolate policy failures
+                 wrapped = CertificationError(
+                     code=CertificationErrorCode.EXECUTION_FAILURE,
+-                    message=(
+-                        f"Certification policy {policy.metadata.policy_id!r} failed: {exc}"
+-                    ),
++                    message=(f"Certification policy {policy.metadata.policy_id!r} failed: {exc}"),
+                     policy_id=policy.metadata.policy_id,
+                 )
+                 errors.append(wrapped)
+@@ -261,12 +255,8 @@ class CertificationEngine:
+         success_count = sum(1 for item in results if item.success)
+         failure_count = len(results) - success_count
+         certified_count = sum(1 for item in results if item.success and item.certified)
+-        successful_scores = tuple(
+-            item.certification_score for item in results if item.success
+-        )
+-        aggregate = (
+-            sum(successful_scores) / len(successful_scores) if successful_scores else None
+-        )
++        successful_scores = tuple(item.certification_score for item in results if item.success)
++        aggregate = sum(successful_scores) / len(successful_scores) if successful_scores else None
+         overall_certified = (
+             failure_count == 0 and certified_count == len(results) and len(results) > 0
+         )
+diff --git a/aiodoo_validation/cli/app.py b/aiodoo_validation/cli/app.py
+index 0eb94de..de0a52e 100644
+--- a/aiodoo_validation/cli/app.py
++++ b/aiodoo_validation/cli/app.py
+@@ -41,9 +41,7 @@ def main(argv: list[str] | None = None) -> int:
+     except Exception as exc:  # noqa: BLE001 — CLI must not crash on unexpected errors
+         if config.debug:
+             raise
+-        sys.stdout.write(
+-            ConsoleFormatter().format_error(f"Unexpected CLI error: {exc}")
+-        )
++        sys.stdout.write(ConsoleFormatter().format_error(f"Unexpected CLI error: {exc}"))
+         return EXIT_FAILED
+ 
+ 
+diff --git a/aiodoo_validation/cli/commands.py b/aiodoo_validation/cli/commands.py
+index dc65bfd..b643dd5 100644
+--- a/aiodoo_validation/cli/commands.py
++++ b/aiodoo_validation/cli/commands.py
+@@ -103,10 +103,7 @@ def run_help(args: argparse.Namespace, *, config: CliConfig) -> int:
+                 f"{program} help"
+             ),
+             examples=(
+-                (
+-                    f"{program} validate --profile coding "
+-                    f"--base-model ./base --adapter ./adapter"
+-                ),
++                (f"{program} validate --profile coding --base-model ./base --adapter ./adapter"),
+                 f"{program} version",
+                 f"{program} capabilities",
+             ),
+diff --git a/aiodoo_validation/cli/formatter.py b/aiodoo_validation/cli/formatter.py
+index 65bfb13..e867e5d 100644
+--- a/aiodoo_validation/cli/formatter.py
++++ b/aiodoo_validation/cli/formatter.py
+@@ -57,9 +57,7 @@ class ConsoleFormatter:
+             if report_execution.overall_status is not None:
+                 lines.append(f"  Overall status: {report_execution.overall_status}")
+             for report in report_execution.results:
+-                lines.append(
+-                    f"  - {report.template_id}: {report.status} ({report.summary})"
+-                )
++                lines.append(f"  - {report.template_id}: {report.status} ({report.summary})")
+             lines.append("")
+ 
+         lines.append(result.message)
+diff --git a/aiodoo_validation/domain/context.py b/aiodoo_validation/domain/context.py
+index a3927d1..9bddc67 100644
+--- a/aiodoo_validation/domain/context.py
++++ b/aiodoo_validation/domain/context.py
+@@ -111,9 +111,7 @@ class RunContext:
+     def with_benchmark_execution(self, execution: BenchmarkExecutionResult) -> RunContext:
+         return replace(self, benchmark_execution=execution)
+ 
+-    def with_certification_execution(
+-        self, execution: CertificationExecutionResult
+-    ) -> RunContext:
++    def with_certification_execution(self, execution: CertificationExecutionResult) -> RunContext:
+         return replace(self, certification_execution=execution)
+ 
+     def with_report_execution(self, execution: ReportExecutionResult) -> RunContext:
+diff --git a/aiodoo_validation/domain/enums.py b/aiodoo_validation/domain/enums.py
+index 781c9a9..29b7f95 100644
+--- a/aiodoo_validation/domain/enums.py
++++ b/aiodoo_validation/domain/enums.py
+@@ -4,7 +4,7 @@ from enum import IntEnum, StrEnum
+ 
+ 
+ class ExecutionTier(StrEnum):
+-    """Validation execution tier (behavior unchanged in Phase 0/1)."""
++    """Validation execution tier controlling pipeline depth."""
+ 
+     SMOKE = "smoke"
+     STANDARD = "standard"
+@@ -48,7 +48,7 @@ class StageStatus(StrEnum):
+ 
+ 
+ class SupportedValidationProfile(StrEnum):
+-    """Profiles registered in Phase 0/1 (coding only for v1 scope)."""
++    """Profiles supported in Validation Protocol V1 (coding only for v1 scope)."""
+ 
+     CODING = "coding"
+ 
+diff --git a/aiodoo_validation/domain/request.py b/aiodoo_validation/domain/request.py
+index 806fad1..44930f9 100644
+--- a/aiodoo_validation/domain/request.py
++++ b/aiodoo_validation/domain/request.py
+@@ -25,8 +25,8 @@ class ValidationRequest:
+     """
+     Immutable validation request.
+ 
+-    Fields align with frozen TDD request metadata. Paths are opaque strings in
+-    Phase 0/1 — no artifact loading occurs.
++    Fields align with frozen TDD request metadata. Paths are opaque strings resolved
++    by the ArtifactResolver; no artifact loading occurs at request construction time.
+     """
+ 
+     profile_name: str
+diff --git a/aiodoo_validation/domain/stage.py b/aiodoo_validation/domain/stage.py
+index ba60464..c1d0dc8 100644
+--- a/aiodoo_validation/domain/stage.py
++++ b/aiodoo_validation/domain/stage.py
+@@ -13,7 +13,7 @@ from aiodoo_validation.domain.enums import StageStatus, ValidationStage
+ 
+ @dataclass(frozen=True, slots=True)
+ class PlaceholderStageResult:
+-    """Stub result payload returned by Phase 0/1 stage implementations."""
++    """Immutable result payload returned by pipeline stage implementations."""
+ 
+     stage: ValidationStage
+     status: StageStatus
+diff --git a/aiodoo_validation/engine/protocol.py b/aiodoo_validation/engine/protocol.py
+index b176ec6..cb2d60d 100644
+--- a/aiodoo_validation/engine/protocol.py
++++ b/aiodoo_validation/engine/protocol.py
+@@ -10,7 +10,7 @@ def negotiate_protocol(request: ValidationRequest) -> tuple[int, int]:
+     """
+     Negotiate Validation Protocol version for the request.
+ 
+-    Only Validation Protocol V1 (major=1) exists in Phase 0/1.
++    Only Validation Protocol V1 (major=1) is supported.
+     """
+     if request.protocol_major != SUPPORTED_PROTOCOL_MAJOR:
+         raise ProtocolError(
+diff --git a/aiodoo_validation/engine/validation_engine.py b/aiodoo_validation/engine/validation_engine.py
+index 6a05a2a..5bdf203 100644
+--- a/aiodoo_validation/engine/validation_engine.py
++++ b/aiodoo_validation/engine/validation_engine.py
+@@ -4,7 +4,6 @@ from __future__ import annotations
+ 
+ from collections.abc import Callable
+ from datetime import UTC, datetime
+-from typing import TypeVar
+ 
+ from aiodoo_validation.domain.benchmark import BenchmarkExecutionOutcome
+ from aiodoo_validation.domain.certification import CertificationExecutionOutcome
+@@ -40,7 +39,6 @@ from aiodoo_validation.ports import (
+ from aiodoo_validation.resolution.filesystem import FilesystemArtifactResolver
+ from aiodoo_validation.stubs import StubPipelineComponents
+ 
+-_PortReturn = TypeVar("_PortReturn", bound=PlaceholderStageResult)
+ _StageExecutor = Callable[[RunContext], PlaceholderStageResult]
+ 
+ PIPELINE_STAGE_ORDER: tuple[ValidationStage, ...] = (
+@@ -60,10 +58,12 @@ PIPELINE_STAGE_ORDER: tuple[ValidationStage, ...] = (
+ 
+ class ValidationEngine:
+     """
+-    Production validation orchestrator skeleton.
++    Production validation orchestrator.
+ 
+-    Executes the complete lifecycle using injected ports. Phase 9 wires the
+-    Report Generator through ``ReportGeneratorPort`` as the final pipeline stage.
++    Executes the complete Validation Protocol V1 lifecycle using injected ports.
++    Wired through: ArtifactResolver → ProfileEngine → InferenceRunner →
++    OracleRunner → ScoringEngine → BenchmarkEngine → CertificationEngine →
++    ReportGenerator.
+     """
+ 
+     def __init__(
+@@ -266,14 +266,9 @@ class ValidationEngine:
+         updated = self._record_stage(context, ValidationStage.RESOLVE_PROFILE, result)
+         for warning in outcome.warnings:
+             updated = updated.with_warning(warning)
+-        if (
+-            outcome.success
+-            and outcome.profile is not None
+-            and outcome.plan is not None
+-        ):
+-            return (
+-                updated.with_validation_profile(outcome.profile)
+-                .with_validation_plan(outcome.plan)
++        if outcome.success and outcome.profile is not None and outcome.plan is not None:
++            return updated.with_validation_profile(outcome.profile).with_validation_plan(
++                outcome.plan
+             )
+         for error in outcome.errors:
+             updated = updated.with_error(f"{error.code.value}: {error.message}")
+diff --git a/aiodoo_validation/inference/compatibility.py b/aiodoo_validation/inference/compatibility.py
+index e515c19..cab7858 100644
+--- a/aiodoo_validation/inference/compatibility.py
++++ b/aiodoo_validation/inference/compatibility.py
+@@ -39,9 +39,7 @@ def validate_runtime_artifacts(bundle: ArtifactBundle) -> tuple[InferenceError,
+ 
+     base_meta = bundle.base_model.metadata
+     model_family = _normalize(base_meta.get("model_family", ""))
+-    model_identifier = _normalize(
+-        base_meta.get("identifier", base_meta.get("model_id", ""))
+-    )
++    model_identifier = _normalize(base_meta.get("identifier", base_meta.get("model_id", "")))
+     if model_family and model_family not in SUPPORTED_RUNTIME_MODEL_FAMILIES:
+         errors.append(
+             InferenceError(
+diff --git a/aiodoo_validation/inference/runner.py b/aiodoo_validation/inference/runner.py
+index d3a8e67..0b633a1 100644
+--- a/aiodoo_validation/inference/runner.py
++++ b/aiodoo_validation/inference/runner.py
+@@ -91,10 +91,13 @@ class RealInferenceRunner:
+             return InferenceInitializationOutcome(
+                 success=False,
+                 message="Inference initialization failed.",
+-                errors=(path_error or InferenceError(
+-                    code=InferenceErrorCode.MISSING_BUNDLE,
+-                    message="Missing artifact load paths.",
+-                ),),
++                errors=(
++                    path_error
++                    or InferenceError(
++                        code=InferenceErrorCode.MISSING_BUNDLE,
++                        message="Missing artifact load paths.",
++                    ),
++                ),
+             )
+ 
+         model_identifier = str(bundle.base_model.metadata.get("identifier", "qwen3-8b"))
+diff --git a/aiodoo_validation/oracles/engine.py b/aiodoo_validation/oracles/engine.py
+index 0244af0..5b8cf1d 100644
+--- a/aiodoo_validation/oracles/engine.py
++++ b/aiodoo_validation/oracles/engine.py
+@@ -204,8 +204,7 @@ class OracleEngine:
+             return OracleError(
+                 code=OracleErrorCode.CAPABILITY_MISMATCH,
+                 message=(
+-                    f"ValidationPlan for profile {plan.profile_name!r} "
+-                    "does not support oracles."
++                    f"ValidationPlan for profile {plan.profile_name!r} does not support oracles."
+                 ),
+                 field="capabilities.supports_oracles",
+             )
+diff --git a/aiodoo_validation/ports/__init__.py b/aiodoo_validation/ports/__init__.py
+index 706f117..c560ce6 100644
+--- a/aiodoo_validation/ports/__init__.py
++++ b/aiodoo_validation/ports/__init__.py
+@@ -30,10 +30,10 @@ __all__ = [
+ 
+ class ValidationRunnerPort(Protocol):
+     """
+-    Legacy stub port for RUN_VALIDATION (Phase 0–4).
++    Legacy port for RUN_VALIDATION stage implementations.
+ 
+-    Phase 5 uses ``OracleRunnerPort`` for real oracle orchestration.
+-    Retained for compatibility with residual stub wiring.
++    The active pipeline uses ``OracleRunnerPort`` for oracle orchestration.
++    Retained for backwards compatibility with external stub wiring.
+     """
+ 
+     def run_validation(self, context: RunContext) -> PlaceholderStageResult: ...
+diff --git a/aiodoo_validation/profiles/coding/compatibility.py b/aiodoo_validation/profiles/coding/compatibility.py
+index bd11543..33bf1cb 100644
+--- a/aiodoo_validation/profiles/coding/compatibility.py
++++ b/aiodoo_validation/profiles/coding/compatibility.py
+@@ -28,8 +28,7 @@ def validate_coding_artifact_compatibility(bundle: ArtifactBundle) -> tuple[Prof
+             ProfileError(
+                 code=ProfileErrorCode.UNSUPPORTED_MODEL,
+                 message=(
+-                    f"Unsupported base artifact type "
+-                    f"{bundle.base_model.artifact_type.value!r}."
++                    f"Unsupported base artifact type {bundle.base_model.artifact_type.value!r}."
+                 ),
+                 field="base_model",
+             )
+@@ -48,8 +47,7 @@ def validate_coding_artifact_compatibility(bundle: ArtifactBundle) -> tuple[Prof
+             ProfileError(
+                 code=ProfileErrorCode.UNSUPPORTED_ADAPTER,
+                 message=(
+-                    f"Unsupported adapter artifact type "
+-                    f"{bundle.adapter.artifact_type.value!r}."
++                    f"Unsupported adapter artifact type {bundle.adapter.artifact_type.value!r}."
+                 ),
+                 field="adapter",
+             )
+diff --git a/aiodoo_validation/reporting/engine.py b/aiodoo_validation/reporting/engine.py
+index 8762242..016e3b4 100644
+--- a/aiodoo_validation/reporting/engine.py
++++ b/aiodoo_validation/reporting/engine.py
+@@ -225,9 +225,7 @@ class ReportGenerator:
+             except Exception as exc:  # noqa: BLE001 — isolate template failures
+                 wrapped = ReportError(
+                     code=ReportErrorCode.EXECUTION_FAILURE,
+-                    message=(
+-                        f"Report template {template.metadata.template_id!r} failed: {exc}"
+-                    ),
++                    message=(f"Report template {template.metadata.template_id!r} failed: {exc}"),
+                     template_id=template.metadata.template_id,
+                 )
+                 errors.append(wrapped)
+diff --git a/aiodoo_validation/resolution/compatibility.py b/aiodoo_validation/resolution/compatibility.py
+index 43b0989..6f4d39c 100644
+--- a/aiodoo_validation/resolution/compatibility.py
++++ b/aiodoo_validation/resolution/compatibility.py
+@@ -20,8 +20,7 @@ def validate_no_duplicate_locations(
+                 ArtifactResolutionError(
+                     code=ArtifactResolutionErrorCode.DUPLICATE_ARTIFACT,
+                     message=(
+-                        f"Duplicate artifact location for {descriptor.logical_ref!r} "
+-                        f"and {prior!r}."
++                        f"Duplicate artifact location for {descriptor.logical_ref!r} and {prior!r}."
+                     ),
+                     field=descriptor.logical_ref,
+                 )
+diff --git a/aiodoo_validation/resolution/filesystem.py b/aiodoo_validation/resolution/filesystem.py
+index b82c99a..fba333a 100644
+--- a/aiodoo_validation/resolution/filesystem.py
++++ b/aiodoo_validation/resolution/filesystem.py
+@@ -116,10 +116,14 @@ class FilesystemArtifactResolver:
+                 warnings=tuple(warnings),
+             )
+ 
+-        descriptors = (base_model, adapter) if merged_model is None else (
+-            base_model,
+-            adapter,
+-            merged_model,
++        descriptors = (
++            (base_model, adapter)
++            if merged_model is None
++            else (
++                base_model,
++                adapter,
++                merged_model,
++            )
+         )
+         errors.extend(validate_no_duplicate_locations(descriptors))
+ 
+@@ -139,11 +143,13 @@ class FilesystemArtifactResolver:
+             fingerprint_policy=policy,
+             metadata={
+                 "resolver": "filesystem",
+-                **{ARTIFACT_PATHS_KEY: build_artifact_paths_metadata(
+-                    base_model=request.base_model_ref,
+-                    adapter=request.adapter_ref,
+-                    merged_model=request.merged_model_ref,
+-                )},
++                **{
++                    ARTIFACT_PATHS_KEY: build_artifact_paths_metadata(
++                        base_model=request.base_model_ref,
++                        adapter=request.adapter_ref,
++                        merged_model=request.merged_model_ref,
++                    )
++                },
+             },
+         )
+         return ArtifactResolutionOutcome(
+diff --git a/aiodoo_validation/resolution/fingerprint.py b/aiodoo_validation/resolution/fingerprint.py
+index 8a6aac6..0b4462d 100644
+--- a/aiodoo_validation/resolution/fingerprint.py
++++ b/aiodoo_validation/resolution/fingerprint.py
+@@ -51,9 +51,7 @@ class PlaceholderFingerprintProvider:
+             return None, None
+         if expected == actual.value:
+             return None, None
+-        message = (
+-            f"Fingerprint mismatch for {field}: expected {expected!r}, got {actual.value!r}."
+-        )
++        message = f"Fingerprint mismatch for {field}: expected {expected!r}, got {actual.value!r}."
+         if policy is FingerprintPolicy.STRICT:
+             return (
+                 ArtifactResolutionError(
+diff --git a/aiodoo_validation/scoring/engine.py b/aiodoo_validation/scoring/engine.py
+index 59891c6..255fd29 100644
+--- a/aiodoo_validation/scoring/engine.py
++++ b/aiodoo_validation/scoring/engine.py
+@@ -168,8 +168,7 @@ class ScoringEngine:
+                 missing = ScoreError(
+                     code=ScoreErrorCode.ORACLE_RESULT_MISSING,
+                     message=(
+-                        f"No OracleResult for source oracle "
+-                        f"{policy.metadata.source_oracle_id!r}."
++                        f"No OracleResult for source oracle {policy.metadata.source_oracle_id!r}."
+                     ),
+                     field="source_oracle_id",
+                     policy_id=policy.metadata.policy_id,
+@@ -244,9 +243,7 @@ class ScoringEngine:
+         success_count = sum(1 for item in results if item.success)
+         failure_count = len(results) - success_count
+         successful_scores = tuple(item.score for item in results if item.success)
+-        aggregate = (
+-            sum(successful_scores) / len(successful_scores) if successful_scores else None
+-        )
++        aggregate = sum(successful_scores) / len(successful_scores) if successful_scores else None
+         execution = ScoreExecutionResult(
+             plan_digest=plan.plan_digest,
+             profile_name=plan.profile_name,
+diff --git a/docs/implementation_status.md b/docs/implementation_status.md
+index 6ff6af9..5b388af 100644
+--- a/docs/implementation_status.md
++++ b/docs/implementation_status.md
+@@ -1,11 +1,22 @@
+ # Implementation Status
+ 
+-**Repository version:** 0.0.0-dev  
+-**Active phases:** Phase 0–11 (complete)  
++**Repository version:** 1.0.0  
++**Active phases:** Phase 0–12 (complete)  
+ **Architecture audit:** [Post Phase 0–3 audit](architecture_audit.md) — **frozen**
+ 
+ ## Implemented
+ 
++### Phase 12 — Production Readiness & Repository Stabilization
++
++- Version bumped to `1.0.0` (release-ready)
++- Removed stale phase-reference comments across domain, engine, and port modules
++- Removed unused `_PortReturn` TypeVar from `ValidationEngine`
++- Clarified `PlaceholderStageResult`, `ValidationRunnerPort`, `ValidationEngine` docstrings
++- Updated `docs/integration.md` with explicit stable-API boundary statement
++- Updated `pyproject.toml` with full project metadata (description, license, classifiers)
++- Updated `docs/implementation_status.md` to reflect v1.0.0 and Phase 12 completion
++- Repository-wide boundary and CI verification passes (ruff ✓, mypy ✓, pytest 211 ✓)
++
+ ### Phase 11 — AIODOO Ecosystem Integration
+ 
+ - Public API package (`aiodoo_validation.api`)
+@@ -29,9 +40,8 @@ Repository foundation through Report Generator.
+ 
+ | Phase | Component |
+ |-------|-----------|
+-| 12 | Production hardening |
+-| 13 | v1.0.0 release |
++| 13 | Post-v1.0 enhancements |
+ 
+ ## Next phase
+ 
+-**Phase 12 — Production hardening** per frozen Implementation Plan.
++**Phase 13** per frozen Implementation Plan.
+diff --git a/docs/integration.md b/docs/integration.md
+index a4e408e..dee7b57 100644
+--- a/docs/integration.md
++++ b/docs/integration.md
+@@ -37,6 +37,27 @@ Validation depends on **nobody**. External repositories depend on validation.
+ 
+ ## Public API
+ 
++**Stability contract:** Only symbols explicitly exported from ``aiodoo_validation.api``
++(and the top-level package where explicitly re-exported via ``__all__``) are
++considered the stable public API.
++
++The following modules are **implementation details**. They may change without
++notice. External repositories must never import them directly:
++
++- ``aiodoo_validation.engine``
++- ``aiodoo_validation.oracles``
++- ``aiodoo_validation.scoring``
++- ``aiodoo_validation.benchmark``
++- ``aiodoo_validation.certification``
++- ``aiodoo_validation.reporting``
++- ``aiodoo_validation.profiles``
++- ``aiodoo_validation.validation_plan``
++- ``aiodoo_validation.domain`` (internal types)
++- ``aiodoo_validation.ports``
++- ``aiodoo_validation.stubs``
++- ``aiodoo_validation.inference``
++- ``aiodoo_validation.resolution``
++
+ Import from ``aiodoo_validation.api`` or the top-level package:
+ 
+ ```python
+diff --git a/pyproject.toml b/pyproject.toml
+index 22197c2..6beb29f 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -4,8 +4,17 @@
+ 
+ [project]
+ name = "aiodoo-validation"
+-version = "0.0.0-dev"
++version = "1.0.0"
++description = "Canonical Evaluation & Certification Framework for AIODOO Models"
++readme = "README.md"
++license = { text = "Proprietary" }
+ requires-python = ">=3.12"
++keywords = ["aiodoo", "validation", "evaluation", "certification", "llm"]
++classifiers = [
++    "Programming Language :: Python :: 3",
++    "Programming Language :: Python :: 3.12",
++    "Operating System :: OS Independent",
++]
+ 
+ [project.scripts]
+ aiodoo-validation = "aiodoo_validation.cli.app:main"
+diff --git a/tests/unit/test_benchmark_engine.py b/tests/unit/test_benchmark_engine.py
+index 205f0ef..c53ba19 100644
+--- a/tests/unit/test_benchmark_engine.py
++++ b/tests/unit/test_benchmark_engine.py
+@@ -163,9 +163,7 @@ def test_disabled_quality_benchmark_is_skipped() -> None:
+     context = _context_ready_for_benchmark()
+     plan = context.validation_plan
+     assert plan is not None
+-    quality = next(
+-        stage for stage in plan.benchmark_pipeline if stage.stage_id.endswith("quality")
+-    )
++    quality = next(stage for stage in plan.benchmark_pipeline if stage.stage_id.endswith("quality"))
+     assert quality.enabled is False
+     outcome = BenchmarkEngine.create_default().benchmark(context)
+     assert outcome.execution is not None
+diff --git a/tests/unit/test_certification_engine.py b/tests/unit/test_certification_engine.py
+index dd80113..cc6de96 100644
+--- a/tests/unit/test_certification_engine.py
++++ b/tests/unit/test_certification_engine.py
+@@ -221,9 +221,7 @@ def test_capability_mismatch_fails() -> None:
+         validation_stages=plan.validation_stages,
+         configuration=plan.configuration,
+     )
+-    outcome = CertificationEngine.create_default().certify(
+-        context.with_validation_plan(disabled)
+-    )
++    outcome = CertificationEngine.create_default().certify(context.with_validation_plan(disabled))
+     assert outcome.success is False
+     assert outcome.errors[0].code is CertificationErrorCode.CAPABILITY_MISMATCH
+ 
+diff --git a/tests/unit/test_framework_boundaries.py b/tests/unit/test_framework_boundaries.py
+index 5033311..234718e 100644
+--- a/tests/unit/test_framework_boundaries.py
++++ b/tests/unit/test_framework_boundaries.py
+@@ -184,9 +184,7 @@ def test_reporting_does_not_import_upstream_execution() -> None:
+                     "aiodoo_validation.certification",
+                 }:
+                     violations.append(f"{path.relative_to(ROOT)}: {module}")
+-    assert not violations, "reporting must not import upstream execution:\n" + "\n".join(
+-        violations
+-    )
++    assert not violations, "reporting must not import upstream execution:\n" + "\n".join(violations)
+ 
+ 
+ def test_cli_does_not_import_upstream_execution() -> None:
+diff --git a/tests/unit/test_oracle_framework.py b/tests/unit/test_oracle_framework.py
+index f3a115c..a390192 100644
+--- a/tests/unit/test_oracle_framework.py
++++ b/tests/unit/test_oracle_framework.py
+@@ -143,9 +143,7 @@ def test_disabled_quality_oracle_is_skipped() -> None:
+     assert quality.enabled is False
+     outcome = OracleEngine.create_default().execute_oracles(context)
+     assert outcome.execution is not None
+-    assert "coding.oracle.quality" not in {
+-        result.oracle_id for result in outcome.execution.results
+-    }
++    assert "coding.oracle.quality" not in {result.oracle_id for result in outcome.execution.results}
+ 
+ 
+ def test_missing_plan_fails_gracefully() -> None:
+@@ -181,9 +179,7 @@ def test_unknown_oracle_in_pipeline_fails_gracefully() -> None:
+         validation_stages=plan.validation_stages,
+         configuration=plan.configuration,
+     )
+-    outcome = OracleEngine.create_default().execute_oracles(
+-        context.with_validation_plan(broken)
+-    )
++    outcome = OracleEngine.create_default().execute_oracles(context.with_validation_plan(broken))
+     assert outcome.success is False
+     assert outcome.errors[0].code is OracleErrorCode.ORACLE_NOT_FOUND
+ 
+@@ -207,9 +203,7 @@ def test_capability_mismatch_fails() -> None:
+         validation_stages=plan.validation_stages,
+         configuration=plan.configuration,
+     )
+-    outcome = OracleEngine.create_default().execute_oracles(
+-        context.with_validation_plan(disabled)
+-    )
++    outcome = OracleEngine.create_default().execute_oracles(context.with_validation_plan(disabled))
+     assert outcome.success is False
+     assert outcome.errors[0].code is OracleErrorCode.CAPABILITY_MISMATCH
+ 
+diff --git a/tests/unit/test_scoring_engine.py b/tests/unit/test_scoring_engine.py
+index 9edee89..e1409ef 100644
+--- a/tests/unit/test_scoring_engine.py
++++ b/tests/unit/test_scoring_engine.py
+@@ -156,9 +156,7 @@ def test_disabled_quality_score_policy_is_skipped() -> None:
+     assert quality.enabled is False
+     outcome = ScoringEngine.create_default().score(context)
+     assert outcome.execution is not None
+-    assert "coding.score.quality" not in {
+-        result.policy_id for result in outcome.execution.results
+-    }
++    assert "coding.score.quality" not in {result.policy_id for result in outcome.execution.results}
+ 
+ 
+ def test_missing_oracle_results_fails_gracefully() -> None:

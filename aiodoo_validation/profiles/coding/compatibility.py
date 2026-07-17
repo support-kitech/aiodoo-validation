@@ -28,8 +28,7 @@ def validate_coding_artifact_compatibility(bundle: ArtifactBundle) -> tuple[Prof
             ProfileError(
                 code=ProfileErrorCode.UNSUPPORTED_MODEL,
                 message=(
-                    f"Unsupported base artifact type "
-                    f"{bundle.base_model.artifact_type.value!r}."
+                    f"Unsupported base artifact type {bundle.base_model.artifact_type.value!r}."
                 ),
                 field="base_model",
             )
@@ -48,8 +47,7 @@ def validate_coding_artifact_compatibility(bundle: ArtifactBundle) -> tuple[Prof
             ProfileError(
                 code=ProfileErrorCode.UNSUPPORTED_ADAPTER,
                 message=(
-                    f"Unsupported adapter artifact type "
-                    f"{bundle.adapter.artifact_type.value!r}."
+                    f"Unsupported adapter artifact type {bundle.adapter.artifact_type.value!r}."
                 ),
                 field="adapter",
             )

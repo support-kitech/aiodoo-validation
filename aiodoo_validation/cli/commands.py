@@ -103,10 +103,7 @@ def run_help(args: argparse.Namespace, *, config: CliConfig) -> int:
                 f"{program} help"
             ),
             examples=(
-                (
-                    f"{program} validate --profile coding "
-                    f"--base-model ./base --adapter ./adapter"
-                ),
+                (f"{program} validate --profile coding --base-model ./base --adapter ./adapter"),
                 f"{program} version",
                 f"{program} capabilities",
             ),

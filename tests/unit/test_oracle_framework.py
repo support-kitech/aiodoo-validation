@@ -143,9 +143,7 @@ def test_disabled_quality_oracle_is_skipped() -> None:
     assert quality.enabled is False
     outcome = OracleEngine.create_default().execute_oracles(context)
     assert outcome.execution is not None
-    assert "coding.oracle.quality" not in {
-        result.oracle_id for result in outcome.execution.results
-    }
+    assert "coding.oracle.quality" not in {result.oracle_id for result in outcome.execution.results}
 
 
 def test_missing_plan_fails_gracefully() -> None:
@@ -181,9 +179,7 @@ def test_unknown_oracle_in_pipeline_fails_gracefully() -> None:
         validation_stages=plan.validation_stages,
         configuration=plan.configuration,
     )
-    outcome = OracleEngine.create_default().execute_oracles(
-        context.with_validation_plan(broken)
-    )
+    outcome = OracleEngine.create_default().execute_oracles(context.with_validation_plan(broken))
     assert outcome.success is False
     assert outcome.errors[0].code is OracleErrorCode.ORACLE_NOT_FOUND
 
@@ -207,9 +203,7 @@ def test_capability_mismatch_fails() -> None:
         validation_stages=plan.validation_stages,
         configuration=plan.configuration,
     )
-    outcome = OracleEngine.create_default().execute_oracles(
-        context.with_validation_plan(disabled)
-    )
+    outcome = OracleEngine.create_default().execute_oracles(context.with_validation_plan(disabled))
     assert outcome.success is False
     assert outcome.errors[0].code is OracleErrorCode.CAPABILITY_MISMATCH
 

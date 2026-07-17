@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from datetime import UTC, datetime
-from typing import TypeVar
 
 from aiodoo_validation.domain.benchmark import BenchmarkExecutionOutcome
 from aiodoo_validation.domain.certification import CertificationExecutionOutcome
@@ -40,7 +39,6 @@ from aiodoo_validation.ports import (
 from aiodoo_validation.resolution.filesystem import FilesystemArtifactResolver
 from aiodoo_validation.stubs import StubPipelineComponents
 
-_PortReturn = TypeVar("_PortReturn", bound=PlaceholderStageResult)
 _StageExecutor = Callable[[RunContext], PlaceholderStageResult]
 
 PIPELINE_STAGE_ORDER: tuple[ValidationStage, ...] = (
@@ -60,10 +58,12 @@ PIPELINE_STAGE_ORDER: tuple[ValidationStage, ...] = (
 
 class ValidationEngine:
     """
-    Production validation orchestrator skeleton.
+    Production validation orchestrator.
 
-    Executes the complete lifecycle using injected ports. Phase 9 wires the
-    Report Generator through ``ReportGeneratorPort`` as the final pipeline stage.
+    Executes the complete Validation Protocol V1 lifecycle using injected ports.
+    Wired through: ArtifactResolver → ProfileEngine → InferenceRunner →
+    OracleRunner → ScoringEngine → BenchmarkEngine → CertificationEngine →
+    ReportGenerator.
     """
 
     def __init__(
@@ -266,14 +266,9 @@ class ValidationEngine:
         updated = self._record_stage(context, ValidationStage.RESOLVE_PROFILE, result)
         for warning in outcome.warnings:
             updated = updated.with_warning(warning)
-        if (
-            outcome.success
-            and outcome.profile is not None
-            and outcome.plan is not None
-        ):
-            return (
-                updated.with_validation_profile(outcome.profile)
-                .with_validation_plan(outcome.plan)
+        if outcome.success and outcome.profile is not None and outcome.plan is not None:
+            return updated.with_validation_profile(outcome.profile).with_validation_plan(
+                outcome.plan
             )
         for error in outcome.errors:
             updated = updated.with_error(f"{error.code.value}: {error.message}")

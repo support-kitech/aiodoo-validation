@@ -4,7 +4,7 @@ from enum import IntEnum, StrEnum
 
 
 class ExecutionTier(StrEnum):
-    """Validation execution tier (behavior unchanged in Phase 0/1)."""
+    """Validation execution tier controlling pipeline depth."""
 
     SMOKE = "smoke"
     STANDARD = "standard"
@@ -48,7 +48,7 @@ class StageStatus(StrEnum):
 
 
 class SupportedValidationProfile(StrEnum):
-    """Profiles registered in Phase 0/1 (coding only for v1 scope)."""
+    """Profiles supported in Validation Protocol V1 (coding only for v1 scope)."""
 
     CODING = "coding"
 

@@ -111,9 +111,7 @@ class RunContext:
     def with_benchmark_execution(self, execution: BenchmarkExecutionResult) -> RunContext:
         return replace(self, benchmark_execution=execution)
 
-    def with_certification_execution(
-        self, execution: CertificationExecutionResult
-    ) -> RunContext:
+    def with_certification_execution(self, execution: CertificationExecutionResult) -> RunContext:
         return replace(self, certification_execution=execution)
 
     def with_report_execution(self, execution: ReportExecutionResult) -> RunContext:

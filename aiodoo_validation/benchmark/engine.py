@@ -254,9 +254,7 @@ class BenchmarkEngine:
         success_count = sum(1 for item in results if item.success)
         failure_count = len(results) - success_count
         successful_scores = tuple(item.benchmark_score for item in results if item.success)
-        aggregate = (
-            sum(successful_scores) / len(successful_scores) if successful_scores else None
-        )
+        aggregate = sum(successful_scores) / len(successful_scores) if successful_scores else None
         execution = BenchmarkExecutionResult(
             plan_digest=plan.plan_digest,
             profile_name=plan.profile_name,

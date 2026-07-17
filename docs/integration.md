@@ -37,6 +37,27 @@ Validation depends on **nobody**. External repositories depend on validation.
 
 ## Public API
 
+**Stability contract:** Only symbols explicitly exported from ``aiodoo_validation.api``
+(and the top-level package where explicitly re-exported via ``__all__``) are
+considered the stable public API.
+
+The following modules are **implementation details**. They may change without
+notice. External repositories must never import them directly:
+
+- ``aiodoo_validation.engine``
+- ``aiodoo_validation.oracles``
+- ``aiodoo_validation.scoring``
+- ``aiodoo_validation.benchmark``
+- ``aiodoo_validation.certification``
+- ``aiodoo_validation.reporting``
+- ``aiodoo_validation.profiles``
+- ``aiodoo_validation.validation_plan``
+- ``aiodoo_validation.domain`` (internal types)
+- ``aiodoo_validation.ports``
+- ``aiodoo_validation.stubs``
+- ``aiodoo_validation.inference``
+- ``aiodoo_validation.resolution``
+
 Import from ``aiodoo_validation.api`` or the top-level package:
 
 ```python
