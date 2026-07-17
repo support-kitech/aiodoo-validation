@@ -28,6 +28,7 @@ REQUIRED_DIRS = [
     "aiodoo_validation/reports",
     "aiodoo_validation/reporting",
     "aiodoo_validation/cli",
+    "aiodoo_validation/api",
     "aiodoo_validation/benchmark",
     "aiodoo_validation/certification",
 ]

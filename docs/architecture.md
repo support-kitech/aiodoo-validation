@@ -8,12 +8,12 @@
 
 Determine whether a trained AIODOO model is suitable for production through validation, benchmarking, and certification.
 
-## Logical architecture (Phase 10)
+## Logical architecture (Phase 11)
 
 ```
-User
+External repository / User
     ↓
-CLI (validate | version | capabilities | help)
+CLI or ValidationService (public API)
     ↓
 Validation Engine
     → Artifact Resolver (filesystem + stub)
@@ -25,7 +25,7 @@ Validation Engine
     → Certification Engine (benchmark results only; placeholder certification)
     → Report Generator (certification results only; placeholder report objects)
     ↓
-ValidationRunResult → ConsoleFormatter → Terminal output
+ValidationRunResult → formatter (CLI or external consumer)
 ```
 
 ## Boundaries

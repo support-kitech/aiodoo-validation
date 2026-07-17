@@ -23,12 +23,14 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
 | **Phase 8 — Certification Engine** | **Complete** |
 | **Phase 9 — Report Generation** | **Complete** |
 | **Phase 10 — Production CLI** | **Complete** |
-| Phase 11+ | Not started |
+| **Phase 11 — Ecosystem Integration** | **Complete** |
+| Phase 12+ | Not started |
 
-## Current capabilities (Phase 0–10)
+## Current capabilities (Phase 0–11)
 
 - Production repository foundation (CI, lint, typing, tests, docs)
 - **Validation Engine** with full TDD lifecycle ordering (generic orchestration)
+- **Public Integration API** — `ValidationService`, metadata, builders, helpers
 - **Artifact Resolution** — filesystem and stub resolvers
 - **Coding Validation Profile** — profile selection, compatibility, ValidationPlan
 - **Inference Runner** — mock (CI default) and optional Qwen runtime
@@ -46,8 +48,20 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
 | Component | Implementation Plan phase |
 |-----------|---------------------------|
 | Real oracle / scoring / benchmark / certification / report logic | Later phases (post placeholder) |
-| PDF / HTML / Markdown / JSON report rendering | Future integrations |
-| Ecosystem integration (training, Colab) | Phase 11 |
+| PDF / HTML / Markdown / JSON report rendering | Future consumer integrations |
+| Production hardening | Phase 12 |
+
+## Public API
+
+```python
+from aiodoo_validation.api import ValidationService, build_coding_request
+
+service = ValidationService.create_default()
+request = build_coding_request(base_model_ref="./base", adapter_ref="./adapter")
+result = service.validate(request)
+```
+
+See [Integration guide](docs/integration.md).
 
 ## Quick start
 
@@ -78,6 +92,7 @@ aiodoo-validation validate --profile coding --base-model ./base --adapter ./adap
 - [Certification Engine (Phase 8)](docs/certification_engine.md)
 - [Report Generation (Phase 9)](docs/report_generation.md)
 - [Production CLI (Phase 10)](docs/cli.md)
+- [Ecosystem Integration (Phase 11)](docs/integration.md)
 - [ADR template](docs/adr/0000-adr-template.md)
 
 ## License

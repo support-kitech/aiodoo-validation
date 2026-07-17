@@ -1,45 +1,37 @@
 # Implementation Status
 
 **Repository version:** 0.0.0-dev  
-**Active phases:** Phase 0–10 (complete)  
+**Active phases:** Phase 0–11 (complete)  
 **Architecture audit:** [Post Phase 0–3 audit](architecture_audit.md) — **frozen**
 
 ## Implemented
 
+### Phase 11 — AIODOO Ecosystem Integration
+
+- Public API package (`aiodoo_validation.api`)
+- `ValidationService` facade delegating to `ValidationEngine`
+- Profile discovery, version metadata, compatibility helpers
+- Request builders and result helpers
+- Generic integration hints (training, Colab, VS Code, model repository)
+- CLI refactored to consume `ValidationService`
+- Boundary tests: no ecosystem repository imports
+- [Integration documentation](integration.md)
+
 ### Phase 10 — Production CLI
 
-- `validate`, `version`, `capabilities`, and `help` commands
-- `ConsoleFormatter` for human-readable terminal output
-- Exit code mapping from `ValidationRunResult.exit_status`
-- Entry points: `python -m aiodoo_validation` and `aiodoo-validation` console script
-- Boundary tests: CLI does not import upstream execution modules
 - [CLI documentation](cli.md)
 
-### Phase 9 — Report Generation
+### Phase 0–9
 
-- `ReportGeneratorPort` with `ReportExecutionOutcome`
-- `ReportGenerator`, `ReportRegistry`, `ReportTemplate` protocol
-- Placeholder templates mapped 1:1 to frozen certification IDs
-- `ValidationPlan.report_pipeline` and `ProfileCapabilities.supports_reports`
-- `RunContext.report_execution` attachment
-- [Report Generation documentation](report_generation.md)
-
-### Phase 8 — Certification Engine
-
-- [Certification Engine documentation](certification_engine.md)
-
-### Phase 0–7
-
-Repository foundation through Benchmark Engine.
+Repository foundation through Report Generator.
 
 ## Not implemented (next phases)
 
 | Phase | Component |
 |-------|-----------|
-| 11 | aiodoo-training / Colab integration |
 | 12 | Production hardening |
 | 13 | v1.0.0 release |
 
 ## Next phase
 
-**Phase 11 — Ecosystem integration** per frozen Implementation Plan.
+**Phase 12 — Production hardening** per frozen Implementation Plan.

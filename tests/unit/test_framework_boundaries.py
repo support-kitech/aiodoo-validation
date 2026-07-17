@@ -190,7 +190,7 @@ def test_reporting_does_not_import_upstream_execution() -> None:
 
 
 def test_cli_does_not_import_upstream_execution() -> None:
-    """CLI may import ValidationEngine and result models, not execution engines."""
+    """CLI may import ValidationService and result models, not execution engines."""
     cli_dir = PACKAGE / "cli"
     forbidden_suffixes = (
         "oracles.engine",
@@ -213,6 +213,7 @@ def test_cli_does_not_import_upstream_execution() -> None:
         "reporting.registry",
         "reporting.templates",
         "reporting.base",
+        "engine.validation_engine",
     )
     violations: list[str] = []
     for path in cli_dir.rglob("*.py"):
@@ -226,6 +227,41 @@ def test_cli_does_not_import_upstream_execution() -> None:
                     "aiodoo_validation.benchmark",
                     "aiodoo_validation.certification",
                     "aiodoo_validation.reporting",
+                    "aiodoo_validation.engine",
                 }:
                     violations.append(f"{path.relative_to(ROOT)}: {module}")
     assert not violations, "cli must not import upstream execution:\n" + "\n".join(violations)
+
+
+def test_api_does_not_import_ecosystem_repositories() -> None:
+    """API must remain independent of external AIODOO repositories."""
+    api_dir = PACKAGE / "api"
+    forbidden_roots = {
+        "aiodoo_training",
+        "aiodoo_colab",
+        "aiodoo_models",
+        "aiodoo_vscode",
+        "cursor",
+        "vscode",
+        "google",
+        "torch",
+        "transformers",
+        "datasets",
+        "trl",
+        "peft",
+        "accelerate",
+    }
+    violations: list[str] = []
+    for path in api_dir.rglob("*.py"):
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    root = alias.name.split(".")[0]
+                    if root in forbidden_roots:
+                        violations.append(f"{path.relative_to(ROOT)}: {alias.name}")
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                root = node.module.split(".")[0]
+                if root in forbidden_roots:
+                    violations.append(f"{path.relative_to(ROOT)}: {node.module}")
+    assert not violations, "api must not import ecosystem repositories:\n" + "\n".join(violations)

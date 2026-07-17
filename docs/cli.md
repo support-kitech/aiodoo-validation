@@ -3,7 +3,7 @@
 **Status:** Phase 10 — human-readable terminal output only
 
 The **CLI** presents completed validation runs to users. It accepts input,
-calls ``ValidationEngine.run()``, and formats ``ValidationRunResult`` for the
+calls ``ValidationService``, and formats ``ValidationRunResult`` for the
 terminal. It never validates, scores, benchmarks, certifies, generates reports,
 parses artifacts, or inspects the filesystem directly.
 
@@ -11,7 +11,7 @@ parses artifacts, or inspects the filesystem directly.
 
 ```text
 Correct:
-  User → CLI → ValidationEngine → ValidationRunResult → ConsoleFormatter → Terminal
+  User → CLI → ValidationService → ValidationRunResult → ConsoleFormatter → Terminal
 
 Incorrect:
   CLI → Oracle / Scoring / Benchmark / Certification / ReportGenerator / Filesystem
@@ -22,7 +22,7 @@ User
   ↓
 CLI (validate | version | capabilities | help)
   ↓
-ValidationEngine.run(ValidationRequest)
+ValidationService.validate(ValidationRequest)
   ↓
 ValidationRunResult / RunContext.report_execution
   ↓
@@ -62,7 +62,7 @@ aiodoo-validation validate \
 | `--odoo-versions` | No | `17,18,19` | Comma-separated Odoo major versions |
 | `--debug` | No | off | Show tracebacks for unexpected errors |
 
-The CLI builds a ``ValidationRequest``, invokes ``ValidationEngine.with_filesystem()``,
+The CLI builds a ``ValidationRequest``, invokes ``ValidationService.create_default().validate()``,
 and prints:
 
 - overall exit status
@@ -124,8 +124,14 @@ aiodoo-validation version
 
 ## Console formatter
 
-``ConsoleFormatter`` consumes ``ValidationRunResult`` only and produces plain
-text output:
+``ConsoleFormatter`` is intentionally **presentation-only**. It consumes immutable
+``ValidationRunResult`` objects and converts them into human-readable terminal
+output.
+
+Future integrations (JSON, HTML, PDF, API, VS Code, dashboards, Web UI) must
+consume immutable report objects rather than re-running validation.
+
+``ConsoleFormatter`` produces plain text output:
 
 - run metadata and duration
 - pipeline stage statuses
@@ -145,7 +151,7 @@ No Markdown, HTML, PDF, JSON, colors, progress bars, or interactive UI.
 
 No validation logic, scoring, benchmarking, certification, report generation,
 filesystem artifact parsing, JSON/HTML/Markdown/PDF export, API server, dashboard,
-TUI, async execution, or Phase 11 ecosystem integration.
+TUI, async execution, or direct ecosystem repository imports.
 
 ## Configuration
 

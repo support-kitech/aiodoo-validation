@@ -176,8 +176,9 @@ def test_validate_pipeline_failure_returns_exit_code_2(capsys: pytest.CaptureFix
         message="Validation lifecycle failed.",
         completed_at=ValidationEngine.with_stubs().run(request).completed_at,
     )
-    with patch("aiodoo_validation.cli.commands.ValidationEngine.with_filesystem") as factory:
-        factory.return_value.run.return_value = failed
+    with patch("aiodoo_validation.cli.commands.ValidationService.create_default") as factory:
+        service = factory.return_value
+        service.validate.return_value = failed
         code = main(
             [
                 "validate",
@@ -193,8 +194,8 @@ def test_validate_pipeline_failure_returns_exit_code_2(capsys: pytest.CaptureFix
 
 
 def test_validate_unexpected_error_without_debug(capsys: pytest.CaptureFixture[str]) -> None:
-    with patch("aiodoo_validation.cli.commands.ValidationEngine.with_filesystem") as factory:
-        factory.return_value.run.side_effect = RuntimeError("boom")
+    with patch("aiodoo_validation.cli.commands.ValidationService.create_default") as factory:
+        factory.return_value.validate.side_effect = RuntimeError("boom")
         code = main(
             [
                 "validate",
@@ -258,6 +259,7 @@ def test_cli_does_not_import_upstream_execution_modules() -> None:
         "reporting.registry",
         "reporting.templates",
         "reporting.base",
+        "engine.validation_engine",
     )
     violations: list[str] = []
     for path in CLI_DIR.rglob("*.py"):
@@ -271,6 +273,7 @@ def test_cli_does_not_import_upstream_execution_modules() -> None:
                     "aiodoo_validation.benchmark",
                     "aiodoo_validation.certification",
                     "aiodoo_validation.reporting",
+                    "aiodoo_validation.engine",
                 }:
                     violations.append(f"{path.relative_to(ROOT)}: {module}")
     assert not violations, "cli must not import upstream execution modules:\n" + "\n".join(

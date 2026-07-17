@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+from aiodoo_validation.api.metadata import PIPELINE_STAGE_ORDER_PUBLIC
 from aiodoo_validation.domain.enums import StageStatus, ValidationStage
 from aiodoo_validation.domain.result import ValidationRunResult
-from aiodoo_validation.engine import PIPELINE_STAGE_ORDER
 
 
 class ConsoleFormatter:
@@ -24,7 +24,7 @@ class ConsoleFormatter:
 
         lines.append("Pipeline stages:")
         records_by_stage = {record.stage: record for record in context.stage_records}
-        for stage in PIPELINE_STAGE_ORDER:
+        for stage in PIPELINE_STAGE_ORDER_PUBLIC:
             record = records_by_stage.get(stage)
             if record is None:
                 status = StageStatus.PENDING.value

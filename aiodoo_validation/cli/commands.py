@@ -6,42 +6,34 @@ import argparse
 import sys
 from typing import TYPE_CHECKING
 
-from aiodoo_validation import __version__
+from aiodoo_validation.api import (
+    ValidationService,
+    build_coding_request,
+    capability_labels,
+    get_profile_info,
+    get_repository_metadata,
+    list_profiles,
+    parse_odoo_versions,
+)
 from aiodoo_validation.cli.exit_codes import (
     EXIT_FAILED,
     EXIT_INVALID_REQUEST,
     exit_code_for_status,
 )
 from aiodoo_validation.cli.formatter import ConsoleFormatter
-from aiodoo_validation.domain.enums import ExecutionTier, OdooVersion
-from aiodoo_validation.domain.request import (
-    SUPPORTED_PROFILES,
-    SUPPORTED_PROTOCOL_MAJOR,
-    ValidationRequest,
-)
-from aiodoo_validation.engine import PIPELINE_STAGE_ORDER, ValidationEngine
+from aiodoo_validation.domain.enums import ExecutionTier
+from aiodoo_validation.domain.request import ValidationRequest
 from aiodoo_validation.exceptions import InvalidRequestError
-from aiodoo_validation.profiles.coding.profile import CodingProfile
-from aiodoo_validation.validation_plan import ProfileCapabilities
 
 if TYPE_CHECKING:
     from aiodoo_validation.cli.config import CliConfig
 
 
 def run_validate(args: argparse.Namespace, *, config: CliConfig) -> int:
-    """Build a request, run the validation engine, and print formatted output."""
+    """Build a request, run validation, and print formatted output."""
     formatter = ConsoleFormatter()
     try:
-        odoo_versions = _parse_odoo_versions(args.odoo_versions)
-        request = ValidationRequest(
-            profile_name=args.profile,
-            base_model_ref=args.base_model,
-            adapter_ref=args.adapter,
-            merged_model_ref=args.merged_model,
-            execution_tier=ExecutionTier(args.execution_tier),
-            odoo_versions=odoo_versions,
-            run_id=args.run_id,
-        )
+        request = _build_request(args)
     except InvalidRequestError as exc:
         sys.stdout.write(formatter.format_error(str(exc)))
         return EXIT_INVALID_REQUEST
@@ -49,9 +41,9 @@ def run_validate(args: argparse.Namespace, *, config: CliConfig) -> int:
         sys.stdout.write(formatter.format_error(str(exc)))
         return EXIT_INVALID_REQUEST
 
-    engine = ValidationEngine.with_filesystem()
+    service = ValidationService.create_default()
     try:
-        result = engine.run(request)
+        result = service.validate(request)
     except Exception as exc:  # noqa: BLE001 — CLI must not crash on unexpected errors
         if config.debug or args.debug:
             raise
@@ -65,14 +57,15 @@ def run_validate(args: argparse.Namespace, *, config: CliConfig) -> int:
 def run_version(_args: argparse.Namespace, *, config: CliConfig) -> int:
     """Display repository and protocol metadata."""
     _ = config
+    metadata = get_repository_metadata()
     formatter = ConsoleFormatter()
     sys.stdout.write(
         formatter.format_version(
-            repository_version=__version__,
-            protocol_major=SUPPORTED_PROTOCOL_MAJOR,
-            protocol_minor=0,
-            supported_profiles=tuple(sorted(SUPPORTED_PROFILES)),
-            supported_execution_tiers=tuple(tier.value for tier in ExecutionTier),
+            repository_version=metadata.repository_version,
+            protocol_major=metadata.protocol.major,
+            protocol_minor=metadata.protocol.minor,
+            supported_profiles=metadata.supported_profiles,
+            supported_execution_tiers=metadata.supported_execution_tiers,
         )
     )
     return 0
@@ -82,16 +75,13 @@ def run_capabilities(_args: argparse.Namespace, *, config: CliConfig) -> int:
     """Display supported capabilities from static profile metadata."""
     _ = config
     formatter = ConsoleFormatter()
-    profile = CodingProfile.create(
-        odoo_versions=(OdooVersion.V17, OdooVersion.V18, OdooVersion.V19)
-    )
-    capabilities = profile.capabilities
-    capability_lines = _capability_labels(capabilities)
+    profile_name = list_profiles()[0]
+    profile = get_profile_info(profile_name)
     sys.stdout.write(
         formatter.format_capabilities(
-            supported_profiles=tuple(sorted(SUPPORTED_PROFILES)),
-            pipeline_stages=PIPELINE_STAGE_ORDER,
-            capabilities=capability_lines,
+            supported_profiles=list_profiles(),
+            pipeline_stages=profile.pipeline_stages,
+            capabilities=capability_labels(profile.capabilities),
             supported_runtimes=profile.supported_runtimes,
             supported_artifact_types=profile.supported_artifact_types,
         )
@@ -125,28 +115,26 @@ def run_help(args: argparse.Namespace, *, config: CliConfig) -> int:
     return 0
 
 
-def _parse_odoo_versions(raw: str) -> tuple[int, ...]:
-    parts = [part.strip() for part in raw.split(",") if part.strip()]
-    if not parts:
-        raise ValueError("odoo_versions must contain at least one version.")
-    return tuple(int(part) for part in parts)
-
-
-def _capability_labels(capabilities: ProfileCapabilities) -> tuple[str, ...]:
-    labels: list[str] = []
-    if capabilities.supports_inference:
-        labels.append("supports_inference")
-    if capabilities.supports_oracles:
-        labels.append("supports_oracles")
-    if capabilities.supports_scoring:
-        labels.append("supports_scoring")
-    if capabilities.supports_benchmark:
-        labels.append("supports_benchmark")
-    if capabilities.supports_certification:
-        labels.append("supports_certification")
-    if capabilities.supports_reports:
-        labels.append("supports_reports")
-    return tuple(labels)
+def _build_request(args: argparse.Namespace) -> ValidationRequest:
+    odoo_versions = parse_odoo_versions(args.odoo_versions)
+    if args.profile == "coding":
+        return build_coding_request(
+            base_model_ref=args.base_model,
+            adapter_ref=args.adapter,
+            merged_model_ref=args.merged_model,
+            execution_tier=args.execution_tier,
+            odoo_versions=odoo_versions,
+            run_id=args.run_id,
+        )
+    return ValidationRequest(
+        profile_name=args.profile,
+        base_model_ref=args.base_model,
+        adapter_ref=args.adapter,
+        merged_model_ref=args.merged_model,
+        execution_tier=ExecutionTier(args.execution_tier),
+        odoo_versions=odoo_versions,
+        run_id=args.run_id,
+    )
 
 
 def dispatch(args: argparse.Namespace, *, config: CliConfig) -> int:
