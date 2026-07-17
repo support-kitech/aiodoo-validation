@@ -56,13 +56,14 @@ Metadata Oracle
 ```
 
 Phase 5 executes enabled stages via the Oracle Framework as placeholders only.
+Phase 6 scores those oracle results via the Scoring Engine (deterministic placeholders).
 
 ## ValidationPlan
 
 `ValidationPlan` describes execution without implementing rules:
 
 - Profile name and deterministic `plan_digest`
-- `ProfileCapabilities` (inference + oracles on; scoring/benchmark/certification off)
+- `ProfileCapabilities` (inference + oracles + scoring on; benchmark/certification off)
 - Supported artifact types and runtimes
 - Oracle / scoring / benchmark / certification pipelines
 - `execution_order` and `validation_stages`

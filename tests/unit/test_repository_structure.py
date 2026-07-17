@@ -24,6 +24,7 @@ REQUIRED_DIRS = [
     "aiodoo_validation/profiles/coding",
     "aiodoo_validation/validation_plan",
     "aiodoo_validation/oracles",
+    "aiodoo_validation/scoring",
     "aiodoo_validation/reports",
     "aiodoo_validation/benchmark",
     "aiodoo_validation/certification",

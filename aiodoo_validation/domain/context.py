@@ -15,6 +15,7 @@ from aiodoo_validation.domain.inference import InferenceSession
 from aiodoo_validation.domain.oracle import OracleExecutionResult
 from aiodoo_validation.domain.profile import ResolvedProfile
 from aiodoo_validation.domain.request import SUPPORTED_PROTOCOL_MAJOR, ValidationRequest
+from aiodoo_validation.domain.scoring import ScoreExecutionResult
 from aiodoo_validation.domain.stage import PlaceholderStageResult, StageRecord
 from aiodoo_validation.validation_plan import ValidationPlan
 
@@ -46,6 +47,7 @@ class RunContext:
     validation_plan: ValidationPlan | None = None
     inference_session: InferenceSession | None = None
     oracle_execution: OracleExecutionResult | None = None
+    score_execution: ScoreExecutionResult | None = None
     exit_status: ExitStatus | None = None
 
     @staticmethod
@@ -96,6 +98,9 @@ class RunContext:
 
     def with_oracle_execution(self, execution: OracleExecutionResult) -> RunContext:
         return replace(self, oracle_execution=execution)
+
+    def with_score_execution(self, execution: ScoreExecutionResult) -> RunContext:
+        return replace(self, score_execution=execution)
 
     def with_exit_status(self, status: ExitStatus) -> RunContext:
         return replace(self, exit_status=status)

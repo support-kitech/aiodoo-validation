@@ -6,7 +6,19 @@ The **Oracle Framework** executes the oracle pipeline declared by the
 ValidationPlan. The Coding Profile decides *which* oracles run; the Oracle
 Framework only *executes* registered implementations.
 
-## Architecture
+## Architecture & dependency direction
+
+```text
+domain (OracleResult, OracleExecutionResult, …)
+  ↑
+ports.OracleRunnerPort
+  ↑
+oracles (OracleEngine, OracleRegistry, placeholders)
+  ↑
+engine (orchestration only — no validation logic)
+
+Scoring / Benchmark / Certification MUST NOT be imported by oracles/.
+```
 
 ```text
 Validation Engine
@@ -16,10 +28,31 @@ OracleEngine
 Placeholder Oracles
     ↓ OracleResult
 OracleExecutionResult → RunContext
+    ↓
+Scoring Engine (Phase 6 — consumes results only)
 ```
 
 The Validation Engine never contains validation logic. It calls
 `OracleRunnerPort.execute_oracles(context)` and attaches the immutable result.
+
+## Oracle ID convention (frozen)
+
+Format: `{profile}.oracle.{name}`
+
+Centralized in `aiodoo_validation.oracles.ids`. **Do not rename.**
+
+| Constant | ID |
+|----------|----|
+| `CODING_ORACLE_METADATA` | `coding.oracle.metadata` |
+| `CODING_ORACLE_MANIFEST` | `coding.oracle.manifest` |
+| `CODING_ORACLE_PYTHON` | `coding.oracle.python` |
+| `CODING_ORACLE_XML` | `coding.oracle.xml` |
+| `CODING_ORACLE_SECURITY` | `coding.oracle.security` |
+| `CODING_ORACLE_MODULE_STRUCTURE` | `coding.oracle.module_structure` |
+| `CODING_ORACLE_QUALITY` | `coding.oracle.quality` |
+
+`CODING_ORACLE_QUALITY` is declared in the Coding Profile pipeline as **disabled**
+future metadata — it is not registered by default and is not executed.
 
 ## Components
 
@@ -31,19 +64,12 @@ The Validation Engine never contains validation logic. It calls
 | `Oracle` protocol | Metadata + `execute(OracleContext) → OracleResult` |
 | Placeholder oracles | Always-successful stubs (no XML/AST/security scanning) |
 
-## Placeholder oracles (coding)
+## Placeholder philosophy
 
-| ID | Class |
-|----|-------|
-| `coding.oracle.metadata` | `MetadataOracle` |
-| `coding.oracle.manifest` | `ManifestOracle` |
-| `coding.oracle.python` | `PythonOracle` |
-| `coding.oracle.xml` | `XmlOracle` |
-| `coding.oracle.security` | `SecurityOracle` |
-| `coding.oracle.module_structure` | `ModuleStructureOracle` |
-
-`coding.oracle.quality` appears in the Coding Profile pipeline as **disabled**
-future metadata only — it is not registered and is not executed.
+Placeholder oracles return successful `OracleResult` values without inspecting
+artifacts, parsing XML/Python, scanning security rules, or using inference.
+They exist to prove pipeline wiring. Real validation logic is added later
+**inside** oracle `execute` methods — never in the Validation Engine or Scoring.
 
 ## Lifecycle
 
@@ -53,24 +79,31 @@ future metadata only — it is not registered and is not executed.
    - Require `validation_plan` and `validation_profile`
    - Reject capability mismatch
    - For each **enabled** `oracle_pipeline` stage:
-     - Resolve oracle from registry
+     - Resolve oracle from registry by frozen ID
      - Validate supported profile matches plan
      - Execute oracle with `OracleContext`
    - Aggregate into `OracleExecutionResult`
 4. Engine attaches `oracle_execution` to `RunContext`
+
+## Registry & future plugins
+
+- Register additional oracles via `OracleRegistry.register`
+- Resolve by frozen oracle ID
+- Support new profiles with `{profile}.oracle.{name}` IDs
+- No hardcoded branching in Validation Engine
 
 ## RunContext integration
 
 After a successful RUN_VALIDATION stage:
 
 - `oracle_execution: OracleExecutionResult`
-  - `results: tuple[OracleResult, ...]`
+  - `results: tuple[OracleResult, …]`
   - `duration_ms`, counts, warnings, errors
   - immutable
 
 ## Coding Profile relationship
 
-The Coding Profile owns the oracle pipeline metadata:
+The Coding Profile owns the oracle pipeline metadata (IDs from `oracles.ids`):
 
 ```text
 Metadata → Manifest → Python → XML → Security → Module Structure
@@ -79,34 +112,7 @@ Metadata → Manifest → Python → XML → Security → Module Structure
 
 Oracle Framework does not hardcode this order. It reads `ValidationPlan.oracle_pipeline`.
 
-## ValidationPlan relationship
+## Explicitly not implemented in the Oracle Framework
 
-- Enabled stages → executed
-- Disabled stages → skipped
-- `capabilities.supports_oracles` must be true
-
-## Error handling
-
-Structured `OracleError` / `OracleErrorCode` examples:
-
-- `oracle_not_found` / `unknown_oracle`
-- `registration_failure`
-- `execution_failure`
-- `configuration_failure`
-- `profile_mismatch`
-- `capability_mismatch`
-- `missing_plan` / `missing_profile`
-
-Outcomes are returned to the Validation Engine; the engine never crashes.
-
-## Future extensibility
-
-- Register additional oracles via `OracleRegistry.register`
-- Add real validation logic inside oracle `execute` methods in later phases
-- Support new profiles by registering profile-scoped oracle IDs
-- Quality / scoring oracles remain out of scope until their phases
-
-## Explicitly not implemented (Phase 5)
-
-No XML parsing, AST analysis, Odoo inspection, security scanning, code quality
-checks, scoring, benchmarking, certification, reports, or CLI.
+No scoring, benchmarking, certification, reports, CLI, XML parsing, AST analysis,
+Odoo inspection, security scanning, or code quality checks.

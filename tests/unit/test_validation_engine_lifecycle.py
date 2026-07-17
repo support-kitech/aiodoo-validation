@@ -14,7 +14,6 @@ from aiodoo_validation.engine import PIPELINE_STAGE_ORDER, ValidationEngine
 from aiodoo_validation.exceptions import InvalidRequestError
 
 STUB_PORT_STAGES = (
-    ValidationStage.SCORING,
     ValidationStage.BENCHMARK,
     ValidationStage.CERTIFICATION,
     ValidationStage.REPORT,
@@ -85,6 +84,11 @@ def test_stub_engine_runs_complete_lifecycle() -> None:
     assert oracle_result.status is StageStatus.SUCCEEDED
     assert result.run_context.oracle_execution is not None
     assert result.run_context.oracle_execution.oracle_count == 6
+
+    scoring_result = result.run_context.placeholder_results[ValidationStage.SCORING]
+    assert scoring_result.status is StageStatus.SUCCEEDED
+    assert result.run_context.score_execution is not None
+    assert result.run_context.score_execution.policy_count == 6
 
     for stage in PIPELINE_STAGE_ORDER:
         assert stage in result.run_context.placeholder_results

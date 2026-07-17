@@ -18,9 +18,10 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
 | **Phase 3 — Inference Runner** | **Complete** |
 | **Phase 4 — Coding Validation Profile** | **Complete** |
 | **Phase 5 — Oracle Framework** | **Complete** |
-| Phase 6+ | Not started |
+| **Phase 6 — Scoring Engine** | **Complete** |
+| Phase 7+ | Not started |
 
-## Current capabilities (Phase 0–5)
+## Current capabilities (Phase 0–6)
 
 - Production repository foundation (CI, lint, typing, tests, docs)
 - **Validation Engine** with full TDD lifecycle ordering (generic orchestration)
@@ -28,8 +29,9 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
 - **Coding Validation Profile** — profile selection, compatibility, ValidationPlan
 - **Inference Runner** — mock (CI default) and optional Qwen runtime
 - **Oracle Framework** — registry + placeholder oracle pipeline execution
-- Immutable **RunContext** with artifact bundle, profile, plan, inference session, oracle execution
-- Stub ports for scoring, benchmark, certification, report
+- **Scoring Engine** — consumes oracle results only; placeholder deterministic scores
+- Immutable **RunContext** with artifact bundle, profile, plan, inference, oracle, and score execution
+- Stub ports for benchmark, certification, report
 - Deterministic CPU-only tests — no GPU, no model downloads in CI
 
 ## Not yet implemented (deferred by design)
@@ -37,7 +39,7 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
 | Component | Implementation Plan phase |
 |-----------|---------------------------|
 | Real oracle validation rules | Later phases (post placeholder) |
-| Scoring Engine | Phase 6 |
+| Real scoring formulas | Later phases (post placeholder) |
 | Benchmark Engine | Phase 7 |
 | Certification Engine | Phase 8 |
 | Reporting / Protocol V1 reports | Phase 9 |
@@ -67,6 +69,7 @@ python3 -m aiodoo_validation   # stub lifecycle run
 - [Inference Runner (Phase 3)](docs/inference_runner.md)
 - [Coding Validation Profile (Phase 4)](docs/coding_profile.md)
 - [Oracle Framework (Phase 5)](docs/oracle_framework.md)
+- [Scoring Engine (Phase 6)](docs/scoring_engine.md)
 - [ADR template](docs/adr/0000-adr-template.md)
 
 ## License

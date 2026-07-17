@@ -142,3 +142,18 @@ class OracleErrorCode(StrEnum):
     CAPABILITY_MISMATCH = "capability_mismatch"
     MISSING_PLAN = "missing_plan"
     MISSING_PROFILE = "missing_profile"
+
+
+class ScoreErrorCode(StrEnum):
+    """Structured scoring engine error codes."""
+
+    MISSING_ORACLE_RESULTS = "missing_oracle_results"
+    MISSING_PLAN = "missing_plan"
+    MISSING_PROFILE = "missing_profile"
+    POLICY_NOT_FOUND = "policy_not_found"
+    REGISTRATION_FAILURE = "registration_failure"
+    CAPABILITY_MISMATCH = "capability_mismatch"
+    PROFILE_MISMATCH = "profile_mismatch"
+    EXECUTION_FAILURE = "execution_failure"
+    CONFIGURATION_FAILURE = "configuration_failure"
+    ORACLE_RESULT_MISSING = "oracle_result_missing"

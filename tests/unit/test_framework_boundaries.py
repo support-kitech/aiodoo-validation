@@ -53,3 +53,35 @@ def test_resolution_does_not_import_inference_package() -> None:
         if "inference" in imports:
             violations.append(str(path.relative_to(ROOT)))
     assert not violations, "resolution must not import inference:\n" + "\n".join(violations)
+
+
+def test_oracles_do_not_import_scoring() -> None:
+    oracles_dir = PACKAGE / "oracles"
+    violations: list[str] = []
+    for path in oracles_dir.rglob("*.py"):
+        imports = _imports_in_file(path)
+        if "scoring" in imports:
+            violations.append(str(path.relative_to(ROOT)))
+    assert not violations, "oracles must not import scoring:\n" + "\n".join(violations)
+
+
+def test_scoring_does_not_import_oracle_execution() -> None:
+    """Scoring may import oracle domain types and IDs, not oracle execution."""
+    scoring_dir = PACKAGE / "scoring"
+    forbidden_suffixes = (
+        "oracles.engine",
+        "oracles.registry",
+        "oracles.placeholders",
+        "oracles.base",
+    )
+    violations: list[str] = []
+    for path in scoring_dir.rglob("*.py"):
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom) and node.module:
+                module = node.module
+                if module.endswith(forbidden_suffixes) or module == "aiodoo_validation.oracles":
+                    violations.append(f"{path.relative_to(ROOT)}: {module}")
+    assert not violations, "scoring must not import oracle execution modules:\n" + "\n".join(
+        violations
+    )

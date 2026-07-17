@@ -10,6 +10,7 @@ from aiodoo_validation.ports.artifact_resolver import ArtifactResolverPort
 from aiodoo_validation.ports.inference_runner import InferenceRunnerPort
 from aiodoo_validation.ports.oracle_runner import OracleRunnerPort
 from aiodoo_validation.ports.profile_engine import ProfileEnginePort
+from aiodoo_validation.ports.scoring_engine import ScoringEnginePort
 
 __all__ = [
     "ArtifactResolverPort",
@@ -33,12 +34,6 @@ class ValidationRunnerPort(Protocol):
     """
 
     def run_validation(self, context: RunContext) -> PlaceholderStageResult: ...
-
-
-class ScoringEnginePort(Protocol):
-    """Aggregate validation scores (Phase 6+)."""
-
-    def score(self, context: RunContext) -> PlaceholderStageResult: ...
 
 
 class BenchmarkEnginePort(Protocol):

@@ -116,12 +116,16 @@ def test_validation_plan_is_immutable_and_metadata_only() -> None:
     assert plan.profile_name == "coding"
     assert plan.capabilities.supports_inference is True
     assert plan.capabilities.supports_oracles is True
+    assert plan.capabilities.supports_scoring is True
     assert plan.validation_stages == (ValidationStage.RUN_VALIDATION,)
     assert ValidationStage.INITIALIZE_INFERENCE in plan.execution_order
     assert plan.oracle_pipeline[0].enabled is True
     assert plan.oracle_pipeline[0].stage_id == "coding.oracle.metadata"
     assert plan.oracle_pipeline[-1].stage_id == "coding.oracle.quality"
     assert plan.oracle_pipeline[-1].enabled is False
+    assert plan.scoring_pipeline[0].stage_id == "coding.score.metadata"
+    assert plan.scoring_pipeline[0].enabled is True
+    assert plan.scoring_pipeline[-1].enabled is False
 
     with pytest.raises(FrozenInstanceError):
         plan.plan_digest = "changed"  # type: ignore[misc]
