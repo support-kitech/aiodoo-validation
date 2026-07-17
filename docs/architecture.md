@@ -8,13 +8,13 @@
 
 Determine whether a trained AIODOO model is suitable for production through validation, benchmarking (future), and certification (future).
 
-## Logical architecture (Phase 2)
+## Logical architecture (Phase 3)
 
 ```
 Validation Engine
     → Artifact Resolver (filesystem + stub)
     → Profile Engine (stub)
-    → Inference Runner (stub)
+    → Inference Runner (mock default; optional Qwen runtime)
     → Validation Runner (stub)
     → Scoring Engine (stub)
     → Benchmark Engine (stub)

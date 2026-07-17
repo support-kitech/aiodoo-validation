@@ -89,3 +89,29 @@ class ArtifactResolutionErrorCode(StrEnum):
     INCOMPATIBLE_ARTIFACT = "incompatible_artifact"
     FINGERPRINT_MISMATCH = "fingerprint_mismatch"
     RESOLVER_FAILURE = "resolver_failure"
+
+
+class InferenceLifecycleState(StrEnum):
+    """Inference loading lifecycle states."""
+
+    INITIALIZING = "initializing"
+    LOADING_BASE = "loading_base"
+    ATTACHING_ADAPTER = "attaching_adapter"
+    VERIFYING = "verifying"
+    READY = "ready"
+    SHUTDOWN = "shutdown"
+
+
+class InferenceErrorCode(StrEnum):
+    """Structured inference error codes."""
+
+    MISSING_BUNDLE = "missing_bundle"
+    UNSUPPORTED_MODEL = "unsupported_model"
+    UNSUPPORTED_ADAPTER = "unsupported_adapter"
+    MODEL_LOAD_FAILURE = "model_load_failure"
+    ADAPTER_LOAD_FAILURE = "adapter_load_failure"
+    OOM = "oom"
+    UNSUPPORTED_CONFIG = "unsupported_config"
+    GENERATION_FAILURE = "generation_failure"
+    NOT_INITIALIZED = "not_initialized"
+    RUNNER_FAILURE = "runner_failure"

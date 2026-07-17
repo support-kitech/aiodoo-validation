@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.enums import ArtifactResolutionErrorCode, ArtifactType
 from aiodoo_validation.domain.resolution import ArtifactResolutionError, ArtifactResolutionOutcome
+from aiodoo_validation.inference.paths import ARTIFACT_PATHS_KEY, build_artifact_paths_metadata
 from aiodoo_validation.resolution.common import (
     build_artifact_bundle,
     effective_fingerprint_policy,
@@ -143,7 +144,14 @@ class FilesystemArtifactResolver:
             adapter=adapter,
             merged_model=merged_model,
             fingerprint_policy=policy,
-            metadata={"resolver": "filesystem"},
+            metadata={
+                "resolver": "filesystem",
+                **{ARTIFACT_PATHS_KEY: build_artifact_paths_metadata(
+                    base_model=request.base_model_ref,
+                    adapter=request.adapter_ref,
+                    merged_model=request.merged_model_ref,
+                )},
+            },
         )
         return ArtifactResolutionOutcome(
             success=True,

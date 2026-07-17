@@ -1,7 +1,7 @@
 # Implementation Status
 
 **Repository version:** 0.0.0-dev  
-**Active phases:** Phase 0 + Phase 1 + Phase 2 (complete)
+**Active phases:** Phase 0 + Phase 1 + Phase 2 + Phase 3 (complete)
 
 ## Implemented
 
@@ -9,7 +9,7 @@
 
 - Project structure (`aiodoo_validation` package)
 - `pyproject.toml` tooling (Ruff, mypy, pytest, coverage)
-- Requirements (`base`, `dev`)
+- Requirements (`base`, `dev`, optional `inference`)
 - CI workflow (GitHub Actions)
 - `.editorconfig`, `.gitignore`, Apache 2.0 LICENSE
 - CONTRIBUTING, README, architecture summary
@@ -41,11 +41,23 @@
 - Unit tests with fake fixture directories (no real weights/GPU)
 - [Artifact Bundle documentation](artifact_bundle.md)
 
+### Phase 3 — Inference Runner
+
+- `InferenceRunnerPort` with initialize / generate / shutdown
+- `InferenceSession`, `GenerationRequest`, `InferenceResult`, structured errors
+- `ModelRuntimePort` with `MockModelRuntime` (CI default) and `QwenModelRuntime` (optional)
+- `RealInferenceRunner` and `StubInferenceRunner` (dependency injection)
+- Load lifecycle: initialize → load base → attach adapter → verify → ready
+- Generation metadata (tokens, latency, memory placeholder)
+- Resource cleanup on shutdown; graceful inference failure in engine
+- `ValidationEngine.with_mock_inference()` factory
+- Unit tests: mock inference, lifecycle, errors, cleanup (no GPU/downloads)
+- [Inference Runner documentation](inference_runner.md)
+
 ## Not implemented (next phases)
 
 | Phase | Component |
 |-------|-----------|
-| 3 | Inference Runner |
 | 4 | Coding Validation Profile |
 | 5 | Oracle Framework |
 | 6 | Scoring Engine |
@@ -59,15 +71,14 @@
 
 ## Next phase
 
-**Phase 3 — Inference Runner** per frozen Implementation Plan.
+**Phase 4 — Coding Validation Profile** per frozen Implementation Plan.
 
 ## Deferred (by design)
 
 | Item | Phase | Reason |
 |------|-------|--------|
-| Real fingerprint hashing | Post-2 | Requires content reads aligned with training export contract |
-| Model / adapter loading | 3 | Inference runner responsibility |
-| PEFT / transformers / torch | 3+ | Explicitly out of Phase 2 scope |
-| Validation logic / oracles | 4–5 | Profile and oracle framework |
+| Coding profile / validation rules | 4 | Profile engine responsibility |
+| Oracles / XML-Python validation | 5 | Oracle framework |
 | Scoring / benchmark / certification | 6–8 | Downstream engines |
-| Reports / CLI / Colab | 9–11 | User-facing and integration surfaces |
+| Real memory telemetry | Post-3 | Resource layer extension |
+| Reports / CLI / Colab | 9–11 | User-facing surfaces |

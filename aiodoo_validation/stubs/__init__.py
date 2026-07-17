@@ -8,6 +8,7 @@ from types import MappingProxyType
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.enums import StageStatus, ValidationStage
 from aiodoo_validation.domain.stage import PlaceholderStageResult
+from aiodoo_validation.inference.stub_runner import StubInferenceRunner
 from aiodoo_validation.ports import (
     ArtifactResolverPort,
     BenchmarkEnginePort,
@@ -39,18 +40,6 @@ class StubProfileEngine:
             message="stub profile resolution",
             profile_name=context.request.profile_name,
             odoo_versions=context.request.odoo_versions,
-            stub=True,
-        )
-
-
-class StubInferenceRunner:
-    """Placeholder inference runner."""
-
-    def initialize(self, context: RunContext) -> PlaceholderStageResult:
-        return _stub_result(
-            ValidationStage.INITIALIZE_INFERENCE,
-            message="stub inference initialization",
-            execution_tier=context.execution_tier.value,
             stub=True,
         )
 
@@ -135,7 +124,7 @@ class StubPipelineComponents:
         return cls(
             artifact_resolver=StubArtifactResolver(),
             profile_engine=StubProfileEngine(),
-            inference_runner=StubInferenceRunner(),
+            inference_runner=StubInferenceRunner.create(),
             validation_runner=StubValidationRunner(),
             scoring_engine=StubScoringEngine(),
             benchmark_engine=StubBenchmarkEngine(),

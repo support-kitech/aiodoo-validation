@@ -18,6 +18,7 @@ REQUIRED_DIRS = [
     "aiodoo_validation/stubs",
     "aiodoo_validation/engine",
     "aiodoo_validation/resolution",
+    "aiodoo_validation/inference",
 ]
 
 REQUIRED_FILES = [

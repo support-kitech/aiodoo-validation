@@ -9,6 +9,7 @@ from aiodoo_validation.domain.artifacts import ArtifactDescriptor, ArtifactFinge
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.enums import ArtifactType
 from aiodoo_validation.domain.resolution import ArtifactResolutionOutcome
+from aiodoo_validation.inference.paths import ARTIFACT_PATHS_KEY, build_artifact_paths_metadata
 from aiodoo_validation.resolution.common import build_artifact_bundle, effective_fingerprint_policy
 
 
@@ -30,6 +31,8 @@ class StubArtifactResolver:
                     "stub": True,
                     "logical_ref": request.base_model_ref,
                     "protocol_major": request.protocol_major,
+                    "model_family": "qwen",
+                    "identifier": "qwen3-8b",
                 }
             ),
             fingerprint=stub_fingerprint,
@@ -70,7 +73,15 @@ class StubArtifactResolver:
             adapter=adapter,
             merged_model=merged_model,
             fingerprint_policy=policy,
-            metadata={"resolver": "stub", "stub": True},
+            metadata={
+                "resolver": "stub",
+                "stub": True,
+                ARTIFACT_PATHS_KEY: build_artifact_paths_metadata(
+                    base_model=request.base_model_ref,
+                    adapter=request.adapter_ref,
+                    merged_model=request.merged_model_ref,
+                ),
+            },
         )
         return ArtifactResolutionOutcome(
             success=True,

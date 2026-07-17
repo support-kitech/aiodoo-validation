@@ -8,6 +8,7 @@ from typing import TypeVar
 
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.enums import ExitStatus, StageStatus, ValidationStage
+from aiodoo_validation.domain.inference import InferenceInitializationOutcome
 from aiodoo_validation.domain.request import ValidationRequest
 from aiodoo_validation.domain.resolution import ArtifactResolutionOutcome
 from aiodoo_validation.domain.result import ValidationRunResult
@@ -19,6 +20,7 @@ from aiodoo_validation.exceptions import (
     PipelineError,
     ProtocolError,
 )
+from aiodoo_validation.inference import MockModelRuntime, RealInferenceRunner
 from aiodoo_validation.ports import (
     ArtifactResolverPort,
     BenchmarkEnginePort,
@@ -54,8 +56,8 @@ class ValidationEngine:
     """
     Production validation orchestrator skeleton.
 
-    Executes the complete lifecycle using injected ports. Phase 2 adds real
-    artifact resolution while downstream stages remain stubbed.
+    Executes the complete lifecycle using injected ports. Phase 3 adds real
+    inference initialization while validation stages remain stubbed.
     """
 
     def __init__(
@@ -109,6 +111,21 @@ class ValidationEngine:
             report_generator=stubs.report_generator,
         )
 
+    @classmethod
+    def with_mock_inference(cls) -> ValidationEngine:
+        """Construct an engine with filesystem artifacts and mock inference."""
+        stubs = StubPipelineComponents.create()
+        return cls(
+            artifact_resolver=FilesystemArtifactResolver.create_default(),
+            profile_engine=stubs.profile_engine,
+            inference_runner=RealInferenceRunner(runtime=MockModelRuntime()),
+            validation_runner=stubs.validation_runner,
+            scoring_engine=stubs.scoring_engine,
+            benchmark_engine=stubs.benchmark_engine,
+            certification_engine=stubs.certification_engine,
+            report_generator=stubs.report_generator,
+        )
+
     def run(self, request: ValidationRequest) -> ValidationRunResult:
         """Execute the full validation lifecycle for the given request."""
         context = RunContext.begin(request)
@@ -118,7 +135,7 @@ class ValidationEngine:
             message = (
                 "Validation lifecycle completed."
                 if exit_status is not ExitStatus.FAILED
-                else "Validation lifecycle failed during artifact resolution."
+                else "Validation lifecycle failed."
             )
             return ValidationRunResult(
                 exit_status=exit_status,
@@ -154,6 +171,10 @@ class ValidationEngine:
                 context = self._run_artifact_stage(context)
                 if context.exit_status is ExitStatus.FAILED:
                     return self._run_failed_exit(context)
+            elif stage == ValidationStage.INITIALIZE_INFERENCE:
+                context = self._run_inference_stage(context)
+                if context.exit_status is ExitStatus.FAILED:
+                    return self._run_failed_exit(context)
             elif stage == ValidationStage.EXIT:
                 context = self._run_exit(context)
             else:
@@ -165,7 +186,6 @@ class ValidationEngine:
     def _executor_for(self, stage: ValidationStage) -> _StageExecutor:
         executors: dict[ValidationStage, _StageExecutor] = {
             ValidationStage.RESOLVE_PROFILE: self._profile_engine.resolve_profile,
-            ValidationStage.INITIALIZE_INFERENCE: self._inference_runner.initialize,
             ValidationStage.RUN_VALIDATION: self._validation_runner.run_validation,
             ValidationStage.SCORING: self._scoring_engine.score,
             ValidationStage.BENCHMARK: self._benchmark_engine.benchmark,
@@ -210,7 +230,27 @@ class ValidationEngine:
             updated = updated.with_error(f"{error.code.value}: {error.message}")
         return updated.with_exit_status(ExitStatus.FAILED)
 
+    def _run_inference_stage(self, context: RunContext) -> RunContext:
+        outcome = self._inference_runner.initialize(context)
+        return self._apply_inference_outcome(context, outcome)
+
+    def _apply_inference_outcome(
+        self,
+        context: RunContext,
+        outcome: InferenceInitializationOutcome,
+    ) -> RunContext:
+        result = outcome.to_stage_result()
+        updated = self._record_stage(context, ValidationStage.INITIALIZE_INFERENCE, result)
+        for warning in outcome.warnings:
+            updated = updated.with_warning(warning)
+        if outcome.success and outcome.session is not None:
+            return updated.with_inference_session(outcome.session)
+        for error in outcome.errors:
+            updated = updated.with_error(f"{error.code.value}: {error.message}")
+        return updated.with_exit_status(ExitStatus.FAILED)
+
     def _run_exit(self, context: RunContext) -> RunContext:
+        self._inference_runner.shutdown(context)
         exit_status = context.exit_status or ExitStatus.NOT_CERTIFIED
         started = datetime.now(UTC)
         result = PlaceholderStageResult(
@@ -272,7 +312,10 @@ class ValidationEngine:
             result=result,
         )
         updated = context.with_stage_record(record).with_placeholder_result(result)
-        if result.status == StageStatus.FAILED and stage is not ValidationStage.RESOLVE_ARTIFACTS:
+        if result.status == StageStatus.FAILED and stage not in (
+            ValidationStage.RESOLVE_ARTIFACTS,
+            ValidationStage.INITIALIZE_INFERENCE,
+        ):
             raise PipelineError(f"Stage {stage.value} failed: {result.message}")
         return updated
 

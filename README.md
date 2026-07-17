@@ -15,24 +15,25 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
 | **Phase 0 — Repository Foundation** | **Complete** |
 | **Phase 1 — Validation Engine Core** | **Complete** |
 | **Phase 2 — Artifact Resolution** | **Complete** |
-| Phase 3+ | Not started |
+| **Phase 3 — Inference Runner** | **Complete** |
+| Phase 4+ | Not started |
 
-## Current capabilities (Phase 0–2)
+## Current capabilities (Phase 0–3)
 
 - Production repository foundation (CI, lint, typing, tests, docs)
 - **Validation Engine** with full TDD lifecycle ordering
 - Immutable **ValidationRequest** and **RunContext**
 - Validation Protocol V1 negotiation (major version 1 only)
 - **Artifact Resolution** — filesystem and stub resolvers produce immutable **Artifact Bundle**
+- **Inference Runner** — mock (CI default) and optional Qwen runtime via dependency injection
 - Placeholder fingerprints with `strict` / `warn` / `off` policies
-- Stub ports for downstream engines (profile, inference, validation, scoring, benchmark, certification, report)
-- Deterministic CPU-only tests — no GPU, no models, no inference
+- Stub ports for downstream engines (profile, validation, scoring, benchmark, certification, report)
+- Deterministic CPU-only tests — no GPU, no model downloads in CI
 
 ## Not yet implemented (deferred by design)
 
 | Component | Implementation Plan phase |
 |-----------|---------------------------|
-| Inference Runner | Phase 3 |
 | Validation Profiles (coding logic) | Phase 4 |
 | Oracle Framework | Phase 5 |
 | Scoring Engine | Phase 6 |
@@ -61,6 +62,7 @@ python3 -m aiodoo_validation   # stub lifecycle run
 - [Architecture summary](docs/architecture.md)
 - [Implementation status](docs/implementation_status.md)
 - [Artifact Bundle (Phase 2)](docs/artifact_bundle.md)
+- [Inference Runner (Phase 3)](docs/inference_runner.md)
 - [ADR template](docs/adr/0000-adr-template.md)
 
 ## License
