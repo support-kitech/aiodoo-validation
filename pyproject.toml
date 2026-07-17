@@ -1,0 +1,29 @@
+# Tooling configuration only.
+# This repository is NOT packaged or published.
+# Run from the repository root with: python3 -m aiodoo_validation
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+files = ["aiodoo_validation"]
+
+[tool.coverage.run]
+branch = true
+source = ["aiodoo_validation"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 85
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

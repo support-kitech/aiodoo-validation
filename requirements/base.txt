@@ -1,0 +1,2 @@
+# Base runtime dependencies (validation request models, protocol negotiation).
+# No ML frameworks in Phase 0/1.
