@@ -92,6 +92,13 @@ Each enabled template returns:
 - One summary section per report
 - No markdown, PDF, HTML, JSON export, or formatting
 
+**`overall_status`, placeholder summaries, and placeholder sections are NOT
+production report output.** The placeholder report objects exist only to validate
+the Report Generator pipeline. Future rendering integrations (CLI formatting,
+Markdown, HTML, PDF, JSON, dashboards, API responses, etc.) will consume these
+immutable report objects. These placeholder values must never be interpreted as
+production report rendering.
+
 Rendering belongs to future integrations (CLI, dashboards, ecosystem tools).
 
 ## RunContext integration
@@ -124,6 +131,6 @@ Structured `ReportError` / `ReportErrorCode`:
 
 ## Explicitly not implemented
 
-No PDF/HTML/Markdown/JSON export, CLI, UI, protocol serialization, validation,
+No PDF/HTML/Markdown/JSON export, UI, protocol serialization, validation,
 scoring, benchmarking, certification, filesystem inspection, or ecosystem
-integrations.
+integrations beyond the production CLI terminal formatter.

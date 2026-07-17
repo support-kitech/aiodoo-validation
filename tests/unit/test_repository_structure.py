@@ -27,6 +27,7 @@ REQUIRED_DIRS = [
     "aiodoo_validation/scoring",
     "aiodoo_validation/reports",
     "aiodoo_validation/reporting",
+    "aiodoo_validation/cli",
     "aiodoo_validation/benchmark",
     "aiodoo_validation/certification",
 ]
@@ -74,6 +75,7 @@ def test_no_egg_info_directory() -> None:
 def test_pyproject_is_tooling_only() -> None:
     text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     assert "[build-system]" not in text
-    assert "[project]" not in text
+    assert "[project.scripts]" in text
+    assert 'aiodoo-validation = "aiodoo_validation.cli.app:main"' in text
     assert "[tool.ruff]" in text
     assert "[tool.mypy]" in text

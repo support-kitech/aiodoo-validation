@@ -1,10 +1,19 @@
 # Implementation Status
 
 **Repository version:** 0.0.0-dev  
-**Active phases:** Phase 0–9 (complete)  
+**Active phases:** Phase 0–10 (complete)  
 **Architecture audit:** [Post Phase 0–3 audit](architecture_audit.md) — **frozen**
 
 ## Implemented
+
+### Phase 10 — Production CLI
+
+- `validate`, `version`, `capabilities`, and `help` commands
+- `ConsoleFormatter` for human-readable terminal output
+- Exit code mapping from `ValidationRunResult.exit_status`
+- Entry points: `python -m aiodoo_validation` and `aiodoo-validation` console script
+- Boundary tests: CLI does not import upstream execution modules
+- [CLI documentation](cli.md)
 
 ### Phase 9 — Report Generation
 
@@ -13,33 +22,24 @@
 - Placeholder templates mapped 1:1 to frozen certification IDs
 - `ValidationPlan.report_pipeline` and `ProfileCapabilities.supports_reports`
 - `RunContext.report_execution` attachment
-- Engine `REPORT` stage wired through `ReportGeneratorPort`
-- Boundary tests: reporting does not import upstream execution modules
 - [Report Generation documentation](report_generation.md)
 
 ### Phase 8 — Certification Engine
 
-- `CertificationEnginePort` with `CertificationExecutionOutcome`
-- `CertificationEngine`, `CertificationRegistry`, `CertificationPolicy` protocol
-- Placeholder policies mapped 1:1 to frozen benchmark IDs
-- `RunContext.certification_execution` attachment
-- Engine `CERTIFICATION` stage wired through `CertificationEnginePort`
-- Boundary tests: certification does not import upstream execution modules
 - [Certification Engine documentation](certification_engine.md)
 
 ### Phase 0–7
 
-Repository foundation through Benchmark Engine (Phase 6–7 frozen refinements applied).
+Repository foundation through Benchmark Engine.
 
 ## Not implemented (next phases)
 
 | Phase | Component |
 |-------|-----------|
-| 10 | CLI |
 | 11 | aiodoo-training / Colab integration |
 | 12 | Production hardening |
 | 13 | v1.0.0 release |
 
 ## Next phase
 
-**Phase 10 — CLI** per frozen Implementation Plan.
+**Phase 11 — Ecosystem integration** per frozen Implementation Plan.

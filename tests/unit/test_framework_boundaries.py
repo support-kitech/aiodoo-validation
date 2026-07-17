@@ -187,3 +187,45 @@ def test_reporting_does_not_import_upstream_execution() -> None:
     assert not violations, "reporting must not import upstream execution:\n" + "\n".join(
         violations
     )
+
+
+def test_cli_does_not_import_upstream_execution() -> None:
+    """CLI may import ValidationEngine and result models, not execution engines."""
+    cli_dir = PACKAGE / "cli"
+    forbidden_suffixes = (
+        "oracles.engine",
+        "oracles.registry",
+        "oracles.placeholders",
+        "oracles.base",
+        "scoring.engine",
+        "scoring.registry",
+        "scoring.policies",
+        "scoring.base",
+        "benchmark.engine",
+        "benchmark.registry",
+        "benchmark.policies",
+        "benchmark.base",
+        "certification.engine",
+        "certification.registry",
+        "certification.policies",
+        "certification.base",
+        "reporting.engine",
+        "reporting.registry",
+        "reporting.templates",
+        "reporting.base",
+    )
+    violations: list[str] = []
+    for path in cli_dir.rglob("*.py"):
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom) and node.module:
+                module = node.module
+                if module.endswith(forbidden_suffixes) or module in {
+                    "aiodoo_validation.oracles",
+                    "aiodoo_validation.scoring",
+                    "aiodoo_validation.benchmark",
+                    "aiodoo_validation.certification",
+                    "aiodoo_validation.reporting",
+                }:
+                    violations.append(f"{path.relative_to(ROOT)}: {module}")
+    assert not violations, "cli must not import upstream execution:\n" + "\n".join(violations)

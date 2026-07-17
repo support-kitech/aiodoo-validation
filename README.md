@@ -22,9 +22,10 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
 | **Phase 7 — Benchmark Engine** | **Complete** |
 | **Phase 8 — Certification Engine** | **Complete** |
 | **Phase 9 — Report Generation** | **Complete** |
-| Phase 10+ | Not started |
+| **Phase 10 — Production CLI** | **Complete** |
+| Phase 11+ | Not started |
 
-## Current capabilities (Phase 0–9)
+## Current capabilities (Phase 0–10)
 
 - Production repository foundation (CI, lint, typing, tests, docs)
 - **Validation Engine** with full TDD lifecycle ordering (generic orchestration)
@@ -36,6 +37,7 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
 - **Benchmark Engine** — consumes score results only; placeholder comparisons
 - **Certification Engine** — consumes benchmark results only; placeholder certification
 - **Report Generator** — consumes certification results only; placeholder report objects
+- **Production CLI** — validate, version, capabilities, help; plain terminal output
 - Immutable **RunContext** through report execution
 - Deterministic CPU-only tests — no GPU, no model downloads in CI
 
@@ -45,7 +47,6 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
 |-----------|---------------------------|
 | Real oracle / scoring / benchmark / certification / report logic | Later phases (post placeholder) |
 | PDF / HTML / Markdown / JSON report rendering | Future integrations |
-| CLI surface | Phase 10 |
 | Ecosystem integration (training, Colab) | Phase 11 |
 
 ## Quick start
@@ -53,7 +54,8 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
 ```bash
 python3 -m pip install -r requirements/dev.txt
 python3 -m pytest
-python3 -m aiodoo_validation   # stub lifecycle run
+python3 -m aiodoo_validation help
+aiodoo-validation validate --profile coding --base-model ./base --adapter ./adapter
 ```
 
 ## Scope
@@ -75,6 +77,7 @@ python3 -m aiodoo_validation   # stub lifecycle run
 - [Benchmark Engine (Phase 7)](docs/benchmark_engine.md)
 - [Certification Engine (Phase 8)](docs/certification_engine.md)
 - [Report Generation (Phase 9)](docs/report_generation.md)
+- [Production CLI (Phase 10)](docs/cli.md)
 - [ADR template](docs/adr/0000-adr-template.md)
 
 ## License

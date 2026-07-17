@@ -1,6 +1,14 @@
 # Tooling configuration only.
-# This repository is NOT packaged or published.
 # Run from the repository root with: python3 -m aiodoo_validation
+# Or use the console script: scripts/aiodoo-validation
+
+[project]
+name = "aiodoo-validation"
+version = "0.0.0-dev"
+requires-python = ">=3.12"
+
+[project.scripts]
+aiodoo-validation = "aiodoo_validation.cli.app:main"
 
 [tool.ruff]
 line-length = 100
