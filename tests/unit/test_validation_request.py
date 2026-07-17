@@ -11,7 +11,7 @@ def test_valid_coding_request() -> None:
     request = ValidationRequest(
         profile_name=SupportedValidationProfile.CODING.value,
         base_model_ref="Qwen/Qwen3-8B",
-        adapter_ref="artifacts/adapters/EXP-0001/stub",
+        adapter_ref="artifacts/adapters/aiodoo-coding/stub",
         execution_tier=ExecutionTier.SMOKE,
     )
     assert request.profile_name == "coding"
