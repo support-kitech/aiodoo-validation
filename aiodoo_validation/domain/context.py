@@ -9,6 +9,7 @@ from types import MappingProxyType
 from typing import Any
 from uuid import uuid4
 
+from aiodoo_validation.domain.artifacts import ArtifactBundle
 from aiodoo_validation.domain.enums import ExecutionTier, ExitStatus, StageStatus, ValidationStage
 from aiodoo_validation.domain.request import SUPPORTED_PROTOCOL_MAJOR, ValidationRequest
 from aiodoo_validation.domain.stage import PlaceholderStageResult, StageRecord
@@ -36,6 +37,7 @@ class RunContext:
     placeholder_results: Mapping[ValidationStage, PlaceholderStageResult] = field(
         default_factory=lambda: MappingProxyType({})
     )
+    artifact_bundle: ArtifactBundle | None = None
     exit_status: ExitStatus | None = None
 
     @staticmethod
@@ -71,6 +73,9 @@ class RunContext:
 
     def with_warning(self, message: str) -> RunContext:
         return replace(self, warnings=self.warnings + (message,))
+
+    def with_artifact_bundle(self, bundle: ArtifactBundle) -> RunContext:
+        return replace(self, artifact_bundle=bundle)
 
     def with_exit_status(self, status: ExitStatus) -> RunContext:
         return replace(self, exit_status=status)

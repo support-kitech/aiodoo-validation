@@ -17,6 +17,7 @@ REQUIRED_DIRS = [
     "aiodoo_validation/ports",
     "aiodoo_validation/stubs",
     "aiodoo_validation/engine",
+    "aiodoo_validation/resolution",
 ]
 
 REQUIRED_FILES = [

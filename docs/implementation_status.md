@@ -1,7 +1,7 @@
 # Implementation Status
 
 **Repository version:** 0.0.0-dev  
-**Active phases:** Phase 0 + Phase 1 (complete)
+**Active phases:** Phase 0 + Phase 1 + Phase 2 (complete)
 
 ## Implemented
 
@@ -28,11 +28,23 @@
 - `python3 -m aiodoo_validation` development entry (stub run)
 - Unit tests: request, context, protocol, lifecycle, repository structure
 
+### Phase 2 — Artifact Resolution
+
+- `ArtifactType`, `FingerprintPolicy`, resolution error codes
+- Immutable `ArtifactBundle` and `ArtifactDescriptor`
+- `ArtifactResolverPort` with `ArtifactResolutionOutcome`
+- `StubArtifactResolver` and `FilesystemArtifactResolver` (DI)
+- Placeholder fingerprint provider (`strict` / `warn` / `off`)
+- Compatibility validation (coding profile, rejected adapter types, duplicates)
+- Engine integration: bundle attached to `RunContext`; graceful failure (no crash)
+- `ValidationEngine.with_filesystem()` factory
+- Unit tests with fake fixture directories (no real weights/GPU)
+- [Artifact Bundle documentation](artifact_bundle.md)
+
 ## Not implemented (next phases)
 
 | Phase | Component |
 |-------|-----------|
-| 2 | Real Artifact Resolver |
 | 3 | Inference Runner |
 | 4 | Coding Validation Profile |
 | 5 | Oracle Framework |
@@ -47,4 +59,15 @@
 
 ## Next phase
 
-**Phase 2 — Artifact Resolution** per frozen Implementation Plan.
+**Phase 3 — Inference Runner** per frozen Implementation Plan.
+
+## Deferred (by design)
+
+| Item | Phase | Reason |
+|------|-------|--------|
+| Real fingerprint hashing | Post-2 | Requires content reads aligned with training export contract |
+| Model / adapter loading | 3 | Inference runner responsibility |
+| PEFT / transformers / torch | 3+ | Explicitly out of Phase 2 scope |
+| Validation logic / oracles | 4–5 | Profile and oracle framework |
+| Scoring / benchmark / certification | 6–8 | Downstream engines |
+| Reports / CLI / Colab | 9–11 | User-facing and integration surfaces |

@@ -6,12 +6,18 @@ from typing import Protocol
 
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.stage import PlaceholderStageResult
+from aiodoo_validation.ports.artifact_resolver import ArtifactResolverPort
 
-
-class ArtifactResolverPort(Protocol):
-    """Resolve base model and adapter references (Phase 2+)."""
-
-    def resolve(self, context: RunContext) -> PlaceholderStageResult: ...
+__all__ = [
+    "ArtifactResolverPort",
+    "BenchmarkEnginePort",
+    "CertificationEnginePort",
+    "InferenceRunnerPort",
+    "ProfileEnginePort",
+    "ReportGeneratorPort",
+    "ScoringEnginePort",
+    "ValidationRunnerPort",
+]
 
 
 class ProfileEnginePort(Protocol):

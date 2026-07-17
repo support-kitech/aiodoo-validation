@@ -59,3 +59,33 @@ class OdooVersion(IntEnum):
     V17 = 17
     V18 = 18
     V19 = 19
+
+
+class ArtifactType(StrEnum):
+    """Supported artifact kinds for Phase 2 (coding scope)."""
+
+    BASE_MODEL = "base_model"
+    CODING_ADAPTER = "coding_adapter"
+    MERGED_MODEL = "merged_model"
+
+
+class FingerprintPolicy(StrEnum):
+    """Fingerprint verification strictness."""
+
+    STRICT = "strict"
+    WARN = "warn"
+    OFF = "off"
+
+
+class ArtifactResolutionErrorCode(StrEnum):
+    """Structured artifact resolution error codes."""
+
+    MISSING_PATH = "missing_path"
+    INVALID_PATH = "invalid_path"
+    UNSUPPORTED_ARTIFACT = "unsupported_artifact"
+    MISSING_METADATA = "missing_metadata"
+    INVALID_PROTOCOL = "invalid_protocol"
+    DUPLICATE_ARTIFACT = "duplicate_artifact"
+    INCOMPATIBLE_ARTIFACT = "incompatible_artifact"
+    FINGERPRINT_MISMATCH = "fingerprint_mismatch"
+    RESOLVER_FAILURE = "resolver_failure"

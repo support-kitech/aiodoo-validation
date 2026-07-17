@@ -18,6 +18,7 @@ from aiodoo_validation.ports import (
     ScoringEnginePort,
     ValidationRunnerPort,
 )
+from aiodoo_validation.resolution.stub_resolver import StubArtifactResolver
 
 
 def _stub_result(stage: ValidationStage, *, message: str, **data: object) -> PlaceholderStageResult:
@@ -27,19 +28,6 @@ def _stub_result(stage: ValidationStage, *, message: str, **data: object) -> Pla
         message=message,
         data=MappingProxyType(dict(data)),
     )
-
-
-class StubArtifactResolver:
-    """Placeholder artifact resolver."""
-
-    def resolve(self, context: RunContext) -> PlaceholderStageResult:
-        return _stub_result(
-            ValidationStage.RESOLVE_ARTIFACTS,
-            message="stub artifact resolution",
-            base_model_ref=context.request.base_model_ref,
-            adapter_ref=context.request.adapter_ref,
-            stub=True,
-        )
 
 
 class StubProfileEngine:

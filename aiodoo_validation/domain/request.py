@@ -7,7 +7,12 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Any
 
-from aiodoo_validation.domain.enums import ExecutionTier, OdooVersion, SupportedValidationProfile
+from aiodoo_validation.domain.enums import (
+    ExecutionTier,
+    FingerprintPolicy,
+    OdooVersion,
+    SupportedValidationProfile,
+)
 from aiodoo_validation.exceptions import InvalidRequestError
 
 SUPPORTED_PROTOCOL_MAJOR = 1
@@ -27,11 +32,13 @@ class ValidationRequest:
     profile_name: str
     base_model_ref: str
     adapter_ref: str
+    merged_model_ref: str | None = None
     execution_tier: ExecutionTier = ExecutionTier.STANDARD
     protocol_major: int = SUPPORTED_PROTOCOL_MAJOR
     protocol_minor: int = 0
     odoo_versions: tuple[int, ...] = (OdooVersion.V17, OdooVersion.V18, OdooVersion.V19)
     strict_fingerprint_policy: bool = False
+    fingerprint_policy: FingerprintPolicy = FingerprintPolicy.OFF
     run_id: str | None = None
     metadata: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
 

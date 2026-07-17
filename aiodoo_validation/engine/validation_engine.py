@@ -9,6 +9,7 @@ from typing import TypeVar
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.enums import ExitStatus, StageStatus, ValidationStage
 from aiodoo_validation.domain.request import ValidationRequest
+from aiodoo_validation.domain.resolution import ArtifactResolutionOutcome
 from aiodoo_validation.domain.result import ValidationRunResult
 from aiodoo_validation.domain.stage import PlaceholderStageResult, StageRecord
 from aiodoo_validation.engine.protocol import negotiate_protocol
@@ -28,6 +29,7 @@ from aiodoo_validation.ports import (
     ScoringEnginePort,
     ValidationRunnerPort,
 )
+from aiodoo_validation.resolution.filesystem import FilesystemArtifactResolver
 from aiodoo_validation.stubs import StubPipelineComponents
 
 _PortReturn = TypeVar("_PortReturn", bound=PlaceholderStageResult)
@@ -52,8 +54,8 @@ class ValidationEngine:
     """
     Production validation orchestrator skeleton.
 
-    Executes the complete lifecycle using injected ports. Phase 0/1 ships with
-    stub implementations only.
+    Executes the complete lifecycle using injected ports. Phase 2 adds real
+    artifact resolution while downstream stages remain stubbed.
     """
 
     def __init__(
@@ -79,10 +81,25 @@ class ValidationEngine:
 
     @classmethod
     def with_stubs(cls) -> ValidationEngine:
-        """Construct an engine wired with Phase 0/1 stub ports."""
+        """Construct an engine wired with stub downstream ports."""
         stubs = StubPipelineComponents.create()
         return cls(
             artifact_resolver=stubs.artifact_resolver,
+            profile_engine=stubs.profile_engine,
+            inference_runner=stubs.inference_runner,
+            validation_runner=stubs.validation_runner,
+            scoring_engine=stubs.scoring_engine,
+            benchmark_engine=stubs.benchmark_engine,
+            certification_engine=stubs.certification_engine,
+            report_generator=stubs.report_generator,
+        )
+
+    @classmethod
+    def with_filesystem(cls) -> ValidationEngine:
+        """Construct an engine with a real filesystem artifact resolver."""
+        stubs = StubPipelineComponents.create()
+        return cls(
+            artifact_resolver=FilesystemArtifactResolver.create_default(),
             profile_engine=stubs.profile_engine,
             inference_runner=stubs.inference_runner,
             validation_runner=stubs.validation_runner,
@@ -98,10 +115,15 @@ class ValidationEngine:
         try:
             context = self._execute_lifecycle(context)
             exit_status = context.exit_status or ExitStatus.NOT_CERTIFIED
+            message = (
+                "Validation lifecycle completed."
+                if exit_status is not ExitStatus.FAILED
+                else "Validation lifecycle failed during artifact resolution."
+            )
             return ValidationRunResult(
                 exit_status=exit_status,
                 run_context=context,
-                message="Validation lifecycle completed (stub pipeline).",
+                message=message,
                 completed_at=datetime.now(UTC),
             )
         except InvalidRequestError as exc:
@@ -129,28 +151,28 @@ class ValidationEngine:
                     lambda ctx: self._validate_request(ctx),
                 )
             elif stage == ValidationStage.RESOLVE_ARTIFACTS:
-                context = self._run_port_stage(context, stage, self._artifact_resolver.resolve)
-            elif stage == ValidationStage.RESOLVE_PROFILE:
-                context = self._run_port_stage(context, stage, self._profile_engine.resolve_profile)
-            elif stage == ValidationStage.INITIALIZE_INFERENCE:
-                context = self._run_port_stage(context, stage, self._inference_runner.initialize)
-            elif stage == ValidationStage.RUN_VALIDATION:
-                context = self._run_port_stage(
-                    context, stage, self._validation_runner.run_validation
-                )
-            elif stage == ValidationStage.SCORING:
-                context = self._run_port_stage(context, stage, self._scoring_engine.score)
-            elif stage == ValidationStage.BENCHMARK:
-                context = self._run_port_stage(context, stage, self._benchmark_engine.benchmark)
-            elif stage == ValidationStage.CERTIFICATION:
-                context = self._run_port_stage(context, stage, self._certification_engine.certify)
-            elif stage == ValidationStage.REPORT:
-                context = self._run_port_stage(
-                    context, stage, self._report_generator.generate_report
-                )
+                context = self._run_artifact_stage(context)
+                if context.exit_status is ExitStatus.FAILED:
+                    return self._run_failed_exit(context)
             elif stage == ValidationStage.EXIT:
                 context = self._run_exit(context)
+            else:
+                if context.exit_status is ExitStatus.FAILED:
+                    continue
+                context = self._run_port_stage(context, stage, self._executor_for(stage))
         return context
+
+    def _executor_for(self, stage: ValidationStage) -> _StageExecutor:
+        executors: dict[ValidationStage, _StageExecutor] = {
+            ValidationStage.RESOLVE_PROFILE: self._profile_engine.resolve_profile,
+            ValidationStage.INITIALIZE_INFERENCE: self._inference_runner.initialize,
+            ValidationStage.RUN_VALIDATION: self._validation_runner.run_validation,
+            ValidationStage.SCORING: self._scoring_engine.score,
+            ValidationStage.BENCHMARK: self._benchmark_engine.benchmark,
+            ValidationStage.CERTIFICATION: self._certification_engine.certify,
+            ValidationStage.REPORT: self._report_generator.generate_report,
+        }
+        return executors[stage]
 
     def _load_request(self, context: RunContext) -> PlaceholderStageResult:
         return PlaceholderStageResult(
@@ -169,13 +191,33 @@ class ValidationEngine:
             data={"protocol_major": major, "protocol_minor": minor},
         )
 
+    def _run_artifact_stage(self, context: RunContext) -> RunContext:
+        outcome = self._artifact_resolver.resolve(context)
+        return self._apply_artifact_outcome(context, outcome)
+
+    def _apply_artifact_outcome(
+        self,
+        context: RunContext,
+        outcome: ArtifactResolutionOutcome,
+    ) -> RunContext:
+        result = outcome.to_stage_result()
+        updated = self._record_stage(context, ValidationStage.RESOLVE_ARTIFACTS, result)
+        for warning in outcome.warnings:
+            updated = updated.with_warning(warning)
+        if outcome.success and outcome.bundle is not None:
+            return updated.with_artifact_bundle(outcome.bundle)
+        for error in outcome.errors:
+            updated = updated.with_error(f"{error.code.value}: {error.message}")
+        return updated.with_exit_status(ExitStatus.FAILED)
+
     def _run_exit(self, context: RunContext) -> RunContext:
+        exit_status = context.exit_status or ExitStatus.NOT_CERTIFIED
         started = datetime.now(UTC)
         result = PlaceholderStageResult(
             stage=ValidationStage.EXIT,
             status=StageStatus.SUCCEEDED,
             message="pipeline exit",
-            data={"exit_status": ExitStatus.NOT_CERTIFIED.value},
+            data={"exit_status": exit_status.value},
         )
         record = StageRecord(
             stage=ValidationStage.EXIT,
@@ -188,9 +230,12 @@ class ValidationEngine:
         return (
             context.with_stage_record(record)
             .with_placeholder_result(result)
-            .with_exit_status(ExitStatus.NOT_CERTIFIED)
+            .with_exit_status(exit_status)
             .with_metadata(completed=True)
         )
+
+    def _run_failed_exit(self, context: RunContext) -> RunContext:
+        return self._run_exit(context)
 
     def _run_internal_stage(
         self,
@@ -198,7 +243,7 @@ class ValidationEngine:
         stage: ValidationStage,
         executor: Callable[[RunContext], PlaceholderStageResult],
     ) -> RunContext:
-        return self._run_stage(context, stage, executor(context))
+        return self._record_stage(context, stage, executor(context))
 
     def _run_port_stage(
         self,
@@ -206,9 +251,9 @@ class ValidationEngine:
         stage: ValidationStage,
         executor: _StageExecutor,
     ) -> RunContext:
-        return self._run_stage(context, stage, executor(context))
+        return self._record_stage(context, stage, executor(context))
 
-    def _run_stage(
+    def _record_stage(
         self,
         context: RunContext,
         stage: ValidationStage,
@@ -227,7 +272,7 @@ class ValidationEngine:
             result=result,
         )
         updated = context.with_stage_record(record).with_placeholder_result(result)
-        if result.status == StageStatus.FAILED:
+        if result.status == StageStatus.FAILED and stage is not ValidationStage.RESOLVE_ARTIFACTS:
             raise PipelineError(f"Stage {stage.value} failed: {result.message}")
         return updated
 

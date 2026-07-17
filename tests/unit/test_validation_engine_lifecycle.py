@@ -67,7 +67,14 @@ def test_stub_engine_runs_complete_lifecycle() -> None:
         assert record.result is not None
 
     for stage in STUB_PORT_STAGES:
+        if stage is ValidationStage.RESOLVE_ARTIFACTS:
+            continue
         assert result.run_context.placeholder_results[stage].data.get("stub") is True
+
+    artifact_result = result.run_context.placeholder_results[ValidationStage.RESOLVE_ARTIFACTS]
+    assert artifact_result.status is StageStatus.SUCCEEDED
+    assert result.run_context.artifact_bundle is not None
+    assert result.run_context.artifact_bundle.base_model.artifact_type.value == "base_model"
 
     for stage in PIPELINE_STAGE_ORDER:
         assert stage in result.run_context.placeholder_results
