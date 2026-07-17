@@ -19,6 +19,7 @@ class ProfileCapabilities:
     supports_scoring: bool = False
     supports_benchmark: bool = False
     supports_certification: bool = False
+    supports_reports: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -48,6 +49,7 @@ class ValidationPlan:
     scoring_pipeline: tuple[PipelineStagePlaceholder, ...]
     benchmark_pipeline: tuple[PipelineStagePlaceholder, ...]
     certification_pipeline: tuple[PipelineStagePlaceholder, ...]
+    report_pipeline: tuple[PipelineStagePlaceholder, ...]
     execution_order: tuple[ValidationStage, ...]
     validation_stages: tuple[ValidationStage, ...]
     configuration: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))

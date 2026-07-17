@@ -46,6 +46,15 @@ from aiodoo_validation.profiles.coding.policy import (
     SUPPORTED_PROTOCOL_MAJORS,
     SUPPORTED_RUNTIMES,
 )
+from aiodoo_validation.reporting.ids import (
+    CODING_REPORT_MANIFEST,
+    CODING_REPORT_METADATA,
+    CODING_REPORT_MODULE_STRUCTURE,
+    CODING_REPORT_PYTHON,
+    CODING_REPORT_QUALITY,
+    CODING_REPORT_SECURITY,
+    CODING_REPORT_XML,
+)
 from aiodoo_validation.scoring.ids import (
     CODING_SCORE_MANIFEST,
     CODING_SCORE_METADATA,
@@ -242,6 +251,52 @@ CODING_CERTIFICATION_PIPELINE: tuple[PipelineStagePlaceholder, ...] = (
 )
 
 
+CODING_REPORT_PIPELINE: tuple[PipelineStagePlaceholder, ...] = (
+    PipelineStagePlaceholder(
+        stage_id=CODING_REPORT_METADATA,
+        name="Metadata Report Template",
+        enabled=True,
+        phase="report",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_REPORT_MANIFEST,
+        name="Manifest Report Template",
+        enabled=True,
+        phase="report",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_REPORT_PYTHON,
+        name="Python Report Template",
+        enabled=True,
+        phase="report",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_REPORT_XML,
+        name="XML Report Template",
+        enabled=True,
+        phase="report",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_REPORT_SECURITY,
+        name="Security Report Template",
+        enabled=True,
+        phase="report",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_REPORT_MODULE_STRUCTURE,
+        name="Module Structure Report Template",
+        enabled=True,
+        phase="report",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_REPORT_QUALITY,
+        name="Future Quality Report Template",
+        enabled=False,
+        phase="report",
+    ),
+)
+
+
 @dataclass(frozen=True, slots=True)
 class CodingProfile(ResolvedProfile):
     """Immutable coding validation profile metadata."""
@@ -268,13 +323,15 @@ class CodingProfile(ResolvedProfile):
             supports_scoring=True,
             supports_benchmark=True,
             supports_certification=True,
+            supports_reports=True,
         )
     )
-    validation_strategy: str = "coding-v1-certification-placeholders"
+    validation_strategy: str = "coding-v1-report-placeholders"
     oracle_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_ORACLE_PIPELINE
     scoring_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_SCORING_PIPELINE
     benchmark_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_BENCHMARK_PIPELINE
     certification_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_CERTIFICATION_PIPELINE
+    report_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_REPORT_PIPELINE
     metadata: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
 
     @staticmethod

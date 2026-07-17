@@ -16,6 +16,7 @@ from aiodoo_validation.domain.enums import ExecutionTier, ExitStatus, StageStatu
 from aiodoo_validation.domain.inference import InferenceSession
 from aiodoo_validation.domain.oracle import OracleExecutionResult
 from aiodoo_validation.domain.profile import ResolvedProfile
+from aiodoo_validation.domain.report import ReportExecutionResult
 from aiodoo_validation.domain.request import SUPPORTED_PROTOCOL_MAJOR, ValidationRequest
 from aiodoo_validation.domain.scoring import ScoreExecutionResult
 from aiodoo_validation.domain.stage import PlaceholderStageResult, StageRecord
@@ -52,6 +53,7 @@ class RunContext:
     score_execution: ScoreExecutionResult | None = None
     benchmark_execution: BenchmarkExecutionResult | None = None
     certification_execution: CertificationExecutionResult | None = None
+    report_execution: ReportExecutionResult | None = None
     exit_status: ExitStatus | None = None
 
     @staticmethod
@@ -113,6 +115,9 @@ class RunContext:
         self, execution: CertificationExecutionResult
     ) -> RunContext:
         return replace(self, certification_execution=execution)
+
+    def with_report_execution(self, execution: ReportExecutionResult) -> RunContext:
+        return replace(self, report_execution=execution)
 
     def with_exit_status(self, status: ExitStatus) -> RunContext:
         return replace(self, exit_status=status)

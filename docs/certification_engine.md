@@ -100,8 +100,10 @@ The `aggregate_certification_score` is the arithmetic mean of successful
 placeholder certification scores. `overall_certified` is true when all enabled
 policies succeed and certify.
 
-These values exist only to validate pipeline wiring and must not be interpreted
-as production certification decisions.
+**`overall_certified` and `aggregate_certification_score` are NOT production
+certification decisions.** The placeholder values exist only to validate pipeline
+wiring. Future certification policies will replace these placeholder values. They
+must never be interpreted as production certification decisions.
 
 ## RunContext integration
 

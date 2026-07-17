@@ -13,6 +13,7 @@ from aiodoo_validation.domain.enums import ExitStatus, StageStatus, ValidationSt
 from aiodoo_validation.domain.inference import InferenceInitializationOutcome
 from aiodoo_validation.domain.oracle import OracleExecutionOutcome
 from aiodoo_validation.domain.profile import ProfileResolutionOutcome
+from aiodoo_validation.domain.report import ReportExecutionOutcome
 from aiodoo_validation.domain.request import ValidationRequest
 from aiodoo_validation.domain.resolution import ArtifactResolutionOutcome
 from aiodoo_validation.domain.result import ValidationRunResult
@@ -61,9 +62,8 @@ class ValidationEngine:
     """
     Production validation orchestrator skeleton.
 
-    Executes the complete lifecycle using injected ports. Phase 8 wires the
-    Certification Engine through ``CertificationEnginePort`` while report
-    generation remains stubbed.
+    Executes the complete lifecycle using injected ports. Phase 9 wires the
+    Report Generator through ``ReportGeneratorPort`` as the final pipeline stage.
     """
 
     def __init__(
@@ -201,6 +201,10 @@ class ValidationEngine:
                 context = self._run_certification_stage(context)
                 if context.exit_status is ExitStatus.FAILED:
                     return self._run_failed_exit(context)
+            elif stage == ValidationStage.REPORT:
+                context = self._run_report_stage(context)
+                if context.exit_status is ExitStatus.FAILED:
+                    return self._run_failed_exit(context)
             elif stage == ValidationStage.EXIT:
                 context = self._run_exit(context)
             else:
@@ -210,9 +214,7 @@ class ValidationEngine:
         return context
 
     def _executor_for(self, stage: ValidationStage) -> _StageExecutor:
-        executors: dict[ValidationStage, _StageExecutor] = {
-            ValidationStage.REPORT: self._report_generator.generate_report,
-        }
+        executors: dict[ValidationStage, _StageExecutor] = {}
         return executors[stage]
 
     def _load_request(self, context: RunContext) -> PlaceholderStageResult:
@@ -373,6 +375,25 @@ class ValidationEngine:
             updated = updated.with_error(f"{error.code.value}: {error.message}")
         return updated.with_exit_status(ExitStatus.FAILED)
 
+    def _run_report_stage(self, context: RunContext) -> RunContext:
+        outcome = self._report_generator.generate_report(context)
+        return self._apply_report_outcome(context, outcome)
+
+    def _apply_report_outcome(
+        self,
+        context: RunContext,
+        outcome: ReportExecutionOutcome,
+    ) -> RunContext:
+        result = outcome.to_stage_result()
+        updated = self._record_stage(context, ValidationStage.REPORT, result)
+        for warning in outcome.warnings:
+            updated = updated.with_warning(warning)
+        if outcome.success and outcome.execution is not None:
+            return updated.with_report_execution(outcome.execution)
+        for error in outcome.errors:
+            updated = updated.with_error(f"{error.code.value}: {error.message}")
+        return updated.with_exit_status(ExitStatus.FAILED)
+
     def _run_exit(self, context: RunContext) -> RunContext:
         self._inference_runner.shutdown(context)
         exit_status = context.exit_status or ExitStatus.NOT_CERTIFIED
@@ -444,6 +465,7 @@ class ValidationEngine:
             ValidationStage.SCORING,
             ValidationStage.BENCHMARK,
             ValidationStage.CERTIFICATION,
+            ValidationStage.REPORT,
         ):
             raise PipelineError(f"Stage {stage.value} failed: {result.message}")
         return updated

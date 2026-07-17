@@ -1,0 +1,56 @@
+"""
+Frozen Report Template ID convention (Phase 9).
+
+Format: ``{profile}.report.{name}``
+
+Each report template presents exactly one CertificationResult identified by the
+matching ``{profile}.certification.{name}`` ID (see ``certification.ids``).
+"""
+
+from __future__ import annotations
+
+from aiodoo_validation.certification.ids import (
+    CODING_CERTIFICATION_MANIFEST,
+    CODING_CERTIFICATION_METADATA,
+    CODING_CERTIFICATION_MODULE_STRUCTURE,
+    CODING_CERTIFICATION_PYTHON,
+    CODING_CERTIFICATION_QUALITY,
+    CODING_CERTIFICATION_SECURITY,
+    CODING_CERTIFICATION_XML,
+)
+
+CODING_REPORT_METADATA = "coding.report.metadata"
+CODING_REPORT_MANIFEST = "coding.report.manifest"
+CODING_REPORT_PYTHON = "coding.report.python"
+CODING_REPORT_XML = "coding.report.xml"
+CODING_REPORT_SECURITY = "coding.report.security"
+CODING_REPORT_MODULE_STRUCTURE = "coding.report.module_structure"
+CODING_REPORT_QUALITY = "coding.report.quality"
+
+CODING_REPORT_IDS_ENABLED: tuple[str, ...] = (
+    CODING_REPORT_METADATA,
+    CODING_REPORT_MANIFEST,
+    CODING_REPORT_PYTHON,
+    CODING_REPORT_XML,
+    CODING_REPORT_SECURITY,
+    CODING_REPORT_MODULE_STRUCTURE,
+)
+
+CODING_REPORT_IDS_ALL: tuple[str, ...] = (
+    *CODING_REPORT_IDS_ENABLED,
+    CODING_REPORT_QUALITY,
+)
+
+# template_id → source certification policy_id
+CODING_REPORT_TO_CERTIFICATION: dict[str, str] = {
+    CODING_REPORT_METADATA: CODING_CERTIFICATION_METADATA,
+    CODING_REPORT_MANIFEST: CODING_CERTIFICATION_MANIFEST,
+    CODING_REPORT_PYTHON: CODING_CERTIFICATION_PYTHON,
+    CODING_REPORT_XML: CODING_CERTIFICATION_XML,
+    CODING_REPORT_SECURITY: CODING_CERTIFICATION_SECURITY,
+    CODING_REPORT_MODULE_STRUCTURE: CODING_CERTIFICATION_MODULE_STRUCTURE,
+    CODING_REPORT_QUALITY: CODING_CERTIFICATION_QUALITY,
+}
+
+PLACEHOLDER_REPORT_STATUS = "SUCCESS"
+PLACEHOLDER_REPORT_SUMMARY = "Placeholder report"

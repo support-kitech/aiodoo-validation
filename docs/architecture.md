@@ -8,7 +8,7 @@
 
 Determine whether a trained AIODOO model is suitable for production through validation, benchmarking, and certification.
 
-## Logical architecture (Phase 8)
+## Logical architecture (Phase 9)
 
 ```
 Validation Engine
@@ -19,7 +19,7 @@ Validation Engine
     → Scoring Engine (oracle results only; placeholder scores)
     → Benchmark Engine (score results only; placeholder comparisons)
     → Certification Engine (benchmark results only; placeholder certification)
-    → Report Generator (stub)
+    → Report Generator (certification results only; placeholder report objects)
 ```
 
 ## Boundaries

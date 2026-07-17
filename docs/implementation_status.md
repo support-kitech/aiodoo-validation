@@ -1,10 +1,21 @@
 # Implementation Status
 
 **Repository version:** 0.0.0-dev  
-**Active phases:** Phase 0–8 (complete)  
+**Active phases:** Phase 0–9 (complete)  
 **Architecture audit:** [Post Phase 0–3 audit](architecture_audit.md) — **frozen**
 
 ## Implemented
+
+### Phase 9 — Report Generation
+
+- `ReportGeneratorPort` with `ReportExecutionOutcome`
+- `ReportGenerator`, `ReportRegistry`, `ReportTemplate` protocol
+- Placeholder templates mapped 1:1 to frozen certification IDs
+- `ValidationPlan.report_pipeline` and `ProfileCapabilities.supports_reports`
+- `RunContext.report_execution` attachment
+- Engine `REPORT` stage wired through `ReportGeneratorPort`
+- Boundary tests: reporting does not import upstream execution modules
+- [Report Generation documentation](report_generation.md)
 
 ### Phase 8 — Certification Engine
 
@@ -24,7 +35,6 @@ Repository foundation through Benchmark Engine (Phase 6–7 frozen refinements a
 
 | Phase | Component |
 |-------|-----------|
-| 9 | Validation Protocol V1 reports |
 | 10 | CLI |
 | 11 | aiodoo-training / Colab integration |
 | 12 | Production hardening |
@@ -32,4 +42,4 @@ Repository foundation through Benchmark Engine (Phase 6–7 frozen refinements a
 
 ## Next phase
 
-**Phase 9 — Reports** per frozen Implementation Plan.
+**Phase 10 — CLI** per frozen Implementation Plan.

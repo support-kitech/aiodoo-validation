@@ -12,6 +12,7 @@ from aiodoo_validation.ports.certification_engine import CertificationEnginePort
 from aiodoo_validation.ports.inference_runner import InferenceRunnerPort
 from aiodoo_validation.ports.oracle_runner import OracleRunnerPort
 from aiodoo_validation.ports.profile_engine import ProfileEnginePort
+from aiodoo_validation.ports.report_generator import ReportGeneratorPort
 from aiodoo_validation.ports.scoring_engine import ScoringEnginePort
 
 __all__ = [
@@ -36,9 +37,3 @@ class ValidationRunnerPort(Protocol):
     """
 
     def run_validation(self, context: RunContext) -> PlaceholderStageResult: ...
-
-
-class ReportGeneratorPort(Protocol):
-    """Emit Validation Protocol V1 reports (Phase 9+)."""
-
-    def generate_report(self, context: RunContext) -> PlaceholderStageResult: ...

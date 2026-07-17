@@ -187,3 +187,18 @@ class CertificationErrorCode(StrEnum):
     EXECUTION_FAILURE = "execution_failure"
     CONFIGURATION_FAILURE = "configuration_failure"
     BENCHMARK_RESULT_MISSING = "benchmark_result_missing"
+
+
+class ReportErrorCode(StrEnum):
+    """Structured report generator error codes."""
+
+    MISSING_CERTIFICATION_RESULTS = "missing_certification_results"
+    MISSING_PLAN = "missing_plan"
+    MISSING_PROFILE = "missing_profile"
+    TEMPLATE_NOT_FOUND = "template_not_found"
+    REGISTRATION_FAILURE = "registration_failure"
+    CAPABILITY_MISMATCH = "capability_mismatch"
+    PROFILE_MISMATCH = "profile_mismatch"
+    EXECUTION_FAILURE = "execution_failure"
+    CONFIGURATION_FAILURE = "configuration_failure"
+    CERTIFICATION_RESULT_MISSING = "certification_result_missing"

@@ -13,10 +13,6 @@ from aiodoo_validation.domain.request import ValidationRequest
 from aiodoo_validation.engine import PIPELINE_STAGE_ORDER, ValidationEngine
 from aiodoo_validation.exceptions import InvalidRequestError
 
-STUB_PORT_STAGES = (
-    ValidationStage.REPORT,
-)
-
 
 def _sample_request() -> ValidationRequest:
     return ValidationRequest(
@@ -59,9 +55,6 @@ def test_stub_engine_runs_complete_lifecycle() -> None:
         assert record.status is StageStatus.SUCCEEDED
         assert record.result is not None
 
-    for stage in STUB_PORT_STAGES:
-        assert result.run_context.placeholder_results[stage].data.get("stub") is True
-
     artifact_result = result.run_context.placeholder_results[ValidationStage.RESOLVE_ARTIFACTS]
     assert artifact_result.status is StageStatus.SUCCEEDED
     assert result.run_context.artifact_bundle is not None
@@ -97,6 +90,11 @@ def test_stub_engine_runs_complete_lifecycle() -> None:
     assert certification_result.status is StageStatus.SUCCEEDED
     assert result.run_context.certification_execution is not None
     assert result.run_context.certification_execution.policy_count == 6
+
+    report_result = result.run_context.placeholder_results[ValidationStage.REPORT]
+    assert report_result.status is StageStatus.SUCCEEDED
+    assert result.run_context.report_execution is not None
+    assert result.run_context.report_execution.template_count == 6
 
     for stage in PIPELINE_STAGE_ORDER:
         assert stage in result.run_context.placeholder_results

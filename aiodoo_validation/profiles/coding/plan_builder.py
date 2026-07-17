@@ -45,6 +45,7 @@ def build_coding_validation_plan(
         scoring_pipeline=profile.scoring_pipeline,
         benchmark_pipeline=profile.benchmark_pipeline,
         certification_pipeline=profile.certification_pipeline,
+        report_pipeline=profile.report_pipeline,
         execution_order=execution_order,
         validation_stages=(ValidationStage.RUN_VALIDATION,),
         configuration={

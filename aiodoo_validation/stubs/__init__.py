@@ -3,13 +3,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from types import MappingProxyType
 
 from aiodoo_validation.benchmark import BenchmarkEngine
 from aiodoo_validation.certification import CertificationEngine
-from aiodoo_validation.domain.context import RunContext
-from aiodoo_validation.domain.enums import StageStatus, ValidationStage
-from aiodoo_validation.domain.stage import PlaceholderStageResult
 from aiodoo_validation.inference.stub_runner import StubInferenceRunner
 from aiodoo_validation.oracles import OracleEngine
 from aiodoo_validation.ports import (
@@ -23,31 +19,9 @@ from aiodoo_validation.ports import (
     ScoringEnginePort,
 )
 from aiodoo_validation.profiles import ProfileEngine
+from aiodoo_validation.reporting import ReportGenerator
 from aiodoo_validation.resolution.stub_resolver import StubArtifactResolver
 from aiodoo_validation.scoring import ScoringEngine
-
-
-def _stub_result(stage: ValidationStage, *, message: str, **data: object) -> PlaceholderStageResult:
-    return PlaceholderStageResult(
-        stage=stage,
-        status=StageStatus.SUCCEEDED,
-        message=message,
-        data=MappingProxyType(dict(data)),
-    )
-
-
-class StubReportGenerator:
-    """Placeholder report generator."""
-
-    def generate_report(self, context: RunContext) -> PlaceholderStageResult:
-        return _stub_result(
-            ValidationStage.REPORT,
-            message="stub report generation",
-            protocol_major=context.protocol_major,
-            protocol_minor=context.protocol_minor,
-            report_generated=False,
-            stub=True,
-        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -73,5 +47,5 @@ class StubPipelineComponents:
             scoring_engine=ScoringEngine.create_default(),
             benchmark_engine=BenchmarkEngine.create_default(),
             certification_engine=CertificationEngine.create_default(),
-            report_generator=StubReportGenerator(),
+            report_generator=ReportGenerator.create_default(),
         )
