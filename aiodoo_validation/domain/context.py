@@ -10,6 +10,7 @@ from typing import Any
 from uuid import uuid4
 
 from aiodoo_validation.domain.artifacts import ArtifactBundle
+from aiodoo_validation.domain.benchmark import BenchmarkExecutionResult
 from aiodoo_validation.domain.enums import ExecutionTier, ExitStatus, StageStatus, ValidationStage
 from aiodoo_validation.domain.inference import InferenceSession
 from aiodoo_validation.domain.oracle import OracleExecutionResult
@@ -48,6 +49,7 @@ class RunContext:
     inference_session: InferenceSession | None = None
     oracle_execution: OracleExecutionResult | None = None
     score_execution: ScoreExecutionResult | None = None
+    benchmark_execution: BenchmarkExecutionResult | None = None
     exit_status: ExitStatus | None = None
 
     @staticmethod
@@ -101,6 +103,9 @@ class RunContext:
 
     def with_score_execution(self, execution: ScoreExecutionResult) -> RunContext:
         return replace(self, score_execution=execution)
+
+    def with_benchmark_execution(self, execution: BenchmarkExecutionResult) -> RunContext:
+        return replace(self, benchmark_execution=execution)
 
     def with_exit_status(self, status: ExitStatus) -> RunContext:
         return replace(self, exit_status=status)

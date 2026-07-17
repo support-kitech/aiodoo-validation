@@ -1,37 +1,30 @@
 # Implementation Status
 
 **Repository version:** 0.0.0-dev  
-**Active phases:** Phase 0–6 (complete)  
+**Active phases:** Phase 0–7 (complete)  
 **Architecture audit:** [Post Phase 0–3 audit](architecture_audit.md) — **frozen**
 
 ## Implemented
 
-### Phase 6 — Scoring Engine
+### Phase 7 — Benchmark Engine
 
-- `ScoringEnginePort` with `ScoreExecutionOutcome`
-- `ScoringEngine`, `ScoringRegistry`, `ScorePolicy` protocol
-- Placeholder policies mapped 1:1 to frozen oracle IDs
-- `RunContext.score_execution` attachment
-- Engine `SCORING` stage wired through `ScoringEnginePort`
-- Unit tests: registry, pipeline, engine integration, structured errors
-- [Scoring Engine documentation](scoring_engine.md)
+- `BenchmarkEnginePort` with `BenchmarkExecutionOutcome`
+- `BenchmarkEngine`, `BenchmarkRegistry`, `BenchmarkPolicy` protocol
+- Placeholder policies mapped 1:1 to frozen score IDs
+- `RunContext.benchmark_execution` attachment
+- Engine `BENCHMARK` stage wired through `BenchmarkEnginePort`
+- Boundary tests: benchmark does not import oracle/scoring execution
+- [Benchmark Engine documentation](benchmark_engine.md)
 
-### Phase 5 — Oracle Framework
-
-- Oracle runner, registry, placeholder oracles
-- Frozen Oracle ID convention in `oracles/ids.py`
-- [Oracle Framework documentation](oracle_framework.md)
-
-### Phase 0–4
+### Phase 0–6
 
 Repository foundation, validation engine, artifact resolution, inference runner,
-coding validation profile.
+coding profile, oracle framework, scoring engine (frozen through Phase 6).
 
 ## Not implemented (next phases)
 
 | Phase | Component |
 |-------|-----------|
-| 7 | Benchmark Engine |
 | 8 | Certification Engine |
 | 9 | Validation Protocol V1 reports |
 | 10 | CLI |
@@ -41,4 +34,4 @@ coding validation profile.
 
 ## Next phase
 
-**Phase 7 — Benchmark Engine** per frozen Implementation Plan.
+**Phase 8 — Certification Engine** per frozen Implementation Plan.

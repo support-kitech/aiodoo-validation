@@ -14,7 +14,6 @@ from aiodoo_validation.engine import PIPELINE_STAGE_ORDER, ValidationEngine
 from aiodoo_validation.exceptions import InvalidRequestError
 
 STUB_PORT_STAGES = (
-    ValidationStage.BENCHMARK,
     ValidationStage.CERTIFICATION,
     ValidationStage.REPORT,
 )
@@ -89,6 +88,11 @@ def test_stub_engine_runs_complete_lifecycle() -> None:
     assert scoring_result.status is StageStatus.SUCCEEDED
     assert result.run_context.score_execution is not None
     assert result.run_context.score_execution.policy_count == 6
+
+    benchmark_result = result.run_context.placeholder_results[ValidationStage.BENCHMARK]
+    assert benchmark_result.status is StageStatus.SUCCEEDED
+    assert result.run_context.benchmark_execution is not None
+    assert result.run_context.benchmark_execution.policy_count == 6
 
     for stage in PIPELINE_STAGE_ORDER:
         assert stage in result.run_context.placeholder_results

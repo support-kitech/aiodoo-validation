@@ -85,3 +85,32 @@ def test_scoring_does_not_import_oracle_execution() -> None:
     assert not violations, "scoring must not import oracle execution modules:\n" + "\n".join(
         violations
     )
+
+
+def test_benchmark_does_not_import_oracle_or_scoring_execution() -> None:
+    """Benchmark may import score domain types and IDs, not execution engines."""
+    benchmark_dir = PACKAGE / "benchmark"
+    forbidden_suffixes = (
+        "oracles.engine",
+        "oracles.registry",
+        "oracles.placeholders",
+        "oracles.base",
+        "scoring.engine",
+        "scoring.registry",
+        "scoring.policies",
+        "scoring.base",
+    )
+    violations: list[str] = []
+    for path in benchmark_dir.rglob("*.py"):
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom) and node.module:
+                module = node.module
+                if module.endswith(forbidden_suffixes) or module in {
+                    "aiodoo_validation.oracles",
+                    "aiodoo_validation.scoring",
+                }:
+                    violations.append(f"{path.relative_to(ROOT)}: {module}")
+    assert not violations, "benchmark must not import oracle/scoring execution:\n" + "\n".join(
+        violations
+    )

@@ -157,3 +157,18 @@ class ScoreErrorCode(StrEnum):
     EXECUTION_FAILURE = "execution_failure"
     CONFIGURATION_FAILURE = "configuration_failure"
     ORACLE_RESULT_MISSING = "oracle_result_missing"
+
+
+class BenchmarkErrorCode(StrEnum):
+    """Structured benchmark engine error codes."""
+
+    MISSING_SCORE_RESULTS = "missing_score_results"
+    MISSING_PLAN = "missing_plan"
+    MISSING_PROFILE = "missing_profile"
+    POLICY_NOT_FOUND = "policy_not_found"
+    REGISTRATION_FAILURE = "registration_failure"
+    CAPABILITY_MISMATCH = "capability_mismatch"
+    PROFILE_MISMATCH = "profile_mismatch"
+    EXECUTION_FAILURE = "execution_failure"
+    CONFIGURATION_FAILURE = "configuration_failure"
+    SCORE_RESULT_MISSING = "score_result_missing"

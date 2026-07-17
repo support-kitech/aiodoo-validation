@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from types import MappingProxyType
 
+from aiodoo_validation.benchmark import BenchmarkEngine
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.enums import StageStatus, ValidationStage
 from aiodoo_validation.domain.stage import PlaceholderStageResult
@@ -32,18 +33,6 @@ def _stub_result(stage: ValidationStage, *, message: str, **data: object) -> Pla
         message=message,
         data=MappingProxyType(dict(data)),
     )
-
-
-class StubBenchmarkEngine:
-    """Placeholder benchmark engine."""
-
-    def benchmark(self, context: RunContext) -> PlaceholderStageResult:
-        return _stub_result(
-            ValidationStage.BENCHMARK,
-            message="stub benchmark",
-            benchmark_verdict="not_evaluated",
-            stub=True,
-        )
 
 
 class StubCertificationEngine:
@@ -93,7 +82,7 @@ class StubPipelineComponents:
             inference_runner=StubInferenceRunner.create(),
             oracle_runner=OracleEngine.create_default(),
             scoring_engine=ScoringEngine.create_default(),
-            benchmark_engine=StubBenchmarkEngine(),
+            benchmark_engine=BenchmarkEngine.create_default(),
             certification_engine=StubCertificationEngine(),
             report_generator=StubReportGenerator(),
         )

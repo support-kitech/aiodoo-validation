@@ -6,9 +6,9 @@
 
 ## Responsibility
 
-Determine whether a trained AIODOO model is suitable for production through validation, benchmarking (future), and certification (future).
+Determine whether a trained AIODOO model is suitable for production through validation, benchmarking, and certification (future).
 
-## Logical architecture (Phase 6)
+## Logical architecture (Phase 7)
 
 ```
 Validation Engine
@@ -16,8 +16,8 @@ Validation Engine
     → Profile Engine → Coding Profile → ValidationPlan
     → Inference Runner (mock default; optional Qwen runtime)
     → Oracle Framework (registry + placeholder oracles)
-    → Scoring Engine (registry + placeholder policies; oracle results only)
-    → Benchmark Engine (stub)
+    → Scoring Engine (oracle results only; placeholder scores)
+    → Benchmark Engine (score results only; placeholder comparisons)
     → Certification Engine (stub)
     → Report Generator (stub)
 ```

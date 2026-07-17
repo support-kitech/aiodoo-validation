@@ -1,0 +1,57 @@
+"""
+Frozen Benchmark Policy ID convention (Phase 7).
+
+Format: ``{profile}.benchmark.{name}``
+
+Each policy benchmarks exactly one ScoreResult identified by the matching
+``{profile}.score.{name}`` ID (see ``scoring.ids``).
+"""
+
+from __future__ import annotations
+
+from aiodoo_validation.scoring.ids import (
+    CODING_SCORE_MANIFEST,
+    CODING_SCORE_METADATA,
+    CODING_SCORE_MODULE_STRUCTURE,
+    CODING_SCORE_PYTHON,
+    CODING_SCORE_QUALITY,
+    CODING_SCORE_SECURITY,
+    CODING_SCORE_XML,
+)
+
+CODING_BENCHMARK_METADATA = "coding.benchmark.metadata"
+CODING_BENCHMARK_MANIFEST = "coding.benchmark.manifest"
+CODING_BENCHMARK_PYTHON = "coding.benchmark.python"
+CODING_BENCHMARK_XML = "coding.benchmark.xml"
+CODING_BENCHMARK_SECURITY = "coding.benchmark.security"
+CODING_BENCHMARK_MODULE_STRUCTURE = "coding.benchmark.module_structure"
+CODING_BENCHMARK_QUALITY = "coding.benchmark.quality"
+
+CODING_BENCHMARK_IDS_ENABLED: tuple[str, ...] = (
+    CODING_BENCHMARK_METADATA,
+    CODING_BENCHMARK_MANIFEST,
+    CODING_BENCHMARK_PYTHON,
+    CODING_BENCHMARK_XML,
+    CODING_BENCHMARK_SECURITY,
+    CODING_BENCHMARK_MODULE_STRUCTURE,
+)
+
+CODING_BENCHMARK_IDS_ALL: tuple[str, ...] = (
+    *CODING_BENCHMARK_IDS_ENABLED,
+    CODING_BENCHMARK_QUALITY,
+)
+
+# policy_id → source score policy_id
+CODING_BENCHMARK_TO_SCORE: dict[str, str] = {
+    CODING_BENCHMARK_METADATA: CODING_SCORE_METADATA,
+    CODING_BENCHMARK_MANIFEST: CODING_SCORE_MANIFEST,
+    CODING_BENCHMARK_PYTHON: CODING_SCORE_PYTHON,
+    CODING_BENCHMARK_XML: CODING_SCORE_XML,
+    CODING_BENCHMARK_SECURITY: CODING_SCORE_SECURITY,
+    CODING_BENCHMARK_MODULE_STRUCTURE: CODING_SCORE_MODULE_STRUCTURE,
+    CODING_BENCHMARK_QUALITY: CODING_SCORE_QUALITY,
+}
+
+PLACEHOLDER_BENCHMARK_SCORE = 100.0
+PLACEHOLDER_BENCHMARK_PASS = True
+PLACEHOLDER_BENCHMARK_RANK = 1

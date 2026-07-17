@@ -6,6 +6,7 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from typing import TypeVar
 
+from aiodoo_validation.domain.benchmark import BenchmarkExecutionOutcome
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.enums import ExitStatus, StageStatus, ValidationStage
 from aiodoo_validation.domain.inference import InferenceInitializationOutcome
@@ -59,9 +60,9 @@ class ValidationEngine:
     """
     Production validation orchestrator skeleton.
 
-    Executes the complete lifecycle using injected ports. Phase 6 wires the
-    Scoring Engine through ``ScoringEnginePort`` while benchmark and later
-    stages remain stubbed.
+    Executes the complete lifecycle using injected ports. Phase 7 wires the
+    Benchmark Engine through ``BenchmarkEnginePort`` while certification and
+    later stages remain stubbed.
     """
 
     def __init__(
@@ -191,6 +192,10 @@ class ValidationEngine:
                 context = self._run_scoring_stage(context)
                 if context.exit_status is ExitStatus.FAILED:
                     return self._run_failed_exit(context)
+            elif stage == ValidationStage.BENCHMARK:
+                context = self._run_benchmark_stage(context)
+                if context.exit_status is ExitStatus.FAILED:
+                    return self._run_failed_exit(context)
             elif stage == ValidationStage.EXIT:
                 context = self._run_exit(context)
             else:
@@ -201,7 +206,6 @@ class ValidationEngine:
 
     def _executor_for(self, stage: ValidationStage) -> _StageExecutor:
         executors: dict[ValidationStage, _StageExecutor] = {
-            ValidationStage.BENCHMARK: self._benchmark_engine.benchmark,
             ValidationStage.CERTIFICATION: self._certification_engine.certify,
             ValidationStage.REPORT: self._report_generator.generate_report,
         }
@@ -327,6 +331,25 @@ class ValidationEngine:
             updated = updated.with_error(f"{error.code.value}: {error.message}")
         return updated.with_exit_status(ExitStatus.FAILED)
 
+    def _run_benchmark_stage(self, context: RunContext) -> RunContext:
+        outcome = self._benchmark_engine.benchmark(context)
+        return self._apply_benchmark_outcome(context, outcome)
+
+    def _apply_benchmark_outcome(
+        self,
+        context: RunContext,
+        outcome: BenchmarkExecutionOutcome,
+    ) -> RunContext:
+        result = outcome.to_stage_result()
+        updated = self._record_stage(context, ValidationStage.BENCHMARK, result)
+        for warning in outcome.warnings:
+            updated = updated.with_warning(warning)
+        if outcome.success and outcome.execution is not None:
+            return updated.with_benchmark_execution(outcome.execution)
+        for error in outcome.errors:
+            updated = updated.with_error(f"{error.code.value}: {error.message}")
+        return updated.with_exit_status(ExitStatus.FAILED)
+
     def _run_exit(self, context: RunContext) -> RunContext:
         self._inference_runner.shutdown(context)
         exit_status = context.exit_status or ExitStatus.NOT_CERTIFIED
@@ -396,6 +419,7 @@ class ValidationEngine:
             ValidationStage.INITIALIZE_INFERENCE,
             ValidationStage.RUN_VALIDATION,
             ValidationStage.SCORING,
+            ValidationStage.BENCHMARK,
         ):
             raise PipelineError(f"Stage {stage.value} failed: {result.message}")
         return updated

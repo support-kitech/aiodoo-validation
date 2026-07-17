@@ -7,6 +7,15 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Any
 
+from aiodoo_validation.benchmark.ids import (
+    CODING_BENCHMARK_MANIFEST,
+    CODING_BENCHMARK_METADATA,
+    CODING_BENCHMARK_MODULE_STRUCTURE,
+    CODING_BENCHMARK_PYTHON,
+    CODING_BENCHMARK_QUALITY,
+    CODING_BENCHMARK_SECURITY,
+    CODING_BENCHMARK_XML,
+)
 from aiodoo_validation.domain.artifacts import ArtifactBundle
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.profile import ProfileError, ResolvedProfile
@@ -133,6 +142,51 @@ CODING_SCORING_PIPELINE: tuple[PipelineStagePlaceholder, ...] = (
     ),
 )
 
+CODING_BENCHMARK_PIPELINE: tuple[PipelineStagePlaceholder, ...] = (
+    PipelineStagePlaceholder(
+        stage_id=CODING_BENCHMARK_METADATA,
+        name="Metadata Benchmark Policy",
+        enabled=True,
+        phase="benchmark",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_BENCHMARK_MANIFEST,
+        name="Manifest Benchmark Policy",
+        enabled=True,
+        phase="benchmark",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_BENCHMARK_PYTHON,
+        name="Python Benchmark Policy",
+        enabled=True,
+        phase="benchmark",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_BENCHMARK_XML,
+        name="XML Benchmark Policy",
+        enabled=True,
+        phase="benchmark",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_BENCHMARK_SECURITY,
+        name="Security Benchmark Policy",
+        enabled=True,
+        phase="benchmark",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_BENCHMARK_MODULE_STRUCTURE,
+        name="Module Structure Benchmark Policy",
+        enabled=True,
+        phase="benchmark",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_BENCHMARK_QUALITY,
+        name="Future Quality Benchmark Policy",
+        enabled=False,
+        phase="benchmark",
+    ),
+)
+
 
 @dataclass(frozen=True, slots=True)
 class CodingProfile(ResolvedProfile):
@@ -158,21 +212,14 @@ class CodingProfile(ResolvedProfile):
             supports_inference=True,
             supports_oracles=True,
             supports_scoring=True,
-            supports_benchmark=False,
+            supports_benchmark=True,
             supports_certification=False,
         )
     )
-    validation_strategy: str = "coding-v1-scoring-placeholders"
+    validation_strategy: str = "coding-v1-benchmark-placeholders"
     oracle_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_ORACLE_PIPELINE
     scoring_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_SCORING_PIPELINE
-    benchmark_pipeline: tuple[PipelineStagePlaceholder, ...] = (
-        PipelineStagePlaceholder(
-            stage_id="coding.benchmark.placeholder",
-            name="Benchmark pipeline placeholder",
-            enabled=False,
-            phase="benchmark",
-        ),
-    )
+    benchmark_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_BENCHMARK_PIPELINE
     certification_pipeline: tuple[PipelineStagePlaceholder, ...] = (
         PipelineStagePlaceholder(
             stage_id="coding.certification.placeholder",
