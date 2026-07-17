@@ -16,25 +16,24 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
 | **Phase 1 — Validation Engine Core** | **Complete** |
 | **Phase 2 — Artifact Resolution** | **Complete** |
 | **Phase 3 — Inference Runner** | **Complete** |
-| Phase 4+ | Not started |
+| **Phase 4 — Coding Validation Profile** | **Complete** |
+| Phase 5+ | Not started |
 
-## Current capabilities (Phase 0–3)
+## Current capabilities (Phase 0–4)
 
 - Production repository foundation (CI, lint, typing, tests, docs)
-- **Validation Engine** with full TDD lifecycle ordering
-- Immutable **ValidationRequest** and **RunContext**
-- Validation Protocol V1 negotiation (major version 1 only)
-- **Artifact Resolution** — filesystem and stub resolvers produce immutable **Artifact Bundle**
-- **Inference Runner** — mock (CI default) and optional Qwen runtime via dependency injection
-- Placeholder fingerprints with `strict` / `warn` / `off` policies
-- Stub ports for downstream engines (profile, validation, scoring, benchmark, certification, report)
+- **Validation Engine** with full TDD lifecycle ordering (generic orchestration)
+- **Artifact Resolution** — filesystem and stub resolvers
+- **Coding Validation Profile** — profile selection, compatibility, ValidationPlan metadata
+- **Inference Runner** — mock (CI default) and optional Qwen runtime
+- Immutable **RunContext** with artifact bundle, profile, plan, and inference session
+- Stub ports for downstream engines (validation, scoring, benchmark, certification, report)
 - Deterministic CPU-only tests — no GPU, no model downloads in CI
 
 ## Not yet implemented (deferred by design)
 
 | Component | Implementation Plan phase |
 |-----------|---------------------------|
-| Validation Profiles (coding logic) | Phase 4 |
 | Oracle Framework | Phase 5 |
 | Scoring Engine | Phase 6 |
 | Benchmark Engine | Phase 7 |
@@ -64,6 +63,7 @@ python3 -m aiodoo_validation   # stub lifecycle run
 - [Implementation status](docs/implementation_status.md)
 - [Artifact Bundle (Phase 2)](docs/artifact_bundle.md)
 - [Inference Runner (Phase 3)](docs/inference_runner.md)
+- [Coding Validation Profile (Phase 4)](docs/coding_profile.md)
 - [ADR template](docs/adr/0000-adr-template.md)
 
 ## License

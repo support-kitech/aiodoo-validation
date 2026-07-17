@@ -1,75 +1,10 @@
-"""Artifact compatibility validation (Phase 2)."""
+"""Artifact structural compatibility validation (Phase 2)."""
 
 from __future__ import annotations
 
 from aiodoo_validation.domain.artifacts import ArtifactDescriptor
-from aiodoo_validation.domain.enums import (
-    ArtifactResolutionErrorCode,
-    ArtifactType,
-    SupportedValidationProfile,
-)
-from aiodoo_validation.domain.request import ValidationRequest
+from aiodoo_validation.domain.enums import ArtifactResolutionErrorCode
 from aiodoo_validation.domain.resolution import ArtifactResolutionError
-from aiodoo_validation.domain.v1_scope import REJECTED_ADAPTER_TYPES, SUPPORTED_V1_ADAPTER_TYPES
-
-
-def validate_profile_artifact_compatibility(
-    request: ValidationRequest,
-    *,
-    base_model: ArtifactDescriptor,
-    adapter: ArtifactDescriptor,
-) -> tuple[ArtifactResolutionError, ...]:
-    """Validate coding profile compatibility with resolved artifacts."""
-    errors: list[ArtifactResolutionError] = []
-
-    if base_model.artifact_type is not ArtifactType.BASE_MODEL:
-        errors.append(
-            ArtifactResolutionError(
-                code=ArtifactResolutionErrorCode.INCOMPATIBLE_ARTIFACT,
-                message=f"Expected base model artifact, got {base_model.artifact_type.value}.",
-                field="base_model",
-            )
-        )
-
-    if adapter.artifact_type is not ArtifactType.CODING_ADAPTER:
-        errors.append(
-            ArtifactResolutionError(
-                code=ArtifactResolutionErrorCode.INCOMPATIBLE_ARTIFACT,
-                message=f"Expected coding adapter artifact, got {adapter.artifact_type.value}.",
-                field="adapter",
-            )
-        )
-
-    adapter_type = str(adapter.metadata.get("adapter_type", "")).strip().lower()
-    if adapter_type in REJECTED_ADAPTER_TYPES:
-        errors.append(
-            ArtifactResolutionError(
-                code=ArtifactResolutionErrorCode.UNSUPPORTED_ARTIFACT,
-                message=f"Adapter type {adapter_type!r} is not supported in Phase 2.",
-                field="adapter",
-            )
-        )
-    elif adapter_type and adapter_type not in SUPPORTED_V1_ADAPTER_TYPES:
-        errors.append(
-            ArtifactResolutionError(
-                code=ArtifactResolutionErrorCode.UNSUPPORTED_ARTIFACT,
-                message=f"Unsupported adapter_type {adapter_type!r}.",
-                field="adapter",
-            )
-        )
-    elif (
-        request.profile_name == SupportedValidationProfile.CODING.value
-        and adapter_type != "coding"
-    ):
-        errors.append(
-            ArtifactResolutionError(
-                code=ArtifactResolutionErrorCode.INCOMPATIBLE_ARTIFACT,
-                message="Coding profile requires adapter_type='coding'.",
-                field="adapter",
-            )
-        )
-
-    return tuple(errors)
 
 
 def validate_no_duplicate_locations(

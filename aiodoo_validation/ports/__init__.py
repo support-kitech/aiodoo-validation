@@ -8,6 +8,7 @@ from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.stage import PlaceholderStageResult
 from aiodoo_validation.ports.artifact_resolver import ArtifactResolverPort
 from aiodoo_validation.ports.inference_runner import InferenceRunnerPort
+from aiodoo_validation.ports.profile_engine import ProfileEnginePort
 
 __all__ = [
     "ArtifactResolverPort",
@@ -19,12 +20,6 @@ __all__ = [
     "ScoringEnginePort",
     "ValidationRunnerPort",
 ]
-
-
-class ProfileEnginePort(Protocol):
-    """Select and plan validation profile checks (Phase 4+)."""
-
-    def resolve_profile(self, context: RunContext) -> PlaceholderStageResult: ...
 
 
 class ValidationRunnerPort(Protocol):

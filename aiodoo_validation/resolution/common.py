@@ -17,7 +17,6 @@ from aiodoo_validation.domain.enums import (
 )
 from aiodoo_validation.domain.request import ValidationRequest
 from aiodoo_validation.domain.resolution import ArtifactResolutionError
-from aiodoo_validation.domain.v1_scope import REJECTED_ADAPTER_TYPES
 from aiodoo_validation.resolution.fingerprint import FingerprintProviderPort
 
 ARTIFACT_METADATA_FILENAME = "artifact.json"
@@ -118,18 +117,6 @@ def validate_artifact_metadata(
         return None, tuple(errors), tuple(warnings)
 
     artifact_type = ArtifactType(artifact_type_value)
-
-    adapter_type = metadata.get("adapter_type")
-    if isinstance(adapter_type, str):
-        normalized_adapter_type = adapter_type.strip().lower()
-        if normalized_adapter_type in REJECTED_ADAPTER_TYPES:
-            errors.append(
-                ArtifactResolutionError(
-                    code=ArtifactResolutionErrorCode.UNSUPPORTED_ARTIFACT,
-                    message=f"Adapter type {normalized_adapter_type!r} is not supported.",
-                    field=logical_ref,
-                )
-            )
 
     protocol_major = metadata.get("protocol_major")
     if protocol_major is None:

@@ -115,3 +115,16 @@ class InferenceErrorCode(StrEnum):
     GENERATION_FAILURE = "generation_failure"
     NOT_INITIALIZED = "not_initialized"
     RUNNER_FAILURE = "runner_failure"
+
+
+class ProfileErrorCode(StrEnum):
+    """Structured profile resolution error codes."""
+
+    UNSUPPORTED_PROFILE = "unsupported_profile"
+    UNSUPPORTED_ADAPTER = "unsupported_adapter"
+    UNSUPPORTED_MODEL = "unsupported_model"
+    UNSUPPORTED_PROTOCOL = "unsupported_protocol"
+    MISSING_BUNDLE = "missing_bundle"
+    CAPABILITY_MISMATCH = "capability_mismatch"
+    CONFIGURATION_ERROR = "configuration_error"
+    PROFILE_CONSTRUCTION_FAILURE = "profile_construction_failure"

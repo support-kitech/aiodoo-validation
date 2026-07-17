@@ -1,14 +1,13 @@
-"""Inference artifact compatibility checks (Phase 3)."""
+"""Inference runtime compatibility checks (Phase 3)."""
 
 from __future__ import annotations
 
 from aiodoo_validation.domain.artifacts import ArtifactBundle
 from aiodoo_validation.domain.enums import ArtifactType, InferenceErrorCode
 from aiodoo_validation.domain.inference import InferenceError
-from aiodoo_validation.domain.v1_scope import (
-    REJECTED_ADAPTER_TYPES,
-    SUPPORTED_MODEL_FAMILIES,
-    SUPPORTED_MODEL_IDENTIFIERS,
+from aiodoo_validation.inference.runtime_policy import (
+    SUPPORTED_RUNTIME_MODEL_FAMILIES,
+    SUPPORTED_RUNTIME_MODEL_IDENTIFIERS,
 )
 
 
@@ -16,8 +15,8 @@ def _normalize(value: object) -> str:
     return str(value).strip().lower()
 
 
-def validate_inference_artifacts(bundle: ArtifactBundle) -> tuple[InferenceError, ...]:
-    """Validate bundle artifacts for Qwen3-8B + coding adapter inference."""
+def validate_runtime_artifacts(bundle: ArtifactBundle) -> tuple[InferenceError, ...]:
+    """Validate bundle artifacts for inference runtime loading."""
     errors: list[InferenceError] = []
 
     if bundle.base_model.artifact_type is not ArtifactType.BASE_MODEL:
@@ -33,7 +32,7 @@ def validate_inference_artifacts(bundle: ArtifactBundle) -> tuple[InferenceError
         errors.append(
             InferenceError(
                 code=InferenceErrorCode.UNSUPPORTED_ADAPTER,
-                message="Coding adapter artifact is required for inference.",
+                message="Adapter artifact is required for inference.",
                 field="adapter",
             )
         )
@@ -43,38 +42,20 @@ def validate_inference_artifacts(bundle: ArtifactBundle) -> tuple[InferenceError
     model_identifier = _normalize(
         base_meta.get("identifier", base_meta.get("model_id", ""))
     )
-    if model_family and model_family not in SUPPORTED_MODEL_FAMILIES:
+    if model_family and model_family not in SUPPORTED_RUNTIME_MODEL_FAMILIES:
         errors.append(
             InferenceError(
                 code=InferenceErrorCode.UNSUPPORTED_MODEL,
-                message=f"Unsupported model family {model_family!r}.",
+                message=f"Unsupported runtime model family {model_family!r}.",
                 field="base_model",
             )
         )
-    if model_identifier and model_identifier not in SUPPORTED_MODEL_IDENTIFIERS:
+    if model_identifier and model_identifier not in SUPPORTED_RUNTIME_MODEL_IDENTIFIERS:
         errors.append(
             InferenceError(
                 code=InferenceErrorCode.UNSUPPORTED_MODEL,
-                message=f"Unsupported model identifier {model_identifier!r}.",
+                message=f"Unsupported runtime model identifier {model_identifier!r}.",
                 field="base_model",
-            )
-        )
-
-    adapter_type = _normalize(bundle.adapter.metadata.get("adapter_type", ""))
-    if adapter_type in REJECTED_ADAPTER_TYPES:
-        errors.append(
-            InferenceError(
-                code=InferenceErrorCode.UNSUPPORTED_ADAPTER,
-                message=f"Adapter type {adapter_type!r} is not supported.",
-                field="adapter",
-            )
-        )
-    elif adapter_type != "coding":
-        errors.append(
-            InferenceError(
-                code=InferenceErrorCode.UNSUPPORTED_ADAPTER,
-                message="Only coding adapters are supported in Phase 3.",
-                field="adapter",
             )
         )
 

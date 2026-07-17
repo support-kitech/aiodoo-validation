@@ -19,6 +19,7 @@ from aiodoo_validation.ports import (
     ScoringEnginePort,
     ValidationRunnerPort,
 )
+from aiodoo_validation.profiles import ProfileEngine
 from aiodoo_validation.resolution.stub_resolver import StubArtifactResolver
 
 
@@ -29,19 +30,6 @@ def _stub_result(stage: ValidationStage, *, message: str, **data: object) -> Pla
         message=message,
         data=MappingProxyType(dict(data)),
     )
-
-
-class StubProfileEngine:
-    """Placeholder profile engine."""
-
-    def resolve_profile(self, context: RunContext) -> PlaceholderStageResult:
-        return _stub_result(
-            ValidationStage.RESOLVE_PROFILE,
-            message="stub profile resolution",
-            profile_name=context.request.profile_name,
-            odoo_versions=context.request.odoo_versions,
-            stub=True,
-        )
 
 
 class StubValidationRunner:
@@ -123,7 +111,7 @@ class StubPipelineComponents:
     def create(cls) -> StubPipelineComponents:
         return cls(
             artifact_resolver=StubArtifactResolver(),
-            profile_engine=StubProfileEngine(),
+            profile_engine=ProfileEngine.create_default(),
             inference_runner=StubInferenceRunner.create(),
             validation_runner=StubValidationRunner(),
             scoring_engine=StubScoringEngine(),

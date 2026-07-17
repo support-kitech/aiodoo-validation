@@ -13,7 +13,7 @@ from aiodoo_validation.domain.inference import (
     InferenceInitializationOutcome,
     InferenceSession,
 )
-from aiodoo_validation.inference.compatibility import validate_inference_artifacts
+from aiodoo_validation.inference.compatibility import validate_runtime_artifacts
 from aiodoo_validation.inference.paths import extract_load_paths
 from aiodoo_validation.inference.runtime.port import LoadedModelHandle, ModelRuntimePort
 
@@ -78,7 +78,7 @@ class RealInferenceRunner:
                 ),
             )
 
-        compatibility_errors = validate_inference_artifacts(bundle)
+        compatibility_errors = validate_runtime_artifacts(bundle)
         if compatibility_errors:
             return InferenceInitializationOutcome(
                 success=False,

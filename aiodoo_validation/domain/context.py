@@ -12,8 +12,10 @@ from uuid import uuid4
 from aiodoo_validation.domain.artifacts import ArtifactBundle
 from aiodoo_validation.domain.enums import ExecutionTier, ExitStatus, StageStatus, ValidationStage
 from aiodoo_validation.domain.inference import InferenceSession
+from aiodoo_validation.domain.profile import ResolvedProfile
 from aiodoo_validation.domain.request import SUPPORTED_PROTOCOL_MAJOR, ValidationRequest
 from aiodoo_validation.domain.stage import PlaceholderStageResult, StageRecord
+from aiodoo_validation.validation_plan import ValidationPlan
 
 
 @dataclass(frozen=True, slots=True)
@@ -39,6 +41,8 @@ class RunContext:
         default_factory=lambda: MappingProxyType({})
     )
     artifact_bundle: ArtifactBundle | None = None
+    validation_profile: ResolvedProfile | None = None
+    validation_plan: ValidationPlan | None = None
     inference_session: InferenceSession | None = None
     exit_status: ExitStatus | None = None
 
@@ -78,6 +82,12 @@ class RunContext:
 
     def with_artifact_bundle(self, bundle: ArtifactBundle) -> RunContext:
         return replace(self, artifact_bundle=bundle)
+
+    def with_validation_profile(self, profile: ResolvedProfile) -> RunContext:
+        return replace(self, validation_profile=profile)
+
+    def with_validation_plan(self, plan: ValidationPlan) -> RunContext:
+        return replace(self, validation_plan=plan)
 
     def with_inference_session(self, session: InferenceSession) -> RunContext:
         return replace(self, inference_session=session)

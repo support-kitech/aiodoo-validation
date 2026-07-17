@@ -21,6 +21,7 @@ from aiodoo_validation.domain.enums import (
     FingerprintPolicy,
     InferenceErrorCode,
     InferenceLifecycleState,
+    ProfileErrorCode,
     StageStatus,
     SupportedValidationProfile,
     ValidationStage,
@@ -28,12 +29,14 @@ from aiodoo_validation.domain.enums import (
 from aiodoo_validation.domain.inference import GenerationRequest, InferenceError
 from aiodoo_validation.domain.request import ValidationRequest
 from aiodoo_validation.engine import ValidationEngine
-from aiodoo_validation.inference.compatibility import validate_inference_artifacts
 from aiodoo_validation.inference.paths import ARTIFACT_PATHS_KEY, build_artifact_paths_metadata
 from aiodoo_validation.inference.runner import RealInferenceRunner
 from aiodoo_validation.inference.runtime.mock import MockModelRuntime
 from aiodoo_validation.inference.runtime.port import LoadedModelHandle
 from aiodoo_validation.inference.stub_runner import StubInferenceRunner
+from aiodoo_validation.profiles.coding.compatibility import (
+    validate_coding_artifact_compatibility,
+)
 from aiodoo_validation.resolution.filesystem import FilesystemArtifactResolver
 from aiodoo_validation.stubs import StubPipelineComponents
 
@@ -140,28 +143,32 @@ def test_missing_bundle_fails_gracefully() -> None:
     assert outcome.errors[0].code is InferenceErrorCode.MISSING_BUNDLE
 
 
-def test_unsupported_planner_adapter_rejected() -> None:
-    bundle = _bundle_with_paths(base="/tmp/base", adapter="/tmp/adapter")
+def test_unsupported_planner_adapter_rejected_at_profile_stage() -> None:
     fp = ArtifactFingerprint(value="placeholder:adapter", placeholder=True)
-    planner_adapter = ArtifactDescriptor(
-        artifact_type=ArtifactType.CODING_ADAPTER,
-        logical_ref="adapter",
-        location_digest=fp.value,
-        metadata={"adapter_type": "planner"},
-        fingerprint=fp,
-    )
     bundle = ArtifactBundle(
-        base_model=bundle.base_model,
-        adapter=planner_adapter,
+        base_model=ArtifactDescriptor(
+            artifact_type=ArtifactType.BASE_MODEL,
+            logical_ref="base_model",
+            location_digest="placeholder:base",
+            metadata={"model_family": "qwen", "identifier": "qwen3-8b"},
+            fingerprint=ArtifactFingerprint(value="placeholder:base", placeholder=True),
+        ),
+        adapter=ArtifactDescriptor(
+            artifact_type=ArtifactType.CODING_ADAPTER,
+            logical_ref="adapter",
+            location_digest=fp.value,
+            metadata={"adapter_type": "planner"},
+            fingerprint=fp,
+        ),
         merged_model=None,
         protocol_major=1,
         protocol_minor=0,
         fingerprint_policy=FingerprintPolicy.OFF,
         bundle_digest="bundle-planner",
-        metadata=bundle.metadata,
+        metadata={},
     )
-    errors = validate_inference_artifacts(bundle)
-    assert any(error.code is InferenceErrorCode.UNSUPPORTED_ADAPTER for error in errors)
+    errors = validate_coding_artifact_compatibility(bundle)
+    assert any(error.code is ProfileErrorCode.UNSUPPORTED_ADAPTER for error in errors)
 
 
 def test_generation_requires_initialization() -> None:

@@ -16,10 +16,7 @@ from aiodoo_validation.resolution.common import (
     effective_fingerprint_policy,
     resolve_descriptor,
 )
-from aiodoo_validation.resolution.compatibility import (
-    validate_no_duplicate_locations,
-    validate_profile_artifact_compatibility,
-)
+from aiodoo_validation.resolution.compatibility import validate_no_duplicate_locations
 from aiodoo_validation.resolution.fingerprint import (
     FingerprintProviderPort,
     PlaceholderFingerprintProvider,
@@ -125,13 +122,6 @@ class FilesystemArtifactResolver:
             merged_model,
         )
         errors.extend(validate_no_duplicate_locations(descriptors))
-        errors.extend(
-            validate_profile_artifact_compatibility(
-                request,
-                base_model=base_model,
-                adapter=adapter,
-            )
-        )
 
         if errors:
             return ArtifactResolutionOutcome(

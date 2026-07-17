@@ -140,22 +140,22 @@ def test_invalid_metadata_json() -> None:
     assert _has_error(outcome, ArtifactResolutionErrorCode.MISSING_METADATA)
 
 
-def test_unsupported_planner_adapter_rejected() -> None:
+def test_unsupported_planner_adapter_resolves_but_profile_rejects() -> None:
     request = _request(
         base=str(FIXTURES / "base_model"),
         adapter=str(FIXTURES / "planner_adapter"),
     )
     outcome = FilesystemArtifactResolver.create_default().resolve(_context(request))
 
-    assert outcome.success is False
-    assert _has_error(outcome, ArtifactResolutionErrorCode.UNSUPPORTED_ARTIFACT)
+    assert outcome.success is True
+    assert outcome.bundle is not None
 
 
 @pytest.mark.parametrize(
     "adapter_type",
     ["repair", "conversation", "execution"],
 )
-def test_rejected_adapter_types(adapter_type: str) -> None:
+def test_rejected_adapter_types_resolve_at_artifact_stage(adapter_type: str) -> None:
     adapter_dir = FIXTURES / f"temp_{adapter_type}_adapter"
     adapter_dir.mkdir(exist_ok=True)
     (adapter_dir / "artifact.json").write_text(
@@ -172,8 +172,7 @@ def test_rejected_adapter_types(adapter_type: str) -> None:
     request = _request(base=str(FIXTURES / "base_model"), adapter=str(adapter_dir))
     outcome = FilesystemArtifactResolver.create_default().resolve(_context(request))
 
-    assert outcome.success is False
-    assert _has_error(outcome, ArtifactResolutionErrorCode.UNSUPPORTED_ARTIFACT)
+    assert outcome.success is True
 
 
 def test_invalid_protocol_version() -> None:

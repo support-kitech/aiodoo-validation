@@ -9,6 +9,7 @@ from typing import TypeVar
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.enums import ExitStatus, StageStatus, ValidationStage
 from aiodoo_validation.domain.inference import InferenceInitializationOutcome
+from aiodoo_validation.domain.profile import ProfileResolutionOutcome
 from aiodoo_validation.domain.request import ValidationRequest
 from aiodoo_validation.domain.resolution import ArtifactResolutionOutcome
 from aiodoo_validation.domain.result import ValidationRunResult
@@ -56,8 +57,8 @@ class ValidationEngine:
     """
     Production validation orchestrator skeleton.
 
-    Executes the complete lifecycle using injected ports. Phase 3 adds real
-    inference initialization while validation stages remain stubbed.
+    Executes the complete lifecycle using injected ports. Phase 4 adds profile
+    resolution while validation stages remain stubbed.
     """
 
     def __init__(
@@ -171,6 +172,10 @@ class ValidationEngine:
                 context = self._run_artifact_stage(context)
                 if context.exit_status is ExitStatus.FAILED:
                     return self._run_failed_exit(context)
+            elif stage == ValidationStage.RESOLVE_PROFILE:
+                context = self._run_profile_stage(context)
+                if context.exit_status is ExitStatus.FAILED:
+                    return self._run_failed_exit(context)
             elif stage == ValidationStage.INITIALIZE_INFERENCE:
                 context = self._run_inference_stage(context)
                 if context.exit_status is ExitStatus.FAILED:
@@ -185,7 +190,6 @@ class ValidationEngine:
 
     def _executor_for(self, stage: ValidationStage) -> _StageExecutor:
         executors: dict[ValidationStage, _StageExecutor] = {
-            ValidationStage.RESOLVE_PROFILE: self._profile_engine.resolve_profile,
             ValidationStage.RUN_VALIDATION: self._validation_runner.run_validation,
             ValidationStage.SCORING: self._scoring_engine.score,
             ValidationStage.BENCHMARK: self._benchmark_engine.benchmark,
@@ -226,6 +230,32 @@ class ValidationEngine:
             updated = updated.with_warning(warning)
         if outcome.success and outcome.bundle is not None:
             return updated.with_artifact_bundle(outcome.bundle)
+        for error in outcome.errors:
+            updated = updated.with_error(f"{error.code.value}: {error.message}")
+        return updated.with_exit_status(ExitStatus.FAILED)
+
+    def _run_profile_stage(self, context: RunContext) -> RunContext:
+        outcome = self._profile_engine.resolve_profile(context)
+        return self._apply_profile_outcome(context, outcome)
+
+    def _apply_profile_outcome(
+        self,
+        context: RunContext,
+        outcome: ProfileResolutionOutcome,
+    ) -> RunContext:
+        result = outcome.to_stage_result()
+        updated = self._record_stage(context, ValidationStage.RESOLVE_PROFILE, result)
+        for warning in outcome.warnings:
+            updated = updated.with_warning(warning)
+        if (
+            outcome.success
+            and outcome.profile is not None
+            and outcome.plan is not None
+        ):
+            return (
+                updated.with_validation_profile(outcome.profile)
+                .with_validation_plan(outcome.plan)
+            )
         for error in outcome.errors:
             updated = updated.with_error(f"{error.code.value}: {error.message}")
         return updated.with_exit_status(ExitStatus.FAILED)
@@ -314,6 +344,7 @@ class ValidationEngine:
         updated = context.with_stage_record(record).with_placeholder_result(result)
         if result.status == StageStatus.FAILED and stage not in (
             ValidationStage.RESOLVE_ARTIFACTS,
+            ValidationStage.RESOLVE_PROFILE,
             ValidationStage.INITIALIZE_INFERENCE,
         ):
             raise PipelineError(f"Stage {stage.value} failed: {result.message}")
