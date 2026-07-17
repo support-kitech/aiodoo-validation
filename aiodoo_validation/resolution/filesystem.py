@@ -4,10 +4,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from aiodoo_validation.domain.artifact_paths import (
+    ARTIFACT_PATHS_KEY,
+    build_artifact_paths_metadata,
+)
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.enums import ArtifactResolutionErrorCode, ArtifactType
 from aiodoo_validation.domain.resolution import ArtifactResolutionError, ArtifactResolutionOutcome
-from aiodoo_validation.inference.paths import ARTIFACT_PATHS_KEY, build_artifact_paths_metadata
 from aiodoo_validation.resolution.common import (
     build_artifact_bundle,
     effective_fingerprint_policy,

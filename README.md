@@ -60,6 +60,7 @@ python3 -m aiodoo_validation   # stub lifecycle run
 ## Documentation
 
 - [Architecture summary](docs/architecture.md)
+- [Architecture audit (Phase 0–3)](docs/architecture_audit.md)
 - [Implementation status](docs/implementation_status.md)
 - [Artifact Bundle (Phase 2)](docs/artifact_bundle.md)
 - [Inference Runner (Phase 3)](docs/inference_runner.md)

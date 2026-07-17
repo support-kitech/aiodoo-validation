@@ -5,15 +5,11 @@ from __future__ import annotations
 from aiodoo_validation.domain.artifacts import ArtifactBundle
 from aiodoo_validation.domain.enums import ArtifactType, InferenceErrorCode
 from aiodoo_validation.domain.inference import InferenceError
-
-SUPPORTED_MODEL_FAMILIES = frozenset({"qwen"})
-SUPPORTED_MODEL_IDENTIFIERS = frozenset(
-    {
-        "qwen3-8b",
-        "qwen/qwen3-8b",
-    }
+from aiodoo_validation.domain.v1_scope import (
+    REJECTED_ADAPTER_TYPES,
+    SUPPORTED_MODEL_FAMILIES,
+    SUPPORTED_MODEL_IDENTIFIERS,
 )
-REJECTED_ADAPTER_TYPES = frozenset({"planner", "repair", "conversation", "execution", "evaluation"})
 
 
 def _normalize(value: object) -> str:

@@ -1,7 +1,8 @@
 # Implementation Status
 
 **Repository version:** 0.0.0-dev  
-**Active phases:** Phase 0 + Phase 1 + Phase 2 + Phase 3 (complete)
+**Active phases:** Phase 0 + Phase 1 + Phase 2 + Phase 3 (complete)  
+**Architecture audit:** [Post Phase 0–3 audit](architecture_audit.md) — **frozen for Phase 4+**
 
 ## Implemented
 

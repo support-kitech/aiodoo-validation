@@ -5,11 +5,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from types import MappingProxyType
 
+from aiodoo_validation.domain.artifact_paths import (
+    ARTIFACT_PATHS_KEY,
+    build_artifact_paths_metadata,
+)
 from aiodoo_validation.domain.artifacts import ArtifactDescriptor, ArtifactFingerprint
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.enums import ArtifactType
 from aiodoo_validation.domain.resolution import ArtifactResolutionOutcome
-from aiodoo_validation.inference.paths import ARTIFACT_PATHS_KEY, build_artifact_paths_metadata
 from aiodoo_validation.resolution.common import build_artifact_bundle, effective_fingerprint_policy
 
 

@@ -17,11 +17,11 @@ from aiodoo_validation.domain.enums import (
 )
 from aiodoo_validation.domain.request import ValidationRequest
 from aiodoo_validation.domain.resolution import ArtifactResolutionError
+from aiodoo_validation.domain.v1_scope import REJECTED_ADAPTER_TYPES
 from aiodoo_validation.resolution.fingerprint import FingerprintProviderPort
 
 ARTIFACT_METADATA_FILENAME = "artifact.json"
 SUPPORTED_ARTIFACT_TYPES = frozenset({member.value for member in ArtifactType})
-REJECTED_ADAPTER_TYPES = frozenset({"planner", "repair", "conversation", "execution", "evaluation"})
 
 
 def effective_fingerprint_policy(request: ValidationRequest) -> FingerprintPolicy:

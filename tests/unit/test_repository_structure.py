@@ -19,6 +19,13 @@ REQUIRED_DIRS = [
     "aiodoo_validation/engine",
     "aiodoo_validation/resolution",
     "aiodoo_validation/inference",
+    "aiodoo_validation/profiles",
+    "aiodoo_validation/profiles/base",
+    "aiodoo_validation/profiles/coding",
+    "aiodoo_validation/validation_plan",
+    "aiodoo_validation/reports",
+    "aiodoo_validation/benchmark",
+    "aiodoo_validation/certification",
 ]
 
 REQUIRED_FILES = [

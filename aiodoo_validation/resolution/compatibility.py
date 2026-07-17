@@ -10,9 +10,7 @@ from aiodoo_validation.domain.enums import (
 )
 from aiodoo_validation.domain.request import ValidationRequest
 from aiodoo_validation.domain.resolution import ArtifactResolutionError
-
-SUPPORTED_ADAPTER_TYPES = frozenset({SupportedValidationProfile.CODING.value})
-REJECTED_ADAPTER_TYPES = frozenset({"planner", "repair", "conversation", "execution", "evaluation"})
+from aiodoo_validation.domain.v1_scope import REJECTED_ADAPTER_TYPES, SUPPORTED_V1_ADAPTER_TYPES
 
 
 def validate_profile_artifact_compatibility(
@@ -51,7 +49,7 @@ def validate_profile_artifact_compatibility(
                 field="adapter",
             )
         )
-    elif adapter_type and adapter_type not in SUPPORTED_ADAPTER_TYPES:
+    elif adapter_type and adapter_type not in SUPPORTED_V1_ADAPTER_TYPES:
         errors.append(
             ArtifactResolutionError(
                 code=ArtifactResolutionErrorCode.UNSUPPORTED_ARTIFACT,
