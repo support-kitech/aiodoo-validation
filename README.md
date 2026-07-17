@@ -20,9 +20,10 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
 | **Phase 5 — Oracle Framework** | **Complete** |
 | **Phase 6 — Scoring Engine** | **Complete / Frozen** |
 | **Phase 7 — Benchmark Engine** | **Complete** |
-| Phase 8+ | Not started |
+| **Phase 8 — Certification Engine** | **Complete** |
+| Phase 9+ | Not started |
 
-## Current capabilities (Phase 0–7)
+## Current capabilities (Phase 0–8)
 
 - Production repository foundation (CI, lint, typing, tests, docs)
 - **Validation Engine** with full TDD lifecycle ordering (generic orchestration)
@@ -32,16 +33,16 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
 - **Oracle Framework** — registry + placeholder oracle pipeline execution
 - **Scoring Engine** — consumes oracle results only; placeholder deterministic scores
 - **Benchmark Engine** — consumes score results only; placeholder comparisons
-- Immutable **RunContext** through oracle, score, and benchmark execution
-- Stub ports for certification and report
+- **Certification Engine** — consumes benchmark results only; placeholder certification
+- Immutable **RunContext** through certification execution
+- Stub report generator
 - Deterministic CPU-only tests — no GPU, no model downloads in CI
 
 ## Not yet implemented (deferred by design)
 
 | Component | Implementation Plan phase |
 |-----------|---------------------------|
-| Real oracle / scoring / benchmark logic | Later phases (post placeholder) |
-| Certification Engine | Phase 8 |
+| Real oracle / scoring / benchmark / certification logic | Later phases (post placeholder) |
 | Reporting / Protocol V1 reports | Phase 9 |
 | CLI surface | Phase 10 |
 | Ecosystem integration (training, Colab) | Phase 11 |
@@ -71,6 +72,7 @@ python3 -m aiodoo_validation   # stub lifecycle run
 - [Oracle Framework (Phase 5)](docs/oracle_framework.md)
 - [Scoring Engine (Phase 6)](docs/scoring_engine.md)
 - [Benchmark Engine (Phase 7)](docs/benchmark_engine.md)
+- [Certification Engine (Phase 8)](docs/certification_engine.md)
 - [ADR template](docs/adr/0000-adr-template.md)
 
 ## License

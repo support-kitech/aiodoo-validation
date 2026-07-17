@@ -16,6 +16,15 @@ from aiodoo_validation.benchmark.ids import (
     CODING_BENCHMARK_SECURITY,
     CODING_BENCHMARK_XML,
 )
+from aiodoo_validation.certification.ids import (
+    CODING_CERTIFICATION_MANIFEST,
+    CODING_CERTIFICATION_METADATA,
+    CODING_CERTIFICATION_MODULE_STRUCTURE,
+    CODING_CERTIFICATION_PYTHON,
+    CODING_CERTIFICATION_QUALITY,
+    CODING_CERTIFICATION_SECURITY,
+    CODING_CERTIFICATION_XML,
+)
 from aiodoo_validation.domain.artifacts import ArtifactBundle
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.profile import ProfileError, ResolvedProfile
@@ -187,6 +196,51 @@ CODING_BENCHMARK_PIPELINE: tuple[PipelineStagePlaceholder, ...] = (
     ),
 )
 
+CODING_CERTIFICATION_PIPELINE: tuple[PipelineStagePlaceholder, ...] = (
+    PipelineStagePlaceholder(
+        stage_id=CODING_CERTIFICATION_METADATA,
+        name="Metadata Certification Policy",
+        enabled=True,
+        phase="certification",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_CERTIFICATION_MANIFEST,
+        name="Manifest Certification Policy",
+        enabled=True,
+        phase="certification",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_CERTIFICATION_PYTHON,
+        name="Python Certification Policy",
+        enabled=True,
+        phase="certification",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_CERTIFICATION_XML,
+        name="XML Certification Policy",
+        enabled=True,
+        phase="certification",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_CERTIFICATION_SECURITY,
+        name="Security Certification Policy",
+        enabled=True,
+        phase="certification",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_CERTIFICATION_MODULE_STRUCTURE,
+        name="Module Structure Certification Policy",
+        enabled=True,
+        phase="certification",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_CERTIFICATION_QUALITY,
+        name="Future Quality Certification Policy",
+        enabled=False,
+        phase="certification",
+    ),
+)
+
 
 @dataclass(frozen=True, slots=True)
 class CodingProfile(ResolvedProfile):
@@ -213,21 +267,14 @@ class CodingProfile(ResolvedProfile):
             supports_oracles=True,
             supports_scoring=True,
             supports_benchmark=True,
-            supports_certification=False,
+            supports_certification=True,
         )
     )
-    validation_strategy: str = "coding-v1-benchmark-placeholders"
+    validation_strategy: str = "coding-v1-certification-placeholders"
     oracle_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_ORACLE_PIPELINE
     scoring_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_SCORING_PIPELINE
     benchmark_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_BENCHMARK_PIPELINE
-    certification_pipeline: tuple[PipelineStagePlaceholder, ...] = (
-        PipelineStagePlaceholder(
-            stage_id="coding.certification.placeholder",
-            name="Certification pipeline placeholder",
-            enabled=False,
-            phase="certification",
-        ),
-    )
+    certification_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_CERTIFICATION_PIPELINE
     metadata: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
 
     @staticmethod

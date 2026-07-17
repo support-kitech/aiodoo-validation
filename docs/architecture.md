@@ -6,9 +6,9 @@
 
 ## Responsibility
 
-Determine whether a trained AIODOO model is suitable for production through validation, benchmarking, and certification (future).
+Determine whether a trained AIODOO model is suitable for production through validation, benchmarking, and certification.
 
-## Logical architecture (Phase 7)
+## Logical architecture (Phase 8)
 
 ```
 Validation Engine
@@ -18,7 +18,7 @@ Validation Engine
     → Oracle Framework (registry + placeholder oracles)
     → Scoring Engine (oracle results only; placeholder scores)
     → Benchmark Engine (score results only; placeholder comparisons)
-    → Certification Engine (stub)
+    → Certification Engine (benchmark results only; placeholder certification)
     → Report Generator (stub)
 ```
 

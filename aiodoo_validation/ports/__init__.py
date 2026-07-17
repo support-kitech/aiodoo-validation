@@ -8,6 +8,7 @@ from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.stage import PlaceholderStageResult
 from aiodoo_validation.ports.artifact_resolver import ArtifactResolverPort
 from aiodoo_validation.ports.benchmark_engine import BenchmarkEnginePort
+from aiodoo_validation.ports.certification_engine import CertificationEnginePort
 from aiodoo_validation.ports.inference_runner import InferenceRunnerPort
 from aiodoo_validation.ports.oracle_runner import OracleRunnerPort
 from aiodoo_validation.ports.profile_engine import ProfileEnginePort
@@ -35,12 +36,6 @@ class ValidationRunnerPort(Protocol):
     """
 
     def run_validation(self, context: RunContext) -> PlaceholderStageResult: ...
-
-
-class CertificationEnginePort(Protocol):
-    """Apply certification policy (Phase 8+)."""
-
-    def certify(self, context: RunContext) -> PlaceholderStageResult: ...
 
 
 class ReportGeneratorPort(Protocol):

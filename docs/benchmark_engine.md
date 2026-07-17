@@ -44,6 +44,9 @@ Format: `{profile}.benchmark.{name}` — maps 1:1 to `{profile}.score.{name}`
 
 Centralized in `aiodoo_validation.benchmark.ids`.
 
+**These IDs are frozen and must never be renamed.** Future phases and plugins
+must reuse them unchanged.
+
 | Policy ID | Source Score Policy ID |
 |-----------|------------------------|
 | `coding.benchmark.metadata` | `coding.score.metadata` |
@@ -53,6 +56,18 @@ Centralized in `aiodoo_validation.benchmark.ids`.
 | `coding.benchmark.security` | `coding.score.security` |
 | `coding.benchmark.module_structure` | `coding.score.module_structure` |
 | `coding.benchmark.quality` | `coding.score.quality` (disabled in plan) |
+
+## What Benchmark does NOT do
+
+Benchmark **never**:
+
+- validates artifacts or runs oracles
+- scores findings (scoring already happened upstream)
+- parses XML / Python / manifests
+- inspects the filesystem
+- executes inference
+
+Benchmark **only** consumes `ScoreExecutionResult` / `ScoreResult`.
 
 ## Lifecycle
 
@@ -79,8 +94,14 @@ No dataset comparison, historical analysis, leaderboards, or statistics.
 ## Placeholder Aggregate
 
 The `aggregate_benchmark_score` is the arithmetic mean of successful placeholder
-benchmark scores. It exists only to validate pipeline wiring and must not be
-interpreted as a production quality metric.
+benchmark scores.
+
+This is **NOT** production benchmarking.
+
+It exists only to validate pipeline wiring and must not be interpreted as a
+production quality metric. Future certification (and later report phases) will
+consume structured `BenchmarkExecutionResult` values — not this aggregate as a
+quality verdict.
 
 ## RunContext integration
 

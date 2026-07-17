@@ -118,6 +118,7 @@ def test_validation_plan_is_immutable_and_metadata_only() -> None:
     assert plan.capabilities.supports_oracles is True
     assert plan.capabilities.supports_scoring is True
     assert plan.capabilities.supports_benchmark is True
+    assert plan.capabilities.supports_certification is True
     assert plan.validation_stages == (ValidationStage.RUN_VALIDATION,)
     assert ValidationStage.INITIALIZE_INFERENCE in plan.execution_order
     assert plan.oracle_pipeline[0].enabled is True
@@ -130,6 +131,9 @@ def test_validation_plan_is_immutable_and_metadata_only() -> None:
     assert plan.benchmark_pipeline[0].stage_id == "coding.benchmark.metadata"
     assert plan.benchmark_pipeline[0].enabled is True
     assert plan.benchmark_pipeline[-1].enabled is False
+    assert plan.certification_pipeline[0].stage_id == "coding.certification.metadata"
+    assert plan.certification_pipeline[0].enabled is True
+    assert plan.certification_pipeline[-1].enabled is False
 
     with pytest.raises(FrozenInstanceError):
         plan.plan_digest = "changed"  # type: ignore[misc]

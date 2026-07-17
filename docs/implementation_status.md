@@ -1,31 +1,29 @@
 # Implementation Status
 
 **Repository version:** 0.0.0-dev  
-**Active phases:** Phase 0–7 (complete)  
+**Active phases:** Phase 0–8 (complete)  
 **Architecture audit:** [Post Phase 0–3 audit](architecture_audit.md) — **frozen**
 
 ## Implemented
 
-### Phase 7 — Benchmark Engine
+### Phase 8 — Certification Engine
 
-- `BenchmarkEnginePort` with `BenchmarkExecutionOutcome`
-- `BenchmarkEngine`, `BenchmarkRegistry`, `BenchmarkPolicy` protocol
-- Placeholder policies mapped 1:1 to frozen score IDs
-- `RunContext.benchmark_execution` attachment
-- Engine `BENCHMARK` stage wired through `BenchmarkEnginePort`
-- Boundary tests: benchmark does not import oracle/scoring execution
-- [Benchmark Engine documentation](benchmark_engine.md)
+- `CertificationEnginePort` with `CertificationExecutionOutcome`
+- `CertificationEngine`, `CertificationRegistry`, `CertificationPolicy` protocol
+- Placeholder policies mapped 1:1 to frozen benchmark IDs
+- `RunContext.certification_execution` attachment
+- Engine `CERTIFICATION` stage wired through `CertificationEnginePort`
+- Boundary tests: certification does not import upstream execution modules
+- [Certification Engine documentation](certification_engine.md)
 
-### Phase 0–6
+### Phase 0–7
 
-Repository foundation, validation engine, artifact resolution, inference runner,
-coding profile, oracle framework, scoring engine (frozen through Phase 6).
+Repository foundation through Benchmark Engine (Phase 6–7 frozen refinements applied).
 
 ## Not implemented (next phases)
 
 | Phase | Component |
 |-------|-----------|
-| 8 | Certification Engine |
 | 9 | Validation Protocol V1 reports |
 | 10 | CLI |
 | 11 | aiodoo-training / Colab integration |
@@ -34,4 +32,4 @@ coding profile, oracle framework, scoring engine (frozen through Phase 6).
 
 ## Next phase
 
-**Phase 8 — Certification Engine** per frozen Implementation Plan.
+**Phase 9 — Reports** per frozen Implementation Plan.
