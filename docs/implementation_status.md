@@ -1,10 +1,21 @@
 # Implementation Status
 
 **Repository version:** 1.0.0  
-**Active phases:** Phase 0–12 (complete)  
+**Status:** Released — maintenance mode  
+**Active phases:** Phase 0–13 (complete / frozen)  
 **Architecture audit:** [Post Phase 0–3 audit](architecture_audit.md) — **frozen**
 
 ## Implemented
+
+### Phase 13 — v1.0.0 Release & Repository Freeze
+
+- Added **Repository Stability** section to README
+- Created `CHANGELOG.md` with release notes, known limitations, and compatibility statement
+- Final repository audit: structure, imports, boundaries, public API, CLI, packaging, CI, security
+- License metadata aligned (`pyproject.toml` → Apache-2.0, matching LICENSE and README)
+- Version consistency verified across `__version__.py`, `pyproject.toml`, README, and metadata API
+- Release checklist verified: 211 tests pass, 87% coverage, ruff ✓, mypy ✓
+- Repository tagged `v1.0.0` and enters maintenance mode
 
 ### Phase 12 — Production Readiness & Repository Stabilization
 
@@ -14,7 +25,6 @@
 - Clarified `PlaceholderStageResult`, `ValidationRunnerPort`, `ValidationEngine` docstrings
 - Updated `docs/integration.md` with explicit stable-API boundary statement
 - Updated `pyproject.toml` with full project metadata (description, license, classifiers)
-- Updated `docs/implementation_status.md` to reflect v1.0.0 and Phase 12 completion
 - Repository-wide boundary and CI verification passes (ruff ✓, mypy ✓, pytest 211 ✓)
 
 ### Phase 11 — AIODOO Ecosystem Integration
@@ -36,12 +46,14 @@
 
 Repository foundation through Report Generator.
 
-## Not implemented (next phases)
+## Maintenance mode
 
-| Phase | Component |
-|-------|-----------|
-| 13 | Post-v1.0 enhancements |
+The repository is frozen at v1.0.0. No new pipeline stages, engines, or
+architectural changes. Future work is limited to:
 
-## Next phase
+- Bug fixes and security patches
+- Production oracle/scoring/benchmark/certification implementations
+- Report renderers as separate consumer integrations
+- Additional validation profiles
 
-**Phase 13** per frozen Implementation Plan.
+See [CHANGELOG](../CHANGELOG.md) for the full roadmap.

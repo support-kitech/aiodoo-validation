@@ -4,6 +4,18 @@
 
 Production-grade validation for trained AIODOO adapters and exports. This repository determines whether a trained model is suitable for production — it does **not** train models, generate datasets, manage a model registry, or run AIODOO agents.
 
+## Repository Stability
+
+Validation Protocol V1 is **architecturally frozen**.
+
+The stable public API is exposed through `aiodoo_validation.api` and is guaranteed
+for the **v1.x** release series.
+
+Internal implementation packages — `engine`, `oracles`, `scoring`, `benchmark`,
+`certification`, `reporting`, `profiles`, `validation_plan`, `ports`, `domain`,
+`stubs`, `resolution`, `inference` — are intentionally excluded from the
+compatibility guarantee.
+
 ## Status
 
 | Phase | Status |
@@ -25,9 +37,11 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
 | **Phase 10 — Production CLI** | **Complete** |
 | **Phase 11 — Ecosystem Integration** | **Complete** |
 | **Phase 12 — Production Readiness** | **Complete** |
-| Phase 13+ | Not started |
+| **Phase 13 — v1.0.0 Release** | **Complete / Frozen** |
 
-## Current capabilities (Phase 0–12, v1.0.0)
+**Repository version:** v1.0.0 — maintenance mode
+
+## Current capabilities (v1.0.0)
 
 - Production repository foundation (CI, lint, typing, tests, docs)
 - **Validation Engine** with full TDD lifecycle ordering (generic orchestration)
@@ -44,13 +58,26 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
 - Immutable **RunContext** through report execution
 - Deterministic CPU-only tests — no GPU, no model downloads in CI
 
+## Known limitations (v1.0.0)
+
+The following are **intentional** placeholder implementations in v1.0.0:
+
+- Oracle logic — placeholder deterministic execution
+- Scoring — placeholder deterministic scores
+- Benchmark — placeholder comparisons
+- Certification — placeholder certification decisions
+- Reports — placeholder report objects (no PDF, HTML, JSON, or Markdown rendering)
+- No Web UI, async execution, plugin system, or distributed execution
+- No GPU inference in CI (CPU-only tests)
+
+See [CHANGELOG](CHANGELOG.md) for the full release notes and future roadmap.
+
 ## Not yet implemented (deferred by design)
 
-| Component | Implementation Plan phase |
-|-----------|---------------------------|
-| Real oracle / scoring / benchmark / certification / report logic | Later phases (post placeholder) |
+| Component | Status |
+|-----------|--------|
+| Real oracle / scoring / benchmark / certification logic | Post-v1.0 maintenance |
 | PDF / HTML / Markdown / JSON report rendering | Future consumer integrations |
-| Production hardening | Phase 12 |
 
 ## Public API
 
@@ -94,6 +121,7 @@ aiodoo-validation validate --profile coding --base-model ./base --adapter ./adap
 - [Report Generation (Phase 9)](docs/report_generation.md)
 - [Production CLI (Phase 10)](docs/cli.md)
 - [Ecosystem Integration (Phase 11)](docs/integration.md)
+- [Changelog](CHANGELOG.md)
 - [ADR template](docs/adr/0000-adr-template.md)
 
 ## License
