@@ -1,0 +1,881 @@
+diff --git a/README.md b/README.md
+index 9fc6e95..d694bcb 100644
+--- a/README.md
++++ b/README.md
+@@ -18,9 +18,10 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
+ | **Phase 3 — Inference Runner** | **Complete** |
+ | **Phase 4 — Coding Validation Profile** | **Complete** |
+ | **Phase 5 — Oracle Framework** | **Complete** |
+-| Phase 6+ | Not started |
++| **Phase 6 — Scoring Engine** | **Complete** |
++| Phase 7+ | Not started |
+ 
+-## Current capabilities (Phase 0–5)
++## Current capabilities (Phase 0–6)
+ 
+ - Production repository foundation (CI, lint, typing, tests, docs)
+ - **Validation Engine** with full TDD lifecycle ordering (generic orchestration)
+@@ -28,8 +29,9 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
+ - **Coding Validation Profile** — profile selection, compatibility, ValidationPlan
+ - **Inference Runner** — mock (CI default) and optional Qwen runtime
+ - **Oracle Framework** — registry + placeholder oracle pipeline execution
+-- Immutable **RunContext** with artifact bundle, profile, plan, inference session, oracle execution
+-- Stub ports for scoring, benchmark, certification, report
++- **Scoring Engine** — consumes oracle results only; placeholder deterministic scores
++- Immutable **RunContext** with artifact bundle, profile, plan, inference, oracle, and score execution
++- Stub ports for benchmark, certification, report
+ - Deterministic CPU-only tests — no GPU, no model downloads in CI
+ 
+ ## Not yet implemented (deferred by design)
+@@ -37,7 +39,7 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
+ | Component | Implementation Plan phase |
+ |-----------|---------------------------|
+ | Real oracle validation rules | Later phases (post placeholder) |
+-| Scoring Engine | Phase 6 |
++| Real scoring formulas | Later phases (post placeholder) |
+ | Benchmark Engine | Phase 7 |
+ | Certification Engine | Phase 8 |
+ | Reporting / Protocol V1 reports | Phase 9 |
+@@ -67,6 +69,7 @@ python3 -m aiodoo_validation   # stub lifecycle run
+ - [Inference Runner (Phase 3)](docs/inference_runner.md)
+ - [Coding Validation Profile (Phase 4)](docs/coding_profile.md)
+ - [Oracle Framework (Phase 5)](docs/oracle_framework.md)
++- [Scoring Engine (Phase 6)](docs/scoring_engine.md)
+ - [ADR template](docs/adr/0000-adr-template.md)
+ 
+ ## License
+diff --git a/aiodoo_validation/domain/context.py b/aiodoo_validation/domain/context.py
+index 4382da0..15b9827 100644
+--- a/aiodoo_validation/domain/context.py
++++ b/aiodoo_validation/domain/context.py
+@@ -15,6 +15,7 @@ from aiodoo_validation.domain.inference import InferenceSession
+ from aiodoo_validation.domain.oracle import OracleExecutionResult
+ from aiodoo_validation.domain.profile import ResolvedProfile
+ from aiodoo_validation.domain.request import SUPPORTED_PROTOCOL_MAJOR, ValidationRequest
++from aiodoo_validation.domain.scoring import ScoreExecutionResult
+ from aiodoo_validation.domain.stage import PlaceholderStageResult, StageRecord
+ from aiodoo_validation.validation_plan import ValidationPlan
+ 
+@@ -46,6 +47,7 @@ class RunContext:
+     validation_plan: ValidationPlan | None = None
+     inference_session: InferenceSession | None = None
+     oracle_execution: OracleExecutionResult | None = None
++    score_execution: ScoreExecutionResult | None = None
+     exit_status: ExitStatus | None = None
+ 
+     @staticmethod
+@@ -97,6 +99,9 @@ class RunContext:
+     def with_oracle_execution(self, execution: OracleExecutionResult) -> RunContext:
+         return replace(self, oracle_execution=execution)
+ 
++    def with_score_execution(self, execution: ScoreExecutionResult) -> RunContext:
++        return replace(self, score_execution=execution)
++
+     def with_exit_status(self, status: ExitStatus) -> RunContext:
+         return replace(self, exit_status=status)
+ 
+diff --git a/aiodoo_validation/domain/enums.py b/aiodoo_validation/domain/enums.py
+index ab56f83..7fa4323 100644
+--- a/aiodoo_validation/domain/enums.py
++++ b/aiodoo_validation/domain/enums.py
+@@ -142,3 +142,18 @@ class OracleErrorCode(StrEnum):
+     CAPABILITY_MISMATCH = "capability_mismatch"
+     MISSING_PLAN = "missing_plan"
+     MISSING_PROFILE = "missing_profile"
++
++
++class ScoreErrorCode(StrEnum):
++    """Structured scoring engine error codes."""
++
++    MISSING_ORACLE_RESULTS = "missing_oracle_results"
++    MISSING_PLAN = "missing_plan"
++    MISSING_PROFILE = "missing_profile"
++    POLICY_NOT_FOUND = "policy_not_found"
++    REGISTRATION_FAILURE = "registration_failure"
++    CAPABILITY_MISMATCH = "capability_mismatch"
++    PROFILE_MISMATCH = "profile_mismatch"
++    EXECUTION_FAILURE = "execution_failure"
++    CONFIGURATION_FAILURE = "configuration_failure"
++    ORACLE_RESULT_MISSING = "oracle_result_missing"
+diff --git a/aiodoo_validation/engine/validation_engine.py b/aiodoo_validation/engine/validation_engine.py
+index 43a8786..4cf3460 100644
+--- a/aiodoo_validation/engine/validation_engine.py
++++ b/aiodoo_validation/engine/validation_engine.py
+@@ -14,6 +14,7 @@ from aiodoo_validation.domain.profile import ProfileResolutionOutcome
+ from aiodoo_validation.domain.request import ValidationRequest
+ from aiodoo_validation.domain.resolution import ArtifactResolutionOutcome
+ from aiodoo_validation.domain.result import ValidationRunResult
++from aiodoo_validation.domain.scoring import ScoreExecutionOutcome
+ from aiodoo_validation.domain.stage import PlaceholderStageResult, StageRecord
+ from aiodoo_validation.engine.protocol import negotiate_protocol
+ from aiodoo_validation.exceptions import (
+@@ -58,8 +59,8 @@ class ValidationEngine:
+     """
+     Production validation orchestrator skeleton.
+ 
+-    Executes the complete lifecycle using injected ports. Phase 5 wires the
+-    Oracle Framework through ``OracleRunnerPort`` while scoring and later
++    Executes the complete lifecycle using injected ports. Phase 6 wires the
++    Scoring Engine through ``ScoringEnginePort`` while benchmark and later
+     stages remain stubbed.
+     """
+ 
+@@ -186,6 +187,10 @@ class ValidationEngine:
+                 context = self._run_oracle_stage(context)
+                 if context.exit_status is ExitStatus.FAILED:
+                     return self._run_failed_exit(context)
++            elif stage == ValidationStage.SCORING:
++                context = self._run_scoring_stage(context)
++                if context.exit_status is ExitStatus.FAILED:
++                    return self._run_failed_exit(context)
+             elif stage == ValidationStage.EXIT:
+                 context = self._run_exit(context)
+             else:
+@@ -196,7 +201,6 @@ class ValidationEngine:
+ 
+     def _executor_for(self, stage: ValidationStage) -> _StageExecutor:
+         executors: dict[ValidationStage, _StageExecutor] = {
+-            ValidationStage.SCORING: self._scoring_engine.score,
+             ValidationStage.BENCHMARK: self._benchmark_engine.benchmark,
+             ValidationStage.CERTIFICATION: self._certification_engine.certify,
+             ValidationStage.REPORT: self._report_generator.generate_report,
+@@ -304,6 +308,25 @@ class ValidationEngine:
+             updated = updated.with_error(detail)
+         return updated.with_exit_status(ExitStatus.FAILED)
+ 
++    def _run_scoring_stage(self, context: RunContext) -> RunContext:
++        outcome = self._scoring_engine.score(context)
++        return self._apply_scoring_outcome(context, outcome)
++
++    def _apply_scoring_outcome(
++        self,
++        context: RunContext,
++        outcome: ScoreExecutionOutcome,
++    ) -> RunContext:
++        result = outcome.to_stage_result()
++        updated = self._record_stage(context, ValidationStage.SCORING, result)
++        for warning in outcome.warnings:
++            updated = updated.with_warning(warning)
++        if outcome.success and outcome.execution is not None:
++            return updated.with_score_execution(outcome.execution)
++        for error in outcome.errors:
++            updated = updated.with_error(f"{error.code.value}: {error.message}")
++        return updated.with_exit_status(ExitStatus.FAILED)
++
+     def _run_exit(self, context: RunContext) -> RunContext:
+         self._inference_runner.shutdown(context)
+         exit_status = context.exit_status or ExitStatus.NOT_CERTIFIED
+@@ -372,6 +395,7 @@ class ValidationEngine:
+             ValidationStage.RESOLVE_PROFILE,
+             ValidationStage.INITIALIZE_INFERENCE,
+             ValidationStage.RUN_VALIDATION,
++            ValidationStage.SCORING,
+         ):
+             raise PipelineError(f"Stage {stage.value} failed: {result.message}")
+         return updated
+diff --git a/aiodoo_validation/oracles/__init__.py b/aiodoo_validation/oracles/__init__.py
+index bff30e1..d55a371 100644
+--- a/aiodoo_validation/oracles/__init__.py
++++ b/aiodoo_validation/oracles/__init__.py
+@@ -2,6 +2,17 @@
+ 
+ from aiodoo_validation.oracles.base import Oracle
+ from aiodoo_validation.oracles.engine import OracleEngine
++from aiodoo_validation.oracles.ids import (
++    CODING_ORACLE_IDS_ALL,
++    CODING_ORACLE_IDS_ENABLED,
++    CODING_ORACLE_MANIFEST,
++    CODING_ORACLE_METADATA,
++    CODING_ORACLE_MODULE_STRUCTURE,
++    CODING_ORACLE_PYTHON,
++    CODING_ORACLE_QUALITY,
++    CODING_ORACLE_SECURITY,
++    CODING_ORACLE_XML,
++)
+ from aiodoo_validation.oracles.placeholders import (
+     ManifestOracle,
+     MetadataOracle,
+@@ -15,6 +26,15 @@ from aiodoo_validation.oracles.placeholders import (
+ from aiodoo_validation.oracles.registry import OracleRegistry
+ 
+ __all__ = [
++    "CODING_ORACLE_IDS_ALL",
++    "CODING_ORACLE_IDS_ENABLED",
++    "CODING_ORACLE_MANIFEST",
++    "CODING_ORACLE_METADATA",
++    "CODING_ORACLE_MODULE_STRUCTURE",
++    "CODING_ORACLE_PYTHON",
++    "CODING_ORACLE_QUALITY",
++    "CODING_ORACLE_SECURITY",
++    "CODING_ORACLE_XML",
+     "ManifestOracle",
+     "MetadataOracle",
+     "ModuleStructureOracle",
+diff --git a/aiodoo_validation/oracles/placeholders.py b/aiodoo_validation/oracles/placeholders.py
+index 2e455d7..917fa05 100644
+--- a/aiodoo_validation/oracles/placeholders.py
++++ b/aiodoo_validation/oracles/placeholders.py
+@@ -12,6 +12,14 @@ from aiodoo_validation.domain.oracle import (
+     OracleMetadata,
+     OracleResult,
+ )
++from aiodoo_validation.oracles.ids import (
++    CODING_ORACLE_MANIFEST,
++    CODING_ORACLE_METADATA,
++    CODING_ORACLE_MODULE_STRUCTURE,
++    CODING_ORACLE_PYTHON,
++    CODING_ORACLE_SECURITY,
++    CODING_ORACLE_XML,
++)
+ 
+ 
+ def placeholder_metadata(
+@@ -68,7 +76,7 @@ class MetadataOracle(PlaceholderOracle):
+     def create() -> MetadataOracle:
+         return MetadataOracle(
+             metadata=placeholder_metadata(
+-                oracle_id="coding.oracle.metadata",
++                oracle_id=CODING_ORACLE_METADATA,
+                 name="Metadata Oracle",
+                 description="Placeholder metadata validation oracle.",
+             )
+@@ -83,7 +91,7 @@ class ManifestOracle(PlaceholderOracle):
+     def create() -> ManifestOracle:
+         return ManifestOracle(
+             metadata=placeholder_metadata(
+-                oracle_id="coding.oracle.manifest",
++                oracle_id=CODING_ORACLE_MANIFEST,
+                 name="Manifest Oracle",
+                 description="Placeholder Odoo manifest validation oracle.",
+             )
+@@ -98,7 +106,7 @@ class PythonOracle(PlaceholderOracle):
+     def create() -> PythonOracle:
+         return PythonOracle(
+             metadata=placeholder_metadata(
+-                oracle_id="coding.oracle.python",
++                oracle_id=CODING_ORACLE_PYTHON,
+                 name="Python Oracle",
+                 description="Placeholder Python source validation oracle.",
+             )
+@@ -113,7 +121,7 @@ class XmlOracle(PlaceholderOracle):
+     def create() -> XmlOracle:
+         return XmlOracle(
+             metadata=placeholder_metadata(
+-                oracle_id="coding.oracle.xml",
++                oracle_id=CODING_ORACLE_XML,
+                 name="XML Oracle",
+                 description="Placeholder XML view validation oracle.",
+             )
+@@ -128,7 +136,7 @@ class SecurityOracle(PlaceholderOracle):
+     def create() -> SecurityOracle:
+         return SecurityOracle(
+             metadata=placeholder_metadata(
+-                oracle_id="coding.oracle.security",
++                oracle_id=CODING_ORACLE_SECURITY,
+                 name="Security Oracle",
+                 description="Placeholder security validation oracle.",
+             )
+@@ -143,7 +151,7 @@ class ModuleStructureOracle(PlaceholderOracle):
+     def create() -> ModuleStructureOracle:
+         return ModuleStructureOracle(
+             metadata=placeholder_metadata(
+-                oracle_id="coding.oracle.module_structure",
++                oracle_id=CODING_ORACLE_MODULE_STRUCTURE,
+                 name="Module Structure Oracle",
+                 description="Placeholder module structure validation oracle.",
+             )
+diff --git a/aiodoo_validation/ports/__init__.py b/aiodoo_validation/ports/__init__.py
+index 26be63a..57f7389 100644
+--- a/aiodoo_validation/ports/__init__.py
++++ b/aiodoo_validation/ports/__init__.py
+@@ -10,6 +10,7 @@ from aiodoo_validation.ports.artifact_resolver import ArtifactResolverPort
+ from aiodoo_validation.ports.inference_runner import InferenceRunnerPort
+ from aiodoo_validation.ports.oracle_runner import OracleRunnerPort
+ from aiodoo_validation.ports.profile_engine import ProfileEnginePort
++from aiodoo_validation.scoring.port import ScoringEnginePort
+ 
+ __all__ = [
+     "ArtifactResolverPort",
+@@ -35,12 +36,6 @@ class ValidationRunnerPort(Protocol):
+     def run_validation(self, context: RunContext) -> PlaceholderStageResult: ...
+ 
+ 
+-class ScoringEnginePort(Protocol):
+-    """Aggregate validation scores (Phase 6+)."""
+-
+-    def score(self, context: RunContext) -> PlaceholderStageResult: ...
+-
+-
+ class BenchmarkEnginePort(Protocol):
+     """Run comparative benchmarks (Phase 7+)."""
+ 
+diff --git a/aiodoo_validation/profiles/coding/profile.py b/aiodoo_validation/profiles/coding/profile.py
+index eca35fc..36c5ae7 100644
+--- a/aiodoo_validation/profiles/coding/profile.py
++++ b/aiodoo_validation/profiles/coding/profile.py
+@@ -10,6 +10,15 @@ from typing import Any
+ from aiodoo_validation.domain.artifacts import ArtifactBundle
+ from aiodoo_validation.domain.context import RunContext
+ from aiodoo_validation.domain.profile import ProfileError, ResolvedProfile
++from aiodoo_validation.oracles.ids import (
++    CODING_ORACLE_MANIFEST,
++    CODING_ORACLE_METADATA,
++    CODING_ORACLE_MODULE_STRUCTURE,
++    CODING_ORACLE_PYTHON,
++    CODING_ORACLE_QUALITY,
++    CODING_ORACLE_SECURITY,
++    CODING_ORACLE_XML,
++)
+ from aiodoo_validation.profiles.coding.compatibility import validate_coding_artifact_compatibility
+ from aiodoo_validation.profiles.coding.policy import (
+     PROFILE_NAME,
+@@ -19,6 +28,15 @@ from aiodoo_validation.profiles.coding.policy import (
+     SUPPORTED_PROTOCOL_MAJORS,
+     SUPPORTED_RUNTIMES,
+ )
++from aiodoo_validation.scoring.ids import (
++    CODING_SCORE_MANIFEST,
++    CODING_SCORE_METADATA,
++    CODING_SCORE_MODULE_STRUCTURE,
++    CODING_SCORE_PYTHON,
++    CODING_SCORE_QUALITY,
++    CODING_SCORE_SECURITY,
++    CODING_SCORE_XML,
++)
+ from aiodoo_validation.validation_plan import (
+     PipelineStagePlaceholder,
+     ProfileCapabilities,
+@@ -27,49 +45,94 @@ from aiodoo_validation.validation_plan import (
+ 
+ CODING_ORACLE_PIPELINE: tuple[PipelineStagePlaceholder, ...] = (
+     PipelineStagePlaceholder(
+-        stage_id="coding.oracle.metadata",
++        stage_id=CODING_ORACLE_METADATA,
+         name="Metadata Oracle",
+         enabled=True,
+         phase="oracle",
+     ),
+     PipelineStagePlaceholder(
+-        stage_id="coding.oracle.manifest",
++        stage_id=CODING_ORACLE_MANIFEST,
+         name="Manifest Oracle",
+         enabled=True,
+         phase="oracle",
+     ),
+     PipelineStagePlaceholder(
+-        stage_id="coding.oracle.python",
++        stage_id=CODING_ORACLE_PYTHON,
+         name="Python Oracle",
+         enabled=True,
+         phase="oracle",
+     ),
+     PipelineStagePlaceholder(
+-        stage_id="coding.oracle.xml",
++        stage_id=CODING_ORACLE_XML,
+         name="XML Oracle",
+         enabled=True,
+         phase="oracle",
+     ),
+     PipelineStagePlaceholder(
+-        stage_id="coding.oracle.security",
++        stage_id=CODING_ORACLE_SECURITY,
+         name="Security Oracle",
+         enabled=True,
+         phase="oracle",
+     ),
+     PipelineStagePlaceholder(
+-        stage_id="coding.oracle.module_structure",
++        stage_id=CODING_ORACLE_MODULE_STRUCTURE,
+         name="Module Structure Oracle",
+         enabled=True,
+         phase="oracle",
+     ),
+     PipelineStagePlaceholder(
+-        stage_id="coding.oracle.quality",
++        stage_id=CODING_ORACLE_QUALITY,
+         name="Future Quality Oracle",
+         enabled=False,
+         phase="oracle",
+     ),
+ )
+ 
++CODING_SCORING_PIPELINE: tuple[PipelineStagePlaceholder, ...] = (
++    PipelineStagePlaceholder(
++        stage_id=CODING_SCORE_METADATA,
++        name="Metadata Score Policy",
++        enabled=True,
++        phase="scoring",
++    ),
++    PipelineStagePlaceholder(
++        stage_id=CODING_SCORE_MANIFEST,
++        name="Manifest Score Policy",
++        enabled=True,
++        phase="scoring",
++    ),
++    PipelineStagePlaceholder(
++        stage_id=CODING_SCORE_PYTHON,
++        name="Python Score Policy",
++        enabled=True,
++        phase="scoring",
++    ),
++    PipelineStagePlaceholder(
++        stage_id=CODING_SCORE_XML,
++        name="XML Score Policy",
++        enabled=True,
++        phase="scoring",
++    ),
++    PipelineStagePlaceholder(
++        stage_id=CODING_SCORE_SECURITY,
++        name="Security Score Policy",
++        enabled=True,
++        phase="scoring",
++    ),
++    PipelineStagePlaceholder(
++        stage_id=CODING_SCORE_MODULE_STRUCTURE,
++        name="Module Structure Score Policy",
++        enabled=True,
++        phase="scoring",
++    ),
++    PipelineStagePlaceholder(
++        stage_id=CODING_SCORE_QUALITY,
++        name="Future Quality Score Policy",
++        enabled=False,
++        phase="scoring",
++    ),
++)
++
+ 
+ @dataclass(frozen=True, slots=True)
+ class CodingProfile(ResolvedProfile):
+@@ -94,21 +157,14 @@ class CodingProfile(ResolvedProfile):
+         default_factory=lambda: ProfileCapabilities(
+             supports_inference=True,
+             supports_oracles=True,
+-            supports_scoring=False,
++            supports_scoring=True,
+             supports_benchmark=False,
+             supports_certification=False,
+         )
+     )
+-    validation_strategy: str = "coding-v1-oracle-placeholders"
++    validation_strategy: str = "coding-v1-scoring-placeholders"
+     oracle_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_ORACLE_PIPELINE
+-    scoring_pipeline: tuple[PipelineStagePlaceholder, ...] = (
+-        PipelineStagePlaceholder(
+-            stage_id="coding.scoring.placeholder",
+-            name="Scoring pipeline placeholder",
+-            enabled=False,
+-            phase="scoring",
+-        ),
+-    )
++    scoring_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_SCORING_PIPELINE
+     benchmark_pipeline: tuple[PipelineStagePlaceholder, ...] = (
+         PipelineStagePlaceholder(
+             stage_id="coding.benchmark.placeholder",
+diff --git a/aiodoo_validation/stubs/__init__.py b/aiodoo_validation/stubs/__init__.py
+index 4fa4265..53e1823 100644
+--- a/aiodoo_validation/stubs/__init__.py
++++ b/aiodoo_validation/stubs/__init__.py
+@@ -1,4 +1,4 @@
+-"""Stub implementations for Phase 0/1 pipeline stages."""
++"""Stub implementations for remaining pipeline stages."""
+ 
+ from __future__ import annotations
+ 
+@@ -22,6 +22,7 @@ from aiodoo_validation.ports import (
+ )
+ from aiodoo_validation.profiles import ProfileEngine
+ from aiodoo_validation.resolution.stub_resolver import StubArtifactResolver
++from aiodoo_validation.scoring import ScoringEngine
+ 
+ 
+ def _stub_result(stage: ValidationStage, *, message: str, **data: object) -> PlaceholderStageResult:
+@@ -33,18 +34,6 @@ def _stub_result(stage: ValidationStage, *, message: str, **data: object) -> Pla
+     )
+ 
+ 
+-class StubScoringEngine:
+-    """Placeholder scoring engine."""
+-
+-    def score(self, context: RunContext) -> PlaceholderStageResult:
+-        return _stub_result(
+-            ValidationStage.SCORING,
+-            message="stub scoring",
+-            validation_verdict="not_evaluated",
+-            stub=True,
+-        )
+-
+-
+ class StubBenchmarkEngine:
+     """Placeholder benchmark engine."""
+ 
+@@ -103,7 +92,7 @@ class StubPipelineComponents:
+             profile_engine=ProfileEngine.create_default(),
+             inference_runner=StubInferenceRunner.create(),
+             oracle_runner=OracleEngine.create_default(),
+-            scoring_engine=StubScoringEngine(),
++            scoring_engine=ScoringEngine.create_default(),
+             benchmark_engine=StubBenchmarkEngine(),
+             certification_engine=StubCertificationEngine(),
+             report_generator=StubReportGenerator(),
+diff --git a/docs/architecture.md b/docs/architecture.md
+index 0710558..d96ec2e 100644
+--- a/docs/architecture.md
++++ b/docs/architecture.md
+@@ -8,7 +8,7 @@
+ 
+ Determine whether a trained AIODOO model is suitable for production through validation, benchmarking (future), and certification (future).
+ 
+-## Logical architecture (Phase 5)
++## Logical architecture (Phase 6)
+ 
+ ```
+ Validation Engine
+@@ -16,7 +16,7 @@ Validation Engine
+     → Profile Engine → Coding Profile → ValidationPlan
+     → Inference Runner (mock default; optional Qwen runtime)
+     → Oracle Framework (registry + placeholder oracles)
+-    → Scoring Engine (stub)
++    → Scoring Engine (registry + placeholder policies; oracle results only)
+     → Benchmark Engine (stub)
+     → Certification Engine (stub)
+     → Report Generator (stub)
+diff --git a/docs/coding_profile.md b/docs/coding_profile.md
+index 0b8113b..ae04eef 100644
+--- a/docs/coding_profile.md
++++ b/docs/coding_profile.md
+@@ -56,13 +56,14 @@ Metadata Oracle
+ ```
+ 
+ Phase 5 executes enabled stages via the Oracle Framework as placeholders only.
++Phase 6 scores those oracle results via the Scoring Engine (deterministic placeholders).
+ 
+ ## ValidationPlan
+ 
+ `ValidationPlan` describes execution without implementing rules:
+ 
+ - Profile name and deterministic `plan_digest`
+-- `ProfileCapabilities` (inference + oracles on; scoring/benchmark/certification off)
++- `ProfileCapabilities` (inference + oracles + scoring on; benchmark/certification off)
+ - Supported artifact types and runtimes
+ - Oracle / scoring / benchmark / certification pipelines
+ - `execution_order` and `validation_stages`
+diff --git a/docs/implementation_status.md b/docs/implementation_status.md
+index c8fb008..35d722e 100644
+--- a/docs/implementation_status.md
++++ b/docs/implementation_status.md
+@@ -1,39 +1,36 @@
+ # Implementation Status
+ 
+ **Repository version:** 0.0.0-dev  
+-**Active phases:** Phase 0–5 (complete)  
+-**Architecture audit:** [Post Phase 0–3 audit](architecture_audit.md) — **frozen** (annotated post Phase 4)
++**Active phases:** Phase 0–6 (complete)  
++**Architecture audit:** [Post Phase 0–3 audit](architecture_audit.md) — **frozen**
+ 
+ ## Implemented
+ 
+-### Phase 5 — Oracle Framework
++### Phase 6 — Scoring Engine
+ 
+-- `OracleRunnerPort` with `OracleExecutionOutcome`
+-- `OracleEngine`, `OracleRegistry`, `Oracle` protocol
+-- Domain types: `OracleResult`, `OracleExecutionResult`, `OracleContext`, errors
+-- Placeholder oracles: Metadata, Manifest, Python, XML, Security, Module Structure
+-- Coding Profile oracle pipeline metadata (Quality disabled / future)
+-- `RunContext.oracle_execution` attachment
+-- Engine `RUN_VALIDATION` stage wired through `OracleRunnerPort`
++- `ScoringEnginePort` with `ScoreExecutionOutcome`
++- `ScoringEngine`, `ScoringRegistry`, `ScorePolicy` protocol
++- Placeholder policies mapped 1:1 to frozen oracle IDs
++- `RunContext.score_execution` attachment
++- Engine `SCORING` stage wired through `ScoringEnginePort`
+ - Unit tests: registry, pipeline, engine integration, structured errors
+-- [Oracle Framework documentation](oracle_framework.md)
++- [Scoring Engine documentation](scoring_engine.md)
+ 
+-### Phase 4 — Coding Validation Profile
++### Phase 5 — Oracle Framework
+ 
+-- Profile engine, Coding Profile, ValidationPlan, RunContext profile attachment
+-- Coding policy ownership under `profiles/coding/`
+-- Final refinements: profile method dispatch cleanup, audit historical annotation
+-- [Coding profile documentation](coding_profile.md)
++- Oracle runner, registry, placeholder oracles
++- Frozen Oracle ID convention in `oracles/ids.py`
++- [Oracle Framework documentation](oracle_framework.md)
+ 
+-### Phase 0–3
++### Phase 0–4
+ 
+-Repository foundation, validation engine, artifact resolution, inference runner.
++Repository foundation, validation engine, artifact resolution, inference runner,
++coding validation profile.
+ 
+ ## Not implemented (next phases)
+ 
+ | Phase | Component |
+ |-------|-----------|
+-| 6 | Scoring Engine |
+ | 7 | Benchmark Engine |
+ | 8 | Certification Engine |
+ | 9 | Validation Protocol V1 reports |
+@@ -44,4 +41,4 @@ Repository foundation, validation engine, artifact resolution, inference runner.
+ 
+ ## Next phase
+ 
+-**Phase 6 — Scoring Engine** per frozen Implementation Plan.
++**Phase 7 — Benchmark Engine** per frozen Implementation Plan.
+diff --git a/docs/oracle_framework.md b/docs/oracle_framework.md
+index 4fff58b..728f4a9 100644
+--- a/docs/oracle_framework.md
++++ b/docs/oracle_framework.md
+@@ -6,7 +6,19 @@ The **Oracle Framework** executes the oracle pipeline declared by the
+ ValidationPlan. The Coding Profile decides *which* oracles run; the Oracle
+ Framework only *executes* registered implementations.
+ 
+-## Architecture
++## Architecture & dependency direction
++
++```text
++domain (OracleResult, OracleExecutionResult, …)
++  ↑
++ports.OracleRunnerPort
++  ↑
++oracles (OracleEngine, OracleRegistry, placeholders)
++  ↑
++engine (orchestration only — no validation logic)
++
++Scoring / Benchmark / Certification MUST NOT be imported by oracles/.
++```
+ 
+ ```text
+ Validation Engine
+@@ -16,11 +28,32 @@ OracleEngine
+ Placeholder Oracles
+     ↓ OracleResult
+ OracleExecutionResult → RunContext
++    ↓
++Scoring Engine (Phase 6 — consumes results only)
+ ```
+ 
+ The Validation Engine never contains validation logic. It calls
+ `OracleRunnerPort.execute_oracles(context)` and attaches the immutable result.
+ 
++## Oracle ID convention (frozen)
++
++Format: `{profile}.oracle.{name}`
++
++Centralized in `aiodoo_validation.oracles.ids`. **Do not rename.**
++
++| Constant | ID |
++|----------|----|
++| `CODING_ORACLE_METADATA` | `coding.oracle.metadata` |
++| `CODING_ORACLE_MANIFEST` | `coding.oracle.manifest` |
++| `CODING_ORACLE_PYTHON` | `coding.oracle.python` |
++| `CODING_ORACLE_XML` | `coding.oracle.xml` |
++| `CODING_ORACLE_SECURITY` | `coding.oracle.security` |
++| `CODING_ORACLE_MODULE_STRUCTURE` | `coding.oracle.module_structure` |
++| `CODING_ORACLE_QUALITY` | `coding.oracle.quality` |
++
++`CODING_ORACLE_QUALITY` is declared in the Coding Profile pipeline as **disabled**
++future metadata — it is not registered by default and is not executed.
++
+ ## Components
+ 
+ | Component | Responsibility |
+@@ -31,19 +64,12 @@ The Validation Engine never contains validation logic. It calls
+ | `Oracle` protocol | Metadata + `execute(OracleContext) → OracleResult` |
+ | Placeholder oracles | Always-successful stubs (no XML/AST/security scanning) |
+ 
+-## Placeholder oracles (coding)
+-
+-| ID | Class |
+-|----|-------|
+-| `coding.oracle.metadata` | `MetadataOracle` |
+-| `coding.oracle.manifest` | `ManifestOracle` |
+-| `coding.oracle.python` | `PythonOracle` |
+-| `coding.oracle.xml` | `XmlOracle` |
+-| `coding.oracle.security` | `SecurityOracle` |
+-| `coding.oracle.module_structure` | `ModuleStructureOracle` |
++## Placeholder philosophy
+ 
+-`coding.oracle.quality` appears in the Coding Profile pipeline as **disabled**
+-future metadata only — it is not registered and is not executed.
++Placeholder oracles return successful `OracleResult` values without inspecting
++artifacts, parsing XML/Python, scanning security rules, or using inference.
++They exist to prove pipeline wiring. Real validation logic is added later
++**inside** oracle `execute` methods — never in the Validation Engine or Scoring.
+ 
+ ## Lifecycle
+ 
+@@ -53,24 +79,31 @@ future metadata only — it is not registered and is not executed.
+    - Require `validation_plan` and `validation_profile`
+    - Reject capability mismatch
+    - For each **enabled** `oracle_pipeline` stage:
+-     - Resolve oracle from registry
++     - Resolve oracle from registry by frozen ID
+      - Validate supported profile matches plan
+      - Execute oracle with `OracleContext`
+    - Aggregate into `OracleExecutionResult`
+ 4. Engine attaches `oracle_execution` to `RunContext`
+ 
++## Registry & future plugins
++
++- Register additional oracles via `OracleRegistry.register`
++- Resolve by frozen oracle ID
++- Support new profiles with `{profile}.oracle.{name}` IDs
++- No hardcoded branching in Validation Engine
++
+ ## RunContext integration
+ 
+ After a successful RUN_VALIDATION stage:
+ 
+ - `oracle_execution: OracleExecutionResult`
+-  - `results: tuple[OracleResult, ...]`
++  - `results: tuple[OracleResult, …]`
+   - `duration_ms`, counts, warnings, errors
+   - immutable
+ 
+ ## Coding Profile relationship
+ 
+-The Coding Profile owns the oracle pipeline metadata:
++The Coding Profile owns the oracle pipeline metadata (IDs from `oracles.ids`):
+ 
+ ```text
+ Metadata → Manifest → Python → XML → Security → Module Structure
+@@ -79,34 +112,7 @@ Metadata → Manifest → Python → XML → Security → Module Structure
+ 
+ Oracle Framework does not hardcode this order. It reads `ValidationPlan.oracle_pipeline`.
+ 
+-## ValidationPlan relationship
+-
+-- Enabled stages → executed
+-- Disabled stages → skipped
+-- `capabilities.supports_oracles` must be true
+-
+-## Error handling
+-
+-Structured `OracleError` / `OracleErrorCode` examples:
+-
+-- `oracle_not_found` / `unknown_oracle`
+-- `registration_failure`
+-- `execution_failure`
+-- `configuration_failure`
+-- `profile_mismatch`
+-- `capability_mismatch`
+-- `missing_plan` / `missing_profile`
+-
+-Outcomes are returned to the Validation Engine; the engine never crashes.
+-
+-## Future extensibility
+-
+-- Register additional oracles via `OracleRegistry.register`
+-- Add real validation logic inside oracle `execute` methods in later phases
+-- Support new profiles by registering profile-scoped oracle IDs
+-- Quality / scoring oracles remain out of scope until their phases
+-
+-## Explicitly not implemented (Phase 5)
++## Explicitly not implemented in the Oracle Framework
+ 
+-No XML parsing, AST analysis, Odoo inspection, security scanning, code quality
+-checks, scoring, benchmarking, certification, reports, or CLI.
++No scoring, benchmarking, certification, reports, CLI, XML parsing, AST analysis,
++Odoo inspection, security scanning, or code quality checks.
+diff --git a/tests/unit/test_coding_profile.py b/tests/unit/test_coding_profile.py
+index 29702c9..37fc85a 100644
+--- a/tests/unit/test_coding_profile.py
++++ b/tests/unit/test_coding_profile.py
+@@ -116,12 +116,16 @@ def test_validation_plan_is_immutable_and_metadata_only() -> None:
+     assert plan.profile_name == "coding"
+     assert plan.capabilities.supports_inference is True
+     assert plan.capabilities.supports_oracles is True
++    assert plan.capabilities.supports_scoring is True
+     assert plan.validation_stages == (ValidationStage.RUN_VALIDATION,)
+     assert ValidationStage.INITIALIZE_INFERENCE in plan.execution_order
+     assert plan.oracle_pipeline[0].enabled is True
+     assert plan.oracle_pipeline[0].stage_id == "coding.oracle.metadata"
+     assert plan.oracle_pipeline[-1].stage_id == "coding.oracle.quality"
+     assert plan.oracle_pipeline[-1].enabled is False
++    assert plan.scoring_pipeline[0].stage_id == "coding.score.metadata"
++    assert plan.scoring_pipeline[0].enabled is True
++    assert plan.scoring_pipeline[-1].enabled is False
+ 
+     with pytest.raises(FrozenInstanceError):
+         plan.plan_digest = "changed"  # type: ignore[misc]
+diff --git a/tests/unit/test_framework_boundaries.py b/tests/unit/test_framework_boundaries.py
+index 813a9f0..56f9b8c 100644
+--- a/tests/unit/test_framework_boundaries.py
++++ b/tests/unit/test_framework_boundaries.py
+@@ -53,3 +53,35 @@ def test_resolution_does_not_import_inference_package() -> None:
+         if "inference" in imports:
+             violations.append(str(path.relative_to(ROOT)))
+     assert not violations, "resolution must not import inference:\n" + "\n".join(violations)
++
++
++def test_oracles_do_not_import_scoring() -> None:
++    oracles_dir = PACKAGE / "oracles"
++    violations: list[str] = []
++    for path in oracles_dir.rglob("*.py"):
++        imports = _imports_in_file(path)
++        if "scoring" in imports:
++            violations.append(str(path.relative_to(ROOT)))
++    assert not violations, "oracles must not import scoring:\n" + "\n".join(violations)
++
++
++def test_scoring_does_not_import_oracle_execution() -> None:
++    """Scoring may import oracle domain types and IDs, not oracle execution."""
++    scoring_dir = PACKAGE / "scoring"
++    forbidden_suffixes = (
++        "oracles.engine",
++        "oracles.registry",
++        "oracles.placeholders",
++        "oracles.base",
++    )
++    violations: list[str] = []
++    for path in scoring_dir.rglob("*.py"):
++        tree = ast.parse(path.read_text(encoding="utf-8"))
++        for node in ast.walk(tree):
++            if isinstance(node, ast.ImportFrom) and node.module:
++                module = node.module
++                if module.endswith(forbidden_suffixes) or module == "aiodoo_validation.oracles":
++                    violations.append(f"{path.relative_to(ROOT)}: {module}")
++    assert not violations, "scoring must not import oracle execution modules:\n" + "\n".join(
++        violations
++    )
+diff --git a/tests/unit/test_repository_structure.py b/tests/unit/test_repository_structure.py
+index 3c7e7ed..26b7b25 100644
+--- a/tests/unit/test_repository_structure.py
++++ b/tests/unit/test_repository_structure.py
+@@ -24,6 +24,7 @@ REQUIRED_DIRS = [
+     "aiodoo_validation/profiles/coding",
+     "aiodoo_validation/validation_plan",
+     "aiodoo_validation/oracles",
++    "aiodoo_validation/scoring",
+     "aiodoo_validation/reports",
+     "aiodoo_validation/benchmark",
+     "aiodoo_validation/certification",
+diff --git a/tests/unit/test_validation_engine_lifecycle.py b/tests/unit/test_validation_engine_lifecycle.py
+index 9d81c89..9317d1c 100644
+--- a/tests/unit/test_validation_engine_lifecycle.py
++++ b/tests/unit/test_validation_engine_lifecycle.py
+@@ -14,7 +14,6 @@ from aiodoo_validation.engine import PIPELINE_STAGE_ORDER, ValidationEngine
+ from aiodoo_validation.exceptions import InvalidRequestError
+ 
+ STUB_PORT_STAGES = (
+-    ValidationStage.SCORING,
+     ValidationStage.BENCHMARK,
+     ValidationStage.CERTIFICATION,
+     ValidationStage.REPORT,
+@@ -86,6 +85,11 @@ def test_stub_engine_runs_complete_lifecycle() -> None:
+     assert result.run_context.oracle_execution is not None
+     assert result.run_context.oracle_execution.oracle_count == 6
+ 
++    scoring_result = result.run_context.placeholder_results[ValidationStage.SCORING]
++    assert scoring_result.status is StageStatus.SUCCEEDED
++    assert result.run_context.score_execution is not None
++    assert result.run_context.score_execution.policy_count == 6
++
+     for stage in PIPELINE_STAGE_ORDER:
+         assert stage in result.run_context.placeholder_results
+ 

@@ -12,6 +12,14 @@ from aiodoo_validation.domain.oracle import (
     OracleMetadata,
     OracleResult,
 )
+from aiodoo_validation.oracles.ids import (
+    CODING_ORACLE_MANIFEST,
+    CODING_ORACLE_METADATA,
+    CODING_ORACLE_MODULE_STRUCTURE,
+    CODING_ORACLE_PYTHON,
+    CODING_ORACLE_SECURITY,
+    CODING_ORACLE_XML,
+)
 
 
 def placeholder_metadata(
@@ -68,7 +76,7 @@ class MetadataOracle(PlaceholderOracle):
     def create() -> MetadataOracle:
         return MetadataOracle(
             metadata=placeholder_metadata(
-                oracle_id="coding.oracle.metadata",
+                oracle_id=CODING_ORACLE_METADATA,
                 name="Metadata Oracle",
                 description="Placeholder metadata validation oracle.",
             )
@@ -83,7 +91,7 @@ class ManifestOracle(PlaceholderOracle):
     def create() -> ManifestOracle:
         return ManifestOracle(
             metadata=placeholder_metadata(
-                oracle_id="coding.oracle.manifest",
+                oracle_id=CODING_ORACLE_MANIFEST,
                 name="Manifest Oracle",
                 description="Placeholder Odoo manifest validation oracle.",
             )
@@ -98,7 +106,7 @@ class PythonOracle(PlaceholderOracle):
     def create() -> PythonOracle:
         return PythonOracle(
             metadata=placeholder_metadata(
-                oracle_id="coding.oracle.python",
+                oracle_id=CODING_ORACLE_PYTHON,
                 name="Python Oracle",
                 description="Placeholder Python source validation oracle.",
             )
@@ -113,7 +121,7 @@ class XmlOracle(PlaceholderOracle):
     def create() -> XmlOracle:
         return XmlOracle(
             metadata=placeholder_metadata(
-                oracle_id="coding.oracle.xml",
+                oracle_id=CODING_ORACLE_XML,
                 name="XML Oracle",
                 description="Placeholder XML view validation oracle.",
             )
@@ -128,7 +136,7 @@ class SecurityOracle(PlaceholderOracle):
     def create() -> SecurityOracle:
         return SecurityOracle(
             metadata=placeholder_metadata(
-                oracle_id="coding.oracle.security",
+                oracle_id=CODING_ORACLE_SECURITY,
                 name="Security Oracle",
                 description="Placeholder security validation oracle.",
             )
@@ -143,7 +151,7 @@ class ModuleStructureOracle(PlaceholderOracle):
     def create() -> ModuleStructureOracle:
         return ModuleStructureOracle(
             metadata=placeholder_metadata(
-                oracle_id="coding.oracle.module_structure",
+                oracle_id=CODING_ORACLE_MODULE_STRUCTURE,
                 name="Module Structure Oracle",
                 description="Placeholder module structure validation oracle.",
             )

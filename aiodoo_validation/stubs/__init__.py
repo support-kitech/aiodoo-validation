@@ -1,4 +1,4 @@
-"""Stub implementations for Phase 0/1 pipeline stages."""
+"""Stub implementations for remaining pipeline stages."""
 
 from __future__ import annotations
 
@@ -22,6 +22,7 @@ from aiodoo_validation.ports import (
 )
 from aiodoo_validation.profiles import ProfileEngine
 from aiodoo_validation.resolution.stub_resolver import StubArtifactResolver
+from aiodoo_validation.scoring import ScoringEngine
 
 
 def _stub_result(stage: ValidationStage, *, message: str, **data: object) -> PlaceholderStageResult:
@@ -31,18 +32,6 @@ def _stub_result(stage: ValidationStage, *, message: str, **data: object) -> Pla
         message=message,
         data=MappingProxyType(dict(data)),
     )
-
-
-class StubScoringEngine:
-    """Placeholder scoring engine."""
-
-    def score(self, context: RunContext) -> PlaceholderStageResult:
-        return _stub_result(
-            ValidationStage.SCORING,
-            message="stub scoring",
-            validation_verdict="not_evaluated",
-            stub=True,
-        )
 
 
 class StubBenchmarkEngine:
@@ -103,7 +92,7 @@ class StubPipelineComponents:
             profile_engine=ProfileEngine.create_default(),
             inference_runner=StubInferenceRunner.create(),
             oracle_runner=OracleEngine.create_default(),
-            scoring_engine=StubScoringEngine(),
+            scoring_engine=ScoringEngine.create_default(),
             benchmark_engine=StubBenchmarkEngine(),
             certification_engine=StubCertificationEngine(),
             report_generator=StubReportGenerator(),

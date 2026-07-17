@@ -14,6 +14,7 @@ from aiodoo_validation.domain.profile import ProfileResolutionOutcome
 from aiodoo_validation.domain.request import ValidationRequest
 from aiodoo_validation.domain.resolution import ArtifactResolutionOutcome
 from aiodoo_validation.domain.result import ValidationRunResult
+from aiodoo_validation.domain.scoring import ScoreExecutionOutcome
 from aiodoo_validation.domain.stage import PlaceholderStageResult, StageRecord
 from aiodoo_validation.engine.protocol import negotiate_protocol
 from aiodoo_validation.exceptions import (
@@ -58,8 +59,8 @@ class ValidationEngine:
     """
     Production validation orchestrator skeleton.
 
-    Executes the complete lifecycle using injected ports. Phase 5 wires the
-    Oracle Framework through ``OracleRunnerPort`` while scoring and later
+    Executes the complete lifecycle using injected ports. Phase 6 wires the
+    Scoring Engine through ``ScoringEnginePort`` while benchmark and later
     stages remain stubbed.
     """
 
@@ -186,6 +187,10 @@ class ValidationEngine:
                 context = self._run_oracle_stage(context)
                 if context.exit_status is ExitStatus.FAILED:
                     return self._run_failed_exit(context)
+            elif stage == ValidationStage.SCORING:
+                context = self._run_scoring_stage(context)
+                if context.exit_status is ExitStatus.FAILED:
+                    return self._run_failed_exit(context)
             elif stage == ValidationStage.EXIT:
                 context = self._run_exit(context)
             else:
@@ -196,7 +201,6 @@ class ValidationEngine:
 
     def _executor_for(self, stage: ValidationStage) -> _StageExecutor:
         executors: dict[ValidationStage, _StageExecutor] = {
-            ValidationStage.SCORING: self._scoring_engine.score,
             ValidationStage.BENCHMARK: self._benchmark_engine.benchmark,
             ValidationStage.CERTIFICATION: self._certification_engine.certify,
             ValidationStage.REPORT: self._report_generator.generate_report,
@@ -304,6 +308,25 @@ class ValidationEngine:
             updated = updated.with_error(detail)
         return updated.with_exit_status(ExitStatus.FAILED)
 
+    def _run_scoring_stage(self, context: RunContext) -> RunContext:
+        outcome = self._scoring_engine.score(context)
+        return self._apply_scoring_outcome(context, outcome)
+
+    def _apply_scoring_outcome(
+        self,
+        context: RunContext,
+        outcome: ScoreExecutionOutcome,
+    ) -> RunContext:
+        result = outcome.to_stage_result()
+        updated = self._record_stage(context, ValidationStage.SCORING, result)
+        for warning in outcome.warnings:
+            updated = updated.with_warning(warning)
+        if outcome.success and outcome.execution is not None:
+            return updated.with_score_execution(outcome.execution)
+        for error in outcome.errors:
+            updated = updated.with_error(f"{error.code.value}: {error.message}")
+        return updated.with_exit_status(ExitStatus.FAILED)
+
     def _run_exit(self, context: RunContext) -> RunContext:
         self._inference_runner.shutdown(context)
         exit_status = context.exit_status or ExitStatus.NOT_CERTIFIED
@@ -372,6 +395,7 @@ class ValidationEngine:
             ValidationStage.RESOLVE_PROFILE,
             ValidationStage.INITIALIZE_INFERENCE,
             ValidationStage.RUN_VALIDATION,
+            ValidationStage.SCORING,
         ):
             raise PipelineError(f"Stage {stage.value} failed: {result.message}")
         return updated

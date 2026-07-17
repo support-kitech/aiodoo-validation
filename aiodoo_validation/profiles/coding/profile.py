@@ -10,6 +10,15 @@ from typing import Any
 from aiodoo_validation.domain.artifacts import ArtifactBundle
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.profile import ProfileError, ResolvedProfile
+from aiodoo_validation.oracles.ids import (
+    CODING_ORACLE_MANIFEST,
+    CODING_ORACLE_METADATA,
+    CODING_ORACLE_MODULE_STRUCTURE,
+    CODING_ORACLE_PYTHON,
+    CODING_ORACLE_QUALITY,
+    CODING_ORACLE_SECURITY,
+    CODING_ORACLE_XML,
+)
 from aiodoo_validation.profiles.coding.compatibility import validate_coding_artifact_compatibility
 from aiodoo_validation.profiles.coding.policy import (
     PROFILE_NAME,
@@ -19,6 +28,15 @@ from aiodoo_validation.profiles.coding.policy import (
     SUPPORTED_PROTOCOL_MAJORS,
     SUPPORTED_RUNTIMES,
 )
+from aiodoo_validation.scoring.ids import (
+    CODING_SCORE_MANIFEST,
+    CODING_SCORE_METADATA,
+    CODING_SCORE_MODULE_STRUCTURE,
+    CODING_SCORE_PYTHON,
+    CODING_SCORE_QUALITY,
+    CODING_SCORE_SECURITY,
+    CODING_SCORE_XML,
+)
 from aiodoo_validation.validation_plan import (
     PipelineStagePlaceholder,
     ProfileCapabilities,
@@ -27,46 +45,91 @@ from aiodoo_validation.validation_plan import (
 
 CODING_ORACLE_PIPELINE: tuple[PipelineStagePlaceholder, ...] = (
     PipelineStagePlaceholder(
-        stage_id="coding.oracle.metadata",
+        stage_id=CODING_ORACLE_METADATA,
         name="Metadata Oracle",
         enabled=True,
         phase="oracle",
     ),
     PipelineStagePlaceholder(
-        stage_id="coding.oracle.manifest",
+        stage_id=CODING_ORACLE_MANIFEST,
         name="Manifest Oracle",
         enabled=True,
         phase="oracle",
     ),
     PipelineStagePlaceholder(
-        stage_id="coding.oracle.python",
+        stage_id=CODING_ORACLE_PYTHON,
         name="Python Oracle",
         enabled=True,
         phase="oracle",
     ),
     PipelineStagePlaceholder(
-        stage_id="coding.oracle.xml",
+        stage_id=CODING_ORACLE_XML,
         name="XML Oracle",
         enabled=True,
         phase="oracle",
     ),
     PipelineStagePlaceholder(
-        stage_id="coding.oracle.security",
+        stage_id=CODING_ORACLE_SECURITY,
         name="Security Oracle",
         enabled=True,
         phase="oracle",
     ),
     PipelineStagePlaceholder(
-        stage_id="coding.oracle.module_structure",
+        stage_id=CODING_ORACLE_MODULE_STRUCTURE,
         name="Module Structure Oracle",
         enabled=True,
         phase="oracle",
     ),
     PipelineStagePlaceholder(
-        stage_id="coding.oracle.quality",
+        stage_id=CODING_ORACLE_QUALITY,
         name="Future Quality Oracle",
         enabled=False,
         phase="oracle",
+    ),
+)
+
+CODING_SCORING_PIPELINE: tuple[PipelineStagePlaceholder, ...] = (
+    PipelineStagePlaceholder(
+        stage_id=CODING_SCORE_METADATA,
+        name="Metadata Score Policy",
+        enabled=True,
+        phase="scoring",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_SCORE_MANIFEST,
+        name="Manifest Score Policy",
+        enabled=True,
+        phase="scoring",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_SCORE_PYTHON,
+        name="Python Score Policy",
+        enabled=True,
+        phase="scoring",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_SCORE_XML,
+        name="XML Score Policy",
+        enabled=True,
+        phase="scoring",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_SCORE_SECURITY,
+        name="Security Score Policy",
+        enabled=True,
+        phase="scoring",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_SCORE_MODULE_STRUCTURE,
+        name="Module Structure Score Policy",
+        enabled=True,
+        phase="scoring",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_SCORE_QUALITY,
+        name="Future Quality Score Policy",
+        enabled=False,
+        phase="scoring",
     ),
 )
 
@@ -94,21 +157,14 @@ class CodingProfile(ResolvedProfile):
         default_factory=lambda: ProfileCapabilities(
             supports_inference=True,
             supports_oracles=True,
-            supports_scoring=False,
+            supports_scoring=True,
             supports_benchmark=False,
             supports_certification=False,
         )
     )
-    validation_strategy: str = "coding-v1-oracle-placeholders"
+    validation_strategy: str = "coding-v1-scoring-placeholders"
     oracle_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_ORACLE_PIPELINE
-    scoring_pipeline: tuple[PipelineStagePlaceholder, ...] = (
-        PipelineStagePlaceholder(
-            stage_id="coding.scoring.placeholder",
-            name="Scoring pipeline placeholder",
-            enabled=False,
-            phase="scoring",
-        ),
-    )
+    scoring_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_SCORING_PIPELINE
     benchmark_pipeline: tuple[PipelineStagePlaceholder, ...] = (
         PipelineStagePlaceholder(
             stage_id="coding.benchmark.placeholder",
