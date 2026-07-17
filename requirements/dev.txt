@@ -1,0 +1,6 @@
+# Development and CI tooling.
+-r base.txt
+pytest>=8.0
+coverage>=7.0
+ruff>=0.6
+mypy>=1.11
