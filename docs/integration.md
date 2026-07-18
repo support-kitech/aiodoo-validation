@@ -207,8 +207,10 @@ The validation repository must **never** import:
 
 Ecosystem consumers import validation — not the reverse.
 
-## Explicitly not implemented
+## Explicitly not implemented (in this repository)
 
-No training integration, Colab runtime, VS Code extension, model loading, GPU
-workloads, dataset generation, HuggingFace coupling, async execution, plugins,
-or Phase 12 production hardening.
+This repository does **not** ship training integration, Colab runtime, VS Code
+extension logic, model loading, GPU workloads, dataset generation, HuggingFace
+coupling, async execution, or plugin hosts — those belong to consumer
+repositories. Production hardening (R1) for validation itself is **complete**;
+see [MAINTENANCE.md](MAINTENANCE.md) for v1.0.x maintenance mode.
