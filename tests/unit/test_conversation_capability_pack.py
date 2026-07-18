@@ -54,7 +54,13 @@ class TestConversationRegistration:
 
     def test_builtin_registry_includes_conversation(self) -> None:
         registry = create_default_capability_registry()
-        assert registry.registered_ids() == ("coding", "conversation", "planner", "repair")
+        assert registry.registered_ids() == (
+            "coding",
+            "conversation",
+            "execution",
+            "planner",
+            "repair",
+        )
         conversation = registry.get("conversation")
         assert conversation.parser_id == CONVERSATION_PARSER_ID
         assert conversation.specification.id == "conversation"

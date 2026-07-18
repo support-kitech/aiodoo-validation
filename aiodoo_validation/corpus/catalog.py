@@ -43,6 +43,13 @@ CONVERSATION_EVAL_FIXTURE_FINGERPRINT = (
 )
 CONVERSATION_EVAL_FIXTURE_VERSION = "fixture-conversation-e5"
 
+# Execution evaluation fixture pin (validation-owned held-out smoke corpus).
+EXECUTION_EVAL_FIXTURE_CORPUS_ID = "fixture.execution.eval.behavior"
+EXECUTION_EVAL_FIXTURE_FINGERPRINT = (
+    "58a4a0a72c0ed98aeec2898a87917999d71371e4062bd7061548dc346df486f4"
+)
+EXECUTION_EVAL_FIXTURE_VERSION = "fixture-execution-e5"
+
 
 def _repair_eval_fixture_pin() -> CorpusPin:
     return CorpusPin(
@@ -88,6 +95,18 @@ def _conversation_eval_fixture_pin() -> CorpusPin:
         dataset_version=CONVERSATION_EVAL_FIXTURE_VERSION,
         source_package="aiodoo-validation-fixtures",
         location_hint="conversation/eval_corpus",
+        metadata=MappingProxyType({"kind": "validation_fixture_pin"}),
+    )
+
+
+def _execution_eval_fixture_pin() -> CorpusPin:
+    return CorpusPin(
+        corpus_id=EXECUTION_EVAL_FIXTURE_CORPUS_ID,
+        capability_id="execution",
+        fingerprint=EXECUTION_EVAL_FIXTURE_FINGERPRINT,
+        dataset_version=EXECUTION_EVAL_FIXTURE_VERSION,
+        source_package="aiodoo-validation-fixtures",
+        location_hint="execution/eval_corpus",
         metadata=MappingProxyType({"kind": "validation_fixture_pin"}),
     )
 
@@ -248,14 +267,15 @@ def builtin_corpus_pin_registry(
     """
     Builtin production pin catalog.
 
-    Ships Repair, Coding, Planner, and Conversation evaluation fixture pins.
-    Does **not** auto-select them for production runs (G11: missing config still
-    defers). Callers must pass ``evaluation_corpus_id`` (or a path) explicitly.
+    Ships Repair, Coding, Planner, Conversation, and Execution evaluation fixture
+    pins. Does **not** auto-select them for production runs (G11: missing config
+    still defers). Callers must pass ``evaluation_corpus_id`` (or a path) explicitly.
     """
     repair_pin = _repair_eval_fixture_pin()
     coding_pin = _coding_eval_fixture_pin()
     planner_pin = _planner_eval_fixture_pin()
     conversation_pin = _conversation_eval_fixture_pin()
+    execution_pin = _execution_eval_fixture_pin()
     fixture_root = _fixture_package_root()
     locations: dict[str, Path] = {}
     if include_fixture_locations and fixture_root.is_dir():
@@ -263,9 +283,10 @@ def builtin_corpus_pin_registry(
         locations[coding_pin.corpus_id] = fixture_root / "coding" / "eval_corpus"
         locations[planner_pin.corpus_id] = fixture_root / "planner" / "eval_corpus"
         locations[conversation_pin.corpus_id] = fixture_root / "conversation" / "eval_corpus"
+        locations[execution_pin.corpus_id] = fixture_root / "execution" / "eval_corpus"
 
     return CorpusPinRegistry.build(
-        (repair_pin, coding_pin, planner_pin, conversation_pin),
+        (repair_pin, coding_pin, planner_pin, conversation_pin, execution_pin),
         aliases={
             "repair.eval": repair_pin.corpus_id,
             "repair.eval.fixture": repair_pin.corpus_id,
@@ -275,6 +296,8 @@ def builtin_corpus_pin_registry(
             "planner.eval.fixture": planner_pin.corpus_id,
             "conversation.eval": conversation_pin.corpus_id,
             "conversation.eval.fixture": conversation_pin.corpus_id,
+            "execution.eval": execution_pin.corpus_id,
+            "execution.eval.fixture": execution_pin.corpus_id,
         },
         locations=locations,
         # Documented default identities — not auto-loaded without configuration.
@@ -283,6 +306,7 @@ def builtin_corpus_pin_registry(
             "coding": coding_pin.corpus_id,
             "planner": planner_pin.corpus_id,
             "conversation": conversation_pin.corpus_id,
+            "execution": execution_pin.corpus_id,
         },
         search_roots=search_roots_from_environment(extra_roots=(fixture_root, *extra_search_roots)),
     )
@@ -333,6 +357,9 @@ __all__ = [
     "CONVERSATION_EVAL_FIXTURE_CORPUS_ID",
     "CONVERSATION_EVAL_FIXTURE_FINGERPRINT",
     "CONVERSATION_EVAL_FIXTURE_VERSION",
+    "EXECUTION_EVAL_FIXTURE_CORPUS_ID",
+    "EXECUTION_EVAL_FIXTURE_FINGERPRINT",
+    "EXECUTION_EVAL_FIXTURE_VERSION",
     "PLANNER_EVAL_FIXTURE_CORPUS_ID",
     "PLANNER_EVAL_FIXTURE_FINGERPRINT",
     "PLANNER_EVAL_FIXTURE_VERSION",

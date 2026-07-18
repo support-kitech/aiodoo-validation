@@ -22,6 +22,13 @@ from aiodoo_validation.capabilities.conversation import (
     ConversationRecordParser,
     get_conversation_capability_pack,
 )
+from aiodoo_validation.capabilities.execution import (
+    EXECUTION_PARSER_ID,
+    ExecutionCapabilityPack,
+    ExecutionParseError,
+    ExecutionRecordParser,
+    get_execution_capability_pack,
+)
 from aiodoo_validation.capabilities.planner import (
     PLANNER_PARSER_ID,
     PlannerCapabilityPack,
@@ -44,6 +51,7 @@ from aiodoo_validation.capabilities.repair import (
 __all__ = [
     "CODING_PARSER_ID",
     "CONVERSATION_PARSER_ID",
+    "EXECUTION_PARSER_ID",
     "PLANNER_PARSER_ID",
     "REPAIR_PARSER_ID",
     "CapabilityRecordParser",
@@ -55,6 +63,9 @@ __all__ = [
     "ConversationCapabilityPack",
     "ConversationParseError",
     "ConversationRecordParser",
+    "ExecutionCapabilityPack",
+    "ExecutionParseError",
+    "ExecutionRecordParser",
     "PlannerCapabilityPack",
     "PlannerParseError",
     "PlannerRecordParser",
@@ -65,6 +76,7 @@ __all__ = [
     "create_default_capability_registry",
     "get_coding_capability_pack",
     "get_conversation_capability_pack",
+    "get_execution_capability_pack",
     "get_planner_capability_pack",
     "get_repair_capability_pack",
     "register_builtin_capability_packs",

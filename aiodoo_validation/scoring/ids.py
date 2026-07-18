@@ -75,3 +75,9 @@ CONVERSATION_SCORE_BEHAVIOR = "conversation.score.behavior"
 CONVERSATION_SCORE_TO_ORACLE: dict[str, str] = {
     CONVERSATION_SCORE_BEHAVIOR: "conversation.oracle.behavior.conversation",
 }
+
+# Execution behavioral scoring — source oracle: execution.oracle.behavior.execution
+EXECUTION_SCORE_BEHAVIOR = "execution.score.behavior"
+EXECUTION_SCORE_TO_ORACLE: dict[str, str] = {
+    EXECUTION_SCORE_BEHAVIOR: "execution.oracle.behavior.execution",
+}

@@ -11,6 +11,7 @@ from aiodoo_validation import ValidationService, __version__
 from aiodoo_validation.api import (
     build_coding_request,
     build_conversation_request,
+    build_execution_request,
     build_planner_request,
     capability_labels,
     colab_integration_hints,
@@ -121,6 +122,20 @@ def test_build_conversation_request() -> None:
     assert request.execution_tier is ExecutionTier.SMOKE
     assert request.odoo_versions == (18,)
     assert request.metadata["evaluation_corpus_id"] == "conversation.eval"
+
+
+def test_build_execution_request() -> None:
+    request = build_execution_request(
+        base_model_ref="base",
+        adapter_ref="adapter",
+        execution_tier="smoke",
+        odoo_versions="18",
+        metadata={"evaluation_corpus_id": "execution.eval"},
+    )
+    assert request.profile_name == "execution"
+    assert request.execution_tier is ExecutionTier.SMOKE
+    assert request.odoo_versions == (18,)
+    assert request.metadata["evaluation_corpus_id"] == "execution.eval"
 
 
 def test_validation_service_runs_with_stubs() -> None:

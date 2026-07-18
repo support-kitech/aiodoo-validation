@@ -14,6 +14,7 @@ from aiodoo_validation.certification.criteria import (
 from aiodoo_validation.certification.ids import (
     CODING_CERTIFICATION_BEHAVIOR,
     CONVERSATION_CERTIFICATION_BEHAVIOR,
+    EXECUTION_CERTIFICATION_BEHAVIOR,
     PLANNER_CERTIFICATION_BEHAVIOR,
     REPAIR_CERTIFICATION_BEHAVIOR,
 )
@@ -32,6 +33,7 @@ from aiodoo_validation.execution import certification_label, is_framework_only_t
 from aiodoo_validation.scoring.ids import (
     CODING_SCORE_BEHAVIOR,
     CONVERSATION_SCORE_BEHAVIOR,
+    EXECUTION_SCORE_BEHAVIOR,
     PLANNER_SCORE_BEHAVIOR,
     REPAIR_SCORE_BEHAVIOR,
 )
@@ -142,6 +144,23 @@ class BehaviorGatedCertificationPolicy:
                 supported_profile="conversation",
             ),
             source_score_policy_id=CONVERSATION_SCORE_BEHAVIOR,
+            criteria=criteria or default_behavior_gated_certification_criteria(),
+        )
+
+    @classmethod
+    def create_for_execution(
+        cls,
+        *,
+        criteria: CertificationCriteria | None = None,
+    ) -> BehaviorGatedCertificationPolicy:
+        return cls(
+            metadata=_metadata(
+                policy_id=EXECUTION_CERTIFICATION_BEHAVIOR,
+                name="Execution Behavior Certification",
+                source_benchmark_policy_id="execution.benchmark.behavior",
+                supported_profile="execution",
+            ),
+            source_score_policy_id=EXECUTION_SCORE_BEHAVIOR,
             criteria=criteria or default_behavior_gated_certification_criteria(),
         )
 

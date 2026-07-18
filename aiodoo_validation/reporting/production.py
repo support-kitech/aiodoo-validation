@@ -243,6 +243,17 @@ def default_production_report_templates(
                 )
             )
         )
+    if profile == "execution":
+        templates.append(
+            CertificationSummaryReportTemplate(
+                metadata=_metadata(
+                    template_id="execution.report.behavior",
+                    name="Execution Behavior Report",
+                    source_certification_policy_id="execution.certification.behavior",
+                    supported_profile="execution",
+                )
+            )
+        )
     return tuple(templates)
 
 

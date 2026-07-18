@@ -350,6 +350,7 @@ def test_behavioral_policy_missing_policy_ref() -> None:
 def test_default_production_policies_include_behavior_profiles() -> None:
     from aiodoo_validation.scoring.ids import (
         CONVERSATION_SCORE_BEHAVIOR,
+        EXECUTION_SCORE_BEHAVIOR,
         PLANNER_SCORE_BEHAVIOR,
     )
 
@@ -357,10 +358,12 @@ def test_default_production_policies_include_behavior_profiles() -> None:
     repair = default_production_score_policies(profile="repair")
     planner = default_production_score_policies(profile="planner")
     conversation = default_production_score_policies(profile="conversation")
+    execution = default_production_score_policies(profile="execution")
     assert any(p.metadata.policy_id == CODING_SCORE_BEHAVIOR for p in coding)
     assert any(p.metadata.policy_id == REPAIR_SCORE_BEHAVIOR for p in repair)
     assert any(p.metadata.policy_id == PLANNER_SCORE_BEHAVIOR for p in planner)
     assert any(p.metadata.policy_id == CONVERSATION_SCORE_BEHAVIOR for p in conversation)
+    assert any(p.metadata.policy_id == EXECUTION_SCORE_BEHAVIOR for p in execution)
     assert all(p.metadata.policy_id != REPAIR_SCORE_BEHAVIOR for p in coding)
     assert all(p.metadata.policy_id != CODING_SCORE_BEHAVIOR for p in repair)
 
@@ -394,6 +397,14 @@ def test_conversation_profile_scoring_pipeline_includes_behavior_stage() -> None
     profile = AdapterProfile.create("conversation", odoo_versions=(18,))
     stage_ids = {stage.stage_id for stage in profile.scoring_pipeline}
     assert CONVERSATION_SCORE_BEHAVIOR in stage_ids
+
+
+def test_execution_profile_scoring_pipeline_includes_behavior_stage() -> None:
+    from aiodoo_validation.scoring.ids import EXECUTION_SCORE_BEHAVIOR
+
+    profile = AdapterProfile.create("execution", odoo_versions=(18,))
+    stage_ids = {stage.stage_id for stage in profile.scoring_pipeline}
+    assert EXECUTION_SCORE_BEHAVIOR in stage_ids
 
 
 def test_pass_rate_derived_from_counts_without_pass_rate_key() -> None:

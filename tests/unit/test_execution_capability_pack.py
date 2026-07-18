@@ -1,4 +1,4 @@
-"""Unit tests for Coding Capability Pack (Phase 1 foundation)."""
+"""Unit tests for Execution Capability Pack (Phase 1 foundation)."""
 
 from __future__ import annotations
 
@@ -8,51 +8,51 @@ from pathlib import Path
 import pytest
 
 from aiodoo_validation.capabilities.bootstrap import create_default_capability_registry
-from aiodoo_validation.capabilities.coding import (
-    CODING_PARSER_ID,
-    CodingParseError,
-    CodingRecordParser,
-    get_coding_capability_pack,
+from aiodoo_validation.capabilities.execution import (
+    EXECUTION_PARSER_ID,
+    ExecutionParseError,
+    ExecutionRecordParser,
+    get_execution_capability_pack,
 )
-from aiodoo_validation.capabilities.coding.specification import (
-    CODING_CAPABILITY_ID,
-    build_coding_specification,
+from aiodoo_validation.capabilities.execution.specification import (
+    EXECUTION_CAPABILITY_ID,
+    build_execution_specification,
     capability_yaml_path,
 )
 from aiodoo_validation.domain.capability_record import ParsedCapabilityRecord
 
-FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "capabilities" / "coding"
+FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "capabilities" / "execution"
 
 
 def _load(name: str) -> dict:
     return json.loads((FIXTURES / name).read_text(encoding="utf-8"))
 
 
-class TestCodingSpecification:
+class TestExecutionSpecification:
     def test_build_matches_identity(self) -> None:
-        spec = build_coding_specification()
-        assert spec.id == CODING_CAPABILITY_ID
-        assert spec.parser_id == CODING_PARSER_ID
+        spec = build_execution_specification()
+        assert spec.id == EXECUTION_CAPABILITY_ID
+        assert spec.parser_id == EXECUTION_PARSER_ID
         assert "replace" in spec.supported_transformation_types
         assert spec.corpus_requirements.fingerprint_required is True
 
     def test_capability_yaml_exists_and_aligns(self) -> None:
         text = capability_yaml_path().read_text(encoding="utf-8")
-        assert "id: coding" in text
-        assert "parser_id: coding_v1" in text
-        assert "coding_tasks_v1" in text
+        assert "id: execution" in text
+        assert "parser_id: execution_v1" in text
+        assert "execution_tasks_v1" in text
 
 
-class TestCodingRegistration:
+class TestExecutionRegistration:
     def test_pack_registration(self) -> None:
-        pack = get_coding_capability_pack()
-        assert pack.parser_id == CODING_PARSER_ID
-        assert pack.capability_id == "coding"
+        pack = get_execution_capability_pack()
+        assert pack.parser_id == EXECUTION_PARSER_ID
+        assert pack.capability_id == "execution"
         assert pack.specification.parser_id == pack.parser_id
-        assert isinstance(pack.parser, CodingRecordParser)
-        assert "id: coding" in pack.capability_yaml()
+        assert isinstance(pack.parser, ExecutionRecordParser)
+        assert "id: execution" in pack.capability_yaml()
 
-    def test_builtin_registry_includes_coding_repair_and_planner(self) -> None:
+    def test_builtin_registry_includes_execution(self) -> None:
         registry = create_default_capability_registry()
         assert registry.registered_ids() == (
             "coding",
@@ -61,20 +61,20 @@ class TestCodingRegistration:
             "planner",
             "repair",
         )
-        coding = registry.get("coding")
-        assert coding.parser_id == CODING_PARSER_ID
-        assert coding.specification.id == "coding"
+        execution = registry.get("execution")
+        assert execution.parser_id == EXECUTION_PARSER_ID
+        assert execution.specification.id == "execution"
 
 
-class TestCodingRecordParser:
+class TestExecutionRecordParser:
     def setup_method(self) -> None:
-        self.parser = CodingRecordParser()
+        self.parser = ExecutionRecordParser()
 
     def test_simple_generate(self) -> None:
         record = self.parser.parse(_load("simple_generate.json"))
         assert isinstance(record, ParsedCapabilityRecord)
-        assert record.record_id == "coding.simple"
-        assert record.capability_id == "coding"
+        assert record.record_id == "execution.simple"
+        assert record.capability_id == "execution"
         assert len(record.artifacts) == 2
         roles = {item.metadata.get("snapshot_role") for item in record.artifacts}
         assert roles == {"original", "expected"}
@@ -90,26 +90,26 @@ class TestCodingRecordParser:
         assert transform.payload["replace"] == "string='New'"
 
     def test_missing_fields(self) -> None:
-        with pytest.raises(CodingParseError, match="content"):
+        with pytest.raises(ExecutionParseError, match="content"):
             self.parser.parse(_load("missing_fields.json"))
 
     def test_invalid_payload(self) -> None:
-        with pytest.raises(CodingParseError, match="search"):
+        with pytest.raises(ExecutionParseError, match="search"):
             self.parser.parse(_load("invalid_payload.json"))
 
     def test_unsupported_schema(self) -> None:
-        with pytest.raises(CodingParseError, match="Unsupported Coding schema"):
+        with pytest.raises(ExecutionParseError, match="Unsupported Execution schema"):
             self.parser.parse(_load("unsupported_schema.json"))
 
     def test_unsupported_operation(self) -> None:
-        with pytest.raises(CodingParseError, match="unsupported operation"):
+        with pytest.raises(ExecutionParseError, match="unsupported operation"):
             self.parser.parse(_load("unsupported_operation.json"))
 
     def test_native_task(self) -> None:
         record = self.parser.parse(_load("native_task.json"))
-        assert record.record_id == "native-coding-1"
+        assert record.record_id == "native-execution-1"
         assert "active partners" in record.problem
-        assert record.metadata.get("rule_id") == "coding_helper"
+        assert record.metadata.get("rule_id") == "execution_helper"
         roles = {item.metadata.get("snapshot_role") for item in record.artifacts}
         assert "original" in roles
         assert "expected" in roles
@@ -117,7 +117,7 @@ class TestCodingRecordParser:
     def test_training_envelope(self) -> None:
         records = self.parser.parse_training_example(_load("training_envelope.json"))
         assert len(records) == 1
-        assert records[0].record_id == "train-coding-1"
+        assert records[0].record_id == "train-execution-1"
         assert records[0].metadata.get("instruction")
         assert any(
             item.metadata.get("snapshot_role") == "expected" for item in records[0].artifacts
@@ -126,4 +126,4 @@ class TestCodingRecordParser:
     def test_parse_training_via_parse_requires_single_task(self) -> None:
         payload = _load("training_envelope.json")
         record = self.parser.parse(payload)
-        assert record.record_id == "train-coding-1"
+        assert record.record_id == "train-execution-1"

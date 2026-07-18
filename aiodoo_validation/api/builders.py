@@ -112,3 +112,35 @@ def build_conversation_request(
         run_id=run_id,
         metadata={} if metadata is None else metadata,
     )
+
+
+def build_execution_request(
+    *,
+    base_model_ref: str,
+    adapter_ref: str,
+    merged_model_ref: str | None = None,
+    execution_tier: ExecutionTier | str = ExecutionTier.STANDARD,
+    odoo_versions: tuple[int, ...] | str = (
+        OdooVersion.V17,
+        OdooVersion.V18,
+        OdooVersion.V19,
+    ),
+    run_id: str | None = None,
+    metadata: Mapping[str, Any] | None = None,
+) -> ValidationRequest:
+    """Build an execution profile ``ValidationRequest``."""
+    tier = normalize_execution_tier(execution_tier)
+    if isinstance(odoo_versions, str):
+        versions = parse_odoo_versions(odoo_versions)
+    else:
+        versions = odoo_versions
+    return ValidationRequest(
+        profile_name="execution",
+        base_model_ref=base_model_ref,
+        adapter_ref=adapter_ref,
+        merged_model_ref=merged_model_ref,
+        execution_tier=tier,
+        odoo_versions=versions,
+        run_id=run_id,
+        metadata={} if metadata is None else metadata,
+    )

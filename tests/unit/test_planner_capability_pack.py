@@ -54,7 +54,13 @@ class TestPlannerRegistration:
 
     def test_builtin_registry_includes_planner_and_repair(self) -> None:
         registry = create_default_capability_registry()
-        assert registry.registered_ids() == ("coding", "conversation", "planner", "repair")
+        assert registry.registered_ids() == (
+            "coding",
+            "conversation",
+            "execution",
+            "planner",
+            "repair",
+        )
         planner = registry.get("planner")
         assert planner.parser_id == PLANNER_PARSER_ID
         assert planner.specification.id == "planner"

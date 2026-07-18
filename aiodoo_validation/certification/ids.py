@@ -77,3 +77,9 @@ CONVERSATION_CERTIFICATION_BEHAVIOR = "conversation.certification.behavior"
 CONVERSATION_CERTIFICATION_TO_BENCHMARK: dict[str, str] = {
     CONVERSATION_CERTIFICATION_BEHAVIOR: "conversation.benchmark.behavior",
 }
+
+# Execution behavior-gated certification
+EXECUTION_CERTIFICATION_BEHAVIOR = "execution.certification.behavior"
+EXECUTION_CERTIFICATION_TO_BENCHMARK: dict[str, str] = {
+    EXECUTION_CERTIFICATION_BEHAVIOR: "execution.benchmark.behavior",
+}

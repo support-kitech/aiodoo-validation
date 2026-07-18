@@ -150,6 +150,17 @@ def default_production_benchmark_policies(
                 )
             )
         )
+    if profile == "execution":
+        policies.append(
+            ScoreThresholdBenchmarkPolicy(
+                metadata=_metadata(
+                    policy_id="execution.benchmark.behavior",
+                    name="Execution Behavior Benchmark",
+                    source_score_policy_id="execution.score.behavior",
+                    supported_profile="execution",
+                )
+            )
+        )
     return tuple(policies)
 
 

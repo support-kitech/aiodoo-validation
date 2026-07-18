@@ -60,6 +60,7 @@ _BEHAVIOR_PROFILES = frozenset(
         SupportedValidationProfile.REPAIR.value,
         SupportedValidationProfile.PLANNER.value,
         SupportedValidationProfile.CONVERSATION.value,
+        SupportedValidationProfile.EXECUTION.value,
     }
 )
 
