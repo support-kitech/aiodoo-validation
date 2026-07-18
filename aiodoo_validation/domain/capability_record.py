@@ -11,15 +11,8 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Any
 
+from aiodoo_validation.domain.freeze import freeze_mapping
 from aiodoo_validation.exceptions import DomainError
-
-
-def _freeze_mapping(value: Mapping[str, Any] | None) -> Mapping[str, Any]:
-    if value is None:
-        return MappingProxyType({})
-    if not isinstance(value, Mapping):
-        raise DomainError("mapping field must be a mapping.")
-    return MappingProxyType(dict(value))
 
 
 @dataclass(frozen=True, slots=True)
@@ -39,7 +32,7 @@ class CapabilityArtifact:
             raise DomainError("path must be non-empty.")
         if self.media_type is not None and not self.media_type.strip():
             raise DomainError("media_type must be non-empty when provided.")
-        object.__setattr__(self, "metadata", _freeze_mapping(self.metadata))
+        object.__setattr__(self, "metadata", freeze_mapping(self.metadata))
 
 
 @dataclass(frozen=True, slots=True)
@@ -57,7 +50,7 @@ class TransformationDescriptor:
     def __post_init__(self) -> None:
         if not self.transformation_type.strip():
             raise DomainError("transformation_type must be non-empty.")
-        object.__setattr__(self, "payload", _freeze_mapping(self.payload))
+        object.__setattr__(self, "payload", freeze_mapping(self.payload))
 
 
 @dataclass(frozen=True, slots=True)
@@ -111,7 +104,7 @@ class ParsedCapabilityRecord:
         object.__setattr__(self, "artifacts", artifacts)
         object.__setattr__(self, "transformations", transforms)
         object.__setattr__(self, "tags", tags)
-        object.__setattr__(self, "metadata", _freeze_mapping(self.metadata))
+        object.__setattr__(self, "metadata", freeze_mapping(self.metadata))
 
 
 __all__ = [

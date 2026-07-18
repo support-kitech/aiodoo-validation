@@ -12,15 +12,8 @@ from types import MappingProxyType
 from typing import Any
 
 from aiodoo_validation.domain.enums import CorpusRole
+from aiodoo_validation.domain.freeze import freeze_mapping
 from aiodoo_validation.exceptions import DomainError
-
-
-def _as_frozen_mapping(value: Mapping[str, Any] | None) -> Mapping[str, Any]:
-    if value is None:
-        return MappingProxyType({})
-    if not isinstance(value, Mapping):
-        raise DomainError("metadata must be a mapping.")
-    return MappingProxyType(dict(value))
 
 
 def _as_frozen_str_tuple(values: tuple[str, ...] | list[str] | None) -> tuple[str, ...]:
@@ -68,7 +61,7 @@ class CorpusManifest:
         if len(denied) != len(set(denied)):
             raise DomainError("denied_training_fingerprints must not contain duplicates.")
         object.__setattr__(self, "denied_training_fingerprints", denied)
-        object.__setattr__(self, "metadata", _as_frozen_mapping(self.metadata))
+        object.__setattr__(self, "metadata", freeze_mapping(self.metadata))
 
 
 __all__ = ["CorpusManifest"]

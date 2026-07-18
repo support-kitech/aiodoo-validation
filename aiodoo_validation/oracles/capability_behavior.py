@@ -212,7 +212,11 @@ class CapabilityBehavioralOracle:
             success=success if not suite.deferred else True,
             message=message,
             findings=tuple(findings),
-            warnings=(suite.deferred_reason,) if suite.deferred else (),
+            warnings=(
+                (suite.deferred_reason,)
+                if suite.deferred and suite.deferred_reason
+                else ()
+            ),
             duration_ms=duration_ms,
             metadata=MappingProxyType(provenance),
         )

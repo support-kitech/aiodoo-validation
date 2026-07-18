@@ -8,15 +8,8 @@ from types import MappingProxyType
 from typing import Any
 
 from aiodoo_validation.domain.enums import CorpusRole, ValidationKind
+from aiodoo_validation.domain.freeze import freeze_mapping
 from aiodoo_validation.exceptions import DomainError
-
-
-def _freeze_mapping(value: Mapping[str, Any] | None) -> Mapping[str, Any]:
-    if value is None:
-        return MappingProxyType({})
-    if not isinstance(value, Mapping):
-        raise DomainError("mapping field must be a mapping.")
-    return MappingProxyType(dict(value))
 
 
 def _normalize_str_tuple(
@@ -71,7 +64,7 @@ class RuntimeRequirements:
     def __post_init__(self) -> None:
         if not self.behavior_certification.strip():
             raise DomainError("behavior_certification must be non-empty.")
-        object.__setattr__(self, "metadata", _freeze_mapping(self.metadata))
+        object.__setattr__(self, "metadata", freeze_mapping(self.metadata))
 
 
 @dataclass(frozen=True, slots=True)
@@ -179,7 +172,7 @@ class CapabilitySpecification:
                 allow_empty=True,
             ),
         )
-        object.__setattr__(self, "metadata", _freeze_mapping(self.metadata))
+        object.__setattr__(self, "metadata", freeze_mapping(self.metadata))
 
 
 __all__ = [

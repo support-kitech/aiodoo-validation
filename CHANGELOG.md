@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- R1 production hardening: shared `domain.freeze.freeze_mapping`, remove
+  scoring→oracle implementation import (use score ID map), mypy fixes for
+  certification typing and behavioral oracle warnings, clarify legacy
+  `reports` stub, add repair production wiring consistency tests
+
 ### Added
 
 - E8 behavior-gated certification: `BehaviorGatedCertificationPolicy`,

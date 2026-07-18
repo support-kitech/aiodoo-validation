@@ -14,11 +14,11 @@
 | Architecture | **Complete / frozen** |
 | Planning / Spec v1.0 documentation | **Complete** (materialized in repo) |
 | Capability Delivery implementation | **Complete (E0–E8)** |
-| Current execution phase | **E8 frozen** — Capability Delivery spine complete |
+| Current execution phase | **R1 complete** — production hardening; Capability Delivery E0–E8 frozen |
 | Structural / artifact validation | **Active (production)** |
 | Behavioral validation | **Repair wired** — deferred without corpus id/path; active when configured |
 | Certification | **Structural + repair behavior gate** (`BehaviorGatedCertificationPolicy`) |
-| Repository | Spec v1.0 authoritative; E0–E8 **frozen** |
+| Repository | Spec v1.0 authoritative; E0–E8 frozen; **R1 release readiness** applied |
 
 ---
 
@@ -54,6 +54,19 @@
 | E6 scoring extras | **Done / frozen** — evidence interpretation, policy loader, `BehavioralEvidenceScorePolicy` |
 | E7 eval corpus pin | **Done / frozen** — pin registry, identity→path resolution, fixture pin for repair |
 | E8 behavior-gated cert | **Done / frozen** — `BehaviorGatedCertificationPolicy`, criteria reasons, ScoreResult signals |
+| R1 production hardening | **Done** — typing, layering cleanup, wiring consistency tests, docs |
+
+---
+
+## Release readiness (R1)
+
+| Check | Status |
+|-------|--------|
+| Full unit/integration suite | Green |
+| Public API surface (`aiodoo_validation.api`) | Stable; internals not exported |
+| Repair delivery chain IDs | Aligned (oracle→score→bench→cert→report) |
+| Capability Delivery redesign | **Forbidden** — frozen |
+| Known deferred (non-blocking) | `aiodoo-datasets` validation-layout pins; `build_repair_request` helper; content fingerprints |
 
 ---
 
@@ -99,4 +112,5 @@ Follow [delivery_governance.md](delivery_governance.md).
 
 - **Protocol V1 / structural certification path:** frozen and active.  
 - **Specification Version 1.0 (docs):** frozen in this repository.  
-- **Capability Delivery code:** E0–E8 frozen (spine complete).
+- **Capability Delivery code:** E0–E8 frozen (spine complete).  
+- **R1:** hardening only — no Capability Delivery architecture changes.

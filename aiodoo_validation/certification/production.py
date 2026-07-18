@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from time import perf_counter
 from types import MappingProxyType
+from typing import Any
 
 from aiodoo_validation.certification.behavioral import BehaviorGatedCertificationPolicy
 from aiodoo_validation.certification.criteria import (
@@ -64,10 +65,10 @@ class BenchmarkPassCertificationPolicy:
         duration_ms = max(0, int((perf_counter() - started) * 1000))
         bench = context.benchmark_result
         score_meta = bench.metadata
-        dimensions: dict = {}
+        dimensions: dict[str, Any] = {}
         raw_dimensions = score_meta.get("dimensions")
         if isinstance(raw_dimensions, dict):
-            dimensions = raw_dimensions
+            dimensions = dict(raw_dimensions)
 
         evaluation = evaluate_certification_criteria(
             self.criteria,
