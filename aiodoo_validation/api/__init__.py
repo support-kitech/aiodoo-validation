@@ -7,6 +7,7 @@ engine, oracle, scoring, benchmark, certification, or reporting modules.
 
 from aiodoo_validation.api.builders import (
     build_coding_request,
+    build_conversation_request,
     build_planner_request,
     parse_odoo_versions,
 )
@@ -44,6 +45,7 @@ __all__ = [
     "RepositoryMetadata",
     "ValidationService",
     "build_coding_request",
+    "build_conversation_request",
     "build_planner_request",
     "capability_labels",
     "colab_integration_hints",

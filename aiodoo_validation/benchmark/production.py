@@ -139,6 +139,17 @@ def default_production_benchmark_policies(
                 )
             )
         )
+    if profile == "conversation":
+        policies.append(
+            ScoreThresholdBenchmarkPolicy(
+                metadata=_metadata(
+                    policy_id="conversation.benchmark.behavior",
+                    name="Conversation Behavior Benchmark",
+                    source_score_policy_id="conversation.score.behavior",
+                    supported_profile="conversation",
+                )
+            )
+        )
     return tuple(policies)
 
 

@@ -1,0 +1,14 @@
+{
+  "record_id": "conversation.bad_schema",
+  "schema_id": "conversation_tasks_v9",
+  "problem": "Unsupported schema",
+  "artifacts": [
+    {
+      "id": "mod_py",
+      "path": "models/mod.py",
+      "type": "python",
+      "content": "x = 1\n"
+    }
+  ],
+  "operations": []
+}

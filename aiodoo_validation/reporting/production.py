@@ -232,6 +232,17 @@ def default_production_report_templates(
                 )
             )
         )
+    if profile == "conversation":
+        templates.append(
+            CertificationSummaryReportTemplate(
+                metadata=_metadata(
+                    template_id="conversation.report.behavior",
+                    name="Conversation Behavior Report",
+                    source_certification_policy_id="conversation.certification.behavior",
+                    supported_profile="conversation",
+                )
+            )
+        )
     return tuple(templates)
 
 

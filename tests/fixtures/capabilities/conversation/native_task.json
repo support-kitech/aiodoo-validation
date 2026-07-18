@@ -1,0 +1,30 @@
+{
+  "id": "native-conversation-1",
+  "problem": {
+    "description": "Add a helper that returns True for active partners.",
+    "severity": "medium",
+    "location": "models/partner.py"
+  },
+  "context": [
+    {
+      "id": "partner_py",
+      "path": "models/partner.py",
+      "type": "python",
+      "content": "class ResPartner(models.Model):\n    _inherit = 'res.partner'\n"
+    }
+  ],
+  "expected_outcome": {
+    "artifacts": [
+      {
+        "id": "partner_py_expected",
+        "path": "models/partner.py",
+        "type": "python",
+        "content": "class ResPartner(models.Model):\n    _inherit = 'res.partner'\n\n    def is_active_partner(self):\n        return bool(self.active)\n"
+      }
+    ],
+    "explanation": "Expose a simple active-partner helper."
+  },
+  "metadata": {
+    "rule_id": "conversation_helper"
+  }
+}

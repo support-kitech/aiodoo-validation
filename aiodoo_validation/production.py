@@ -27,6 +27,7 @@ from aiodoo_validation.oracles import OracleEngine
 from aiodoo_validation.oracles.capability_behavior import (
     build_capability_behavioral_oracle,
     coding_behavior_oracle_id,
+    conversation_behavior_oracle_id,
     planner_behavior_oracle_id,
     repair_behavior_oracle_id,
 )
@@ -132,7 +133,7 @@ def _register_capability_behavioral_oracles(
     oracle_registry: OracleRegistry,
     inference_runner: InferenceRunnerPort,
 ) -> None:
-    """Register repair, coding, and planner capability behavioral oracles."""
+    """Register repair, coding, planner, and conversation capability behavioral oracles."""
     capability_registry = create_default_capability_registry()
     for capability_id, oracle_id, name, description in (
         (
@@ -152,6 +153,12 @@ def _register_capability_behavioral_oracles(
             planner_behavior_oracle_id(),
             "Planner Behavior Oracle",
             "Planner capability behavioral evaluation (corpus-gated).",
+        ),
+        (
+            SupportedValidationProfile.CONVERSATION.value,
+            conversation_behavior_oracle_id(),
+            "Conversation Behavior Oracle",
+            "Conversation capability behavioral evaluation (corpus-gated).",
         ),
     ):
         oracle_registry.register(

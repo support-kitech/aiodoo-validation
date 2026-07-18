@@ -71,3 +71,9 @@ PLANNER_CERTIFICATION_BEHAVIOR = "planner.certification.behavior"
 PLANNER_CERTIFICATION_TO_BENCHMARK: dict[str, str] = {
     PLANNER_CERTIFICATION_BEHAVIOR: "planner.benchmark.behavior",
 }
+
+# Conversation behavior-gated certification
+CONVERSATION_CERTIFICATION_BEHAVIOR = "conversation.certification.behavior"
+CONVERSATION_CERTIFICATION_TO_BENCHMARK: dict[str, str] = {
+    CONVERSATION_CERTIFICATION_BEHAVIOR: "conversation.benchmark.behavior",
+}

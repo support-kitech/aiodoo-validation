@@ -1,0 +1,12 @@
+{
+  "corpus_id": "fixture.conversation.eval.behavior",
+  "capability_id": "conversation",
+  "role": "evaluation",
+  "dataset_version": "fixture-conversation-e5",
+  "fingerprint": "53418c10d2508b99b826a6c6ff85bcd19400a7286fe6039368f3ef605035c003",
+  "source_package": "aiodoo-validation-fixtures",
+  "denied_training_fingerprints": [],
+  "metadata": {
+    "kind": "conversation_behavior_integration"
+  }
+}

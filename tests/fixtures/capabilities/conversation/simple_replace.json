@@ -1,0 +1,20 @@
+{
+  "record_id": "conversation.replace",
+  "problem": "Rename the model field label.",
+  "artifacts": [
+    {
+      "id": "mod_py",
+      "path": "models/sale.py",
+      "type": "python",
+      "content": "name = fields.Char(string='Old')\n"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "replace",
+      "search": "string='Old'",
+      "replace": "string='New'"
+    }
+  ],
+  "explanation": "Update the Char field label."
+}

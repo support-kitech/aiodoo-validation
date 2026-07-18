@@ -9,31 +9,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
-**Planner Profile Completion** landed: Planner Capability Pack, eval corpus pin,
-behavior oracle→score→bench→cert→report chain, production registration, and
-`build_planner_request`. Planner is feature-equivalent to Repair/Coding on the
-frozen Capability Delivery spine.
+**Conversation Profile Completion** landed: Conversation Capability Pack, eval
+corpus pin, behavior oracle→score→bench→cert→report chain, production
+registration, and `build_conversation_request`. Conversation is
+feature-equivalent to Repair/Coding/Planner on the frozen Capability Delivery
+spine.
 
-Coding Profile Completion Phase 1–2 remains in place.
+Planner and Coding Profile Completion Phase 1–2 remain in place.
 
 Post-tag v1.0.x changes otherwise remain limited to maintenance (bugs, security,
 docs, pack registration). See [docs/MAINTENANCE.md](docs/MAINTENANCE.md).
 
 ### Added
 
-- `capabilities/planner/` Capability Pack (`PlannerRecordParser`, spec, registration)
-- Planner evaluation corpus fixture + pin (`fixture.planner.eval.behavior`)
-- Planner behavior stages on `AdapterProfile` + production DI
-- `BehavioralEvidenceScorePolicy.create_for_planner()` /
-  `BehaviorGatedCertificationPolicy.create_for_planner()`
-- `api.build_planner_request`
-- Docs: `docs/planner_profile.md`
-- Tests: `test_planner_capability_pack.py`, `test_planner_behavior_pipeline.py`
+- `capabilities/conversation/` Capability Pack (`ConversationRecordParser`, spec, registration)
+- Conversation evaluation corpus fixture + pin (`fixture.conversation.eval.behavior`)
+- Conversation behavior stages on `AdapterProfile` + production DI
+- `BehavioralEvidenceScorePolicy.create_for_conversation()` /
+  `BehaviorGatedCertificationPolicy.create_for_conversation()`
+- `api.build_conversation_request`
+- Docs: `docs/conversation_profile.md`
+- Tests: `test_conversation_capability_pack.py`, `test_conversation_behavior_pipeline.py`
 
 ### Changed
 
-- Corpus catalog, bootstrap, production score/bench/cert/report helpers include Planner
-- Maintenance / implementation status allow Planner behavior (remaining profiles still structural-only)
+- Corpus catalog, bootstrap, production score/bench/cert/report helpers include Conversation
+- Maintenance / implementation status allow Conversation behavior (execution/approval/evaluation still structural-only)
 
 ## [1.0.0] — 2026-07-18
 

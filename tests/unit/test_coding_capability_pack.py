@@ -54,7 +54,7 @@ class TestCodingRegistration:
 
     def test_builtin_registry_includes_coding_repair_and_planner(self) -> None:
         registry = create_default_capability_registry()
-        assert registry.registered_ids() == ("coding", "planner", "repair")
+        assert registry.registered_ids() == ("coding", "conversation", "planner", "repair")
         coding = registry.get("coding")
         assert coding.parser_id == CODING_PARSER_ID
         assert coding.specification.id == "coding"

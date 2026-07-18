@@ -13,6 +13,7 @@ from aiodoo_validation.certification.criteria import (
 )
 from aiodoo_validation.certification.ids import (
     CODING_CERTIFICATION_BEHAVIOR,
+    CONVERSATION_CERTIFICATION_BEHAVIOR,
     PLANNER_CERTIFICATION_BEHAVIOR,
     REPAIR_CERTIFICATION_BEHAVIOR,
 )
@@ -30,6 +31,7 @@ from aiodoo_validation.domain.enums import ValidationKind
 from aiodoo_validation.execution import certification_label, is_framework_only_tier
 from aiodoo_validation.scoring.ids import (
     CODING_SCORE_BEHAVIOR,
+    CONVERSATION_SCORE_BEHAVIOR,
     PLANNER_SCORE_BEHAVIOR,
     REPAIR_SCORE_BEHAVIOR,
 )
@@ -123,6 +125,23 @@ class BehaviorGatedCertificationPolicy:
                 supported_profile="planner",
             ),
             source_score_policy_id=PLANNER_SCORE_BEHAVIOR,
+            criteria=criteria or default_behavior_gated_certification_criteria(),
+        )
+
+    @classmethod
+    def create_for_conversation(
+        cls,
+        *,
+        criteria: CertificationCriteria | None = None,
+    ) -> BehaviorGatedCertificationPolicy:
+        return cls(
+            metadata=_metadata(
+                policy_id=CONVERSATION_CERTIFICATION_BEHAVIOR,
+                name="Conversation Behavior Certification",
+                source_benchmark_policy_id="conversation.benchmark.behavior",
+                supported_profile="conversation",
+            ),
+            source_score_policy_id=CONVERSATION_SCORE_BEHAVIOR,
             criteria=criteria or default_behavior_gated_certification_criteria(),
         )
 

@@ -24,6 +24,8 @@ from aiodoo_validation.scoring.evidence import interpret_behavioral_oracle_evide
 from aiodoo_validation.scoring.ids import (
     CODING_SCORE_BEHAVIOR,
     CODING_SCORE_TO_ORACLE,
+    CONVERSATION_SCORE_BEHAVIOR,
+    CONVERSATION_SCORE_TO_ORACLE,
     PLANNER_SCORE_BEHAVIOR,
     PLANNER_SCORE_TO_ORACLE,
     REPAIR_SCORE_BEHAVIOR,
@@ -126,6 +128,23 @@ class BehavioralEvidenceScorePolicy:
                 name="Planner Behavior Score",
                 source_oracle_id=PLANNER_SCORE_TO_ORACLE[PLANNER_SCORE_BEHAVIOR],
                 supported_profile="planner",
+            ),
+            default_policy_ref=policy_ref,
+        )
+
+    @classmethod
+    def create_for_conversation(
+        cls,
+        *,
+        policy_ref: str = DEFAULT_BEHAVIORAL_POLICY_REF,
+    ) -> BehavioralEvidenceScorePolicy:
+        load_behavioral_scoring_policy(policy_ref)
+        return cls(
+            metadata=_metadata(
+                policy_id=CONVERSATION_SCORE_BEHAVIOR,
+                name="Conversation Behavior Score",
+                source_oracle_id=CONVERSATION_SCORE_TO_ORACLE[CONVERSATION_SCORE_BEHAVIOR],
+                supported_profile="conversation",
             ),
             default_policy_ref=policy_ref,
         )

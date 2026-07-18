@@ -36,6 +36,13 @@ PLANNER_EVAL_FIXTURE_FINGERPRINT = (
 )
 PLANNER_EVAL_FIXTURE_VERSION = "fixture-planner-e5"
 
+# Conversation evaluation fixture pin (validation-owned held-out smoke corpus).
+CONVERSATION_EVAL_FIXTURE_CORPUS_ID = "fixture.conversation.eval.behavior"
+CONVERSATION_EVAL_FIXTURE_FINGERPRINT = (
+    "53418c10d2508b99b826a6c6ff85bcd19400a7286fe6039368f3ef605035c003"
+)
+CONVERSATION_EVAL_FIXTURE_VERSION = "fixture-conversation-e5"
+
 
 def _repair_eval_fixture_pin() -> CorpusPin:
     return CorpusPin(
@@ -69,6 +76,18 @@ def _planner_eval_fixture_pin() -> CorpusPin:
         dataset_version=PLANNER_EVAL_FIXTURE_VERSION,
         source_package="aiodoo-validation-fixtures",
         location_hint="planner/eval_corpus",
+        metadata=MappingProxyType({"kind": "validation_fixture_pin"}),
+    )
+
+
+def _conversation_eval_fixture_pin() -> CorpusPin:
+    return CorpusPin(
+        corpus_id=CONVERSATION_EVAL_FIXTURE_CORPUS_ID,
+        capability_id="conversation",
+        fingerprint=CONVERSATION_EVAL_FIXTURE_FINGERPRINT,
+        dataset_version=CONVERSATION_EVAL_FIXTURE_VERSION,
+        source_package="aiodoo-validation-fixtures",
+        location_hint="conversation/eval_corpus",
         metadata=MappingProxyType({"kind": "validation_fixture_pin"}),
     )
 
@@ -229,22 +248,24 @@ def builtin_corpus_pin_registry(
     """
     Builtin production pin catalog.
 
-    Ships Repair, Coding, and Planner evaluation fixture pins. Does **not**
-    auto-select them for production runs (G11: missing config still defers).
-    Callers must pass ``evaluation_corpus_id`` (or a path) explicitly.
+    Ships Repair, Coding, Planner, and Conversation evaluation fixture pins.
+    Does **not** auto-select them for production runs (G11: missing config still
+    defers). Callers must pass ``evaluation_corpus_id`` (or a path) explicitly.
     """
     repair_pin = _repair_eval_fixture_pin()
     coding_pin = _coding_eval_fixture_pin()
     planner_pin = _planner_eval_fixture_pin()
+    conversation_pin = _conversation_eval_fixture_pin()
     fixture_root = _fixture_package_root()
     locations: dict[str, Path] = {}
     if include_fixture_locations and fixture_root.is_dir():
         locations[repair_pin.corpus_id] = fixture_root / "repair" / "eval_corpus"
         locations[coding_pin.corpus_id] = fixture_root / "coding" / "eval_corpus"
         locations[planner_pin.corpus_id] = fixture_root / "planner" / "eval_corpus"
+        locations[conversation_pin.corpus_id] = fixture_root / "conversation" / "eval_corpus"
 
     return CorpusPinRegistry.build(
-        (repair_pin, coding_pin, planner_pin),
+        (repair_pin, coding_pin, planner_pin, conversation_pin),
         aliases={
             "repair.eval": repair_pin.corpus_id,
             "repair.eval.fixture": repair_pin.corpus_id,
@@ -252,6 +273,8 @@ def builtin_corpus_pin_registry(
             "coding.eval.fixture": coding_pin.corpus_id,
             "planner.eval": planner_pin.corpus_id,
             "planner.eval.fixture": planner_pin.corpus_id,
+            "conversation.eval": conversation_pin.corpus_id,
+            "conversation.eval.fixture": conversation_pin.corpus_id,
         },
         locations=locations,
         # Documented default identities — not auto-loaded without configuration.
@@ -259,6 +282,7 @@ def builtin_corpus_pin_registry(
             "repair": repair_pin.corpus_id,
             "coding": coding_pin.corpus_id,
             "planner": planner_pin.corpus_id,
+            "conversation": conversation_pin.corpus_id,
         },
         search_roots=search_roots_from_environment(extra_roots=(fixture_root, *extra_search_roots)),
     )
@@ -306,6 +330,9 @@ __all__ = [
     "CODING_EVAL_FIXTURE_CORPUS_ID",
     "CODING_EVAL_FIXTURE_FINGERPRINT",
     "CODING_EVAL_FIXTURE_VERSION",
+    "CONVERSATION_EVAL_FIXTURE_CORPUS_ID",
+    "CONVERSATION_EVAL_FIXTURE_FINGERPRINT",
+    "CONVERSATION_EVAL_FIXTURE_VERSION",
     "PLANNER_EVAL_FIXTURE_CORPUS_ID",
     "PLANNER_EVAL_FIXTURE_FINGERPRINT",
     "PLANNER_EVAL_FIXTURE_VERSION",

@@ -102,6 +102,7 @@ def test_production_registers_repair_coding_and_planner_behavior_oracles() -> No
     assert registry.get("repair.oracle.behavior.repair") is not None
     assert registry.get(CODING_ORACLE_BEHAVIOR) is not None
     assert registry.get("planner.oracle.behavior.planner") is not None
+    assert registry.get("conversation.oracle.behavior.conversation") is not None
 
 
 def test_planner_behavior_pipeline_and_registry_ids_align() -> None:
@@ -137,3 +138,43 @@ def test_planner_behavior_pipeline_and_registry_ids_align() -> None:
     assert benches["planner.benchmark.behavior"] == PLANNER_SCORE_BEHAVIOR
     assert certs[PLANNER_CERTIFICATION_BEHAVIOR] == "planner.benchmark.behavior"
     assert reports["planner.report.behavior"] == PLANNER_CERTIFICATION_BEHAVIOR
+
+
+def test_conversation_behavior_pipeline_and_registry_ids_align() -> None:
+    from aiodoo_validation.certification.ids import CONVERSATION_CERTIFICATION_BEHAVIOR
+    from aiodoo_validation.scoring.ids import CONVERSATION_SCORE_BEHAVIOR
+
+    profile = AdapterProfile.create("conversation", odoo_versions=(18,))
+    pipeline = {
+        "oracle": [s.stage_id for s in profile.oracle_pipeline],
+        "score": [s.stage_id for s in profile.scoring_pipeline],
+        "benchmark": [s.stage_id for s in profile.benchmark_pipeline],
+        "certification": [s.stage_id for s in profile.certification_pipeline],
+        "report": [s.stage_id for s in profile.report_pipeline],
+    }
+    assert "conversation.oracle.behavior.conversation" in pipeline["oracle"]
+    assert CONVERSATION_SCORE_BEHAVIOR in pipeline["score"]
+    assert "conversation.benchmark.behavior" in pipeline["benchmark"]
+    assert CONVERSATION_CERTIFICATION_BEHAVIOR in pipeline["certification"]
+    assert "conversation.report.behavior" in pipeline["report"]
+
+    score_ids = {
+        p.metadata.policy_id for p in default_production_score_policies(profile="conversation")
+    }
+    benches = {
+        p.metadata.policy_id: p.metadata.source_score_policy_id
+        for p in default_production_benchmark_policies(profile="conversation")
+    }
+    certs = {
+        p.metadata.policy_id: p.metadata.source_benchmark_policy_id
+        for p in default_production_certification_policies(profile="conversation")
+    }
+    reports = {
+        t.metadata.template_id: t.metadata.source_certification_policy_id
+        for t in default_production_report_templates(profile="conversation")
+    }
+
+    assert CONVERSATION_SCORE_BEHAVIOR in score_ids
+    assert benches["conversation.benchmark.behavior"] == CONVERSATION_SCORE_BEHAVIOR
+    assert certs[CONVERSATION_CERTIFICATION_BEHAVIOR] == "conversation.benchmark.behavior"
+    assert reports["conversation.report.behavior"] == CONVERSATION_CERTIFICATION_BEHAVIOR

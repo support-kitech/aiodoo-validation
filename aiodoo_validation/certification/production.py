@@ -152,6 +152,8 @@ def default_production_certification_policies(
         policies.append(BehaviorGatedCertificationPolicy.create_for_coding())
     if profile == "planner":
         policies.append(BehaviorGatedCertificationPolicy.create_for_planner())
+    if profile == "conversation":
+        policies.append(BehaviorGatedCertificationPolicy.create_for_conversation())
     return tuple(policies)
 
 

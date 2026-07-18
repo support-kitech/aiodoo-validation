@@ -227,6 +227,10 @@ def planner_behavior_oracle_id() -> str:
     return "planner.oracle.behavior.planner"
 
 
+def conversation_behavior_oracle_id() -> str:
+    return "conversation.oracle.behavior.conversation"
+
+
 def build_capability_behavioral_oracle(
     *,
     capability_id: str,
@@ -271,6 +275,7 @@ __all__ = [
     "CapabilityBehavioralOracle",
     "build_capability_behavioral_oracle",
     "coding_behavior_oracle_id",
+    "conversation_behavior_oracle_id",
     "planner_behavior_oracle_id",
     "repair_behavior_oracle_id",
 ]

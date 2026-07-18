@@ -15,6 +15,9 @@ def register_builtin_capability_packs(registry: CapabilityRegistry) -> Capabilit
     from aiodoo_validation.capabilities.coding.registration import (
         get_coding_capability_pack,
     )
+    from aiodoo_validation.capabilities.conversation.registration import (
+        get_conversation_capability_pack,
+    )
     from aiodoo_validation.capabilities.planner.registration import (
         get_planner_capability_pack,
     )
@@ -24,6 +27,7 @@ def register_builtin_capability_packs(registry: CapabilityRegistry) -> Capabilit
 
     for get_pack in (
         get_coding_capability_pack,
+        get_conversation_capability_pack,
         get_planner_capability_pack,
         get_repair_capability_pack,
     ):
