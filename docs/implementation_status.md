@@ -3,7 +3,7 @@
 **Repository version:** 1.0.0+  
 **Specification:** [SPECIFICATION_V1.md](SPECIFICATION_V1.md) (**frozen**)  
 **Architecture:** Validation Protocol V1 pipeline and public CLI **frozen**  
-**Capability Delivery:** [engineering_execution_plan.md](engineering_execution_plan.md) (**frozen plan**; E0–E4 code landed)
+**Capability Delivery:** [engineering_execution_plan.md](engineering_execution_plan.md) (**frozen plan**; E0–E5 code landed)
 
 ---
 
@@ -14,11 +14,11 @@
 | Architecture | **Complete / frozen** |
 | Planning / Spec v1.0 documentation | **Complete** (materialized in repo) |
 | Capability Delivery implementation | **In progress** |
-| Current execution phase | **E4 frozen** — E5 next (behavior wiring; repair-only) |
+| Current execution phase | **E5 frozen** — E6 next (edit metrics + scoring extras) |
 | Structural / artifact validation | **Active (production)** |
-| Behavioral validation | Architecture ready — **deferred** without evaluation corpora |
+| Behavioral validation | **Repair wired** — deferred without `evaluation_corpus_path`; active when corpus configured |
 | Certification | **Structural only**; `require_behavior_pass` **off** |
-| Repository | Spec v1.0 authoritative; E0–E4 Repair Capability Pack **frozen** |
+| Repository | Spec v1.0 authoritative; E0–E5 production behavior wiring **frozen** |
 
 ---
 
@@ -30,7 +30,7 @@
 | Adapter profiles | coding, planner, repair, conversation, execution, approval, evaluation |
 | Execution tiers | standard (no cert), smoke, full, prod alias |
 | Structural oracles | Active |
-| Behavioral oracles in production plans | Not loaded / deferred |
+| Behavioral oracles in production plans | **Repair only** — deferred without corpus path; gated by `evaluation_corpus_path` |
 | Scoring | Structural 100/0 primary; dimensions architecture ready |
 | Benchmark / certification | Structural signals |
 | Reports | Structural + `behavior_status=deferred` when applicable |
@@ -49,7 +49,7 @@
 | E2 transforms package | **Done / frozen** — replace-only TransformationEngine + SnapshotComparator |
 | E3 BehaviorCaseBuilder | **Done / frozen** — ParsedCapabilityRecord → BehaviorCase (+ snapshots) |
 | E4 Repair Capability Pack | **Done / frozen** — RepairRecordParser, capability.yaml, pack registration |
-| E5 wiring | Not started |
+| E5 behavior wiring | **Done / frozen** — CapabilityRegistry, ConfigurableCorpusProvider, repair-only production oracle |
 | E6 scoring extras | Not started |
 | E7 eval corpus pin | Blocked on datasets eval publish |
 | E8 behavior-gated cert | Not started (requires approval) |
@@ -77,8 +77,8 @@
 
 ## Explicitly not done yet
 
-- E5+ Capability Delivery (production behavior wiring, scoring extras, eval pin, cert gate)  
-- Evaluation corpora loaded in production  
+- E6+ Capability Delivery (scoring extras, eval corpus pin, behavior-gated cert)  
+- Held-out evaluation corpora published for production pin (E7)  
 - Semantic / AI similarity comparators  
 - Behavior-gated certification  
 - `merged` / `foundation` profiles  
@@ -97,4 +97,4 @@ Follow [delivery_governance.md](delivery_governance.md).
 
 - **Protocol V1 / structural certification path:** frozen and active.  
 - **Specification Version 1.0 (docs):** frozen in this repository.  
-- **Capability Delivery code:** E0–E4 frozen; continue at E5 (behavior wiring).
+- **Capability Delivery code:** E0–E5 frozen; continue at E6 (edit metrics / scoring extras).

@@ -28,7 +28,7 @@ guarantee.
 | Public API + CLI | Frozen |
 | Spec v1.0 documentation | Frozen (authoritative in `docs/`) |
 | Production structural validation | Active |
-| Capability Delivery (EEP E0–E8) | E0–E4 frozen — E5 next |
+| Capability Delivery (EEP E0–E8) | E0–E5 frozen — E6 next |
 | Behavioral validation | Architecture ready (no corpora) |
 | **Repository** | Spec synced; structural cert ready for v1.x |
 
@@ -52,8 +52,8 @@ guarantee.
 
 | Limitation | Status |
 |------------|--------|
-| Behavioral evaluation corpora | Not loaded — deferred by design |
-| Capability Delivery implementation | E0–E4 done; E5+ not started (see EEP) |
+| Behavioral evaluation corpora | Optional via request metadata `evaluation_corpus_path` (repair); deferred if unset |
+| Capability Delivery implementation | E0–E5 done; E6+ not started (see EEP) |
 | Semantic / rule-based AI comparators | Deferred (no fake similarity) |
 | Behavior-gated certification | Criteria exist; gate off until E8 + approval |
 | Content fingerprint hashing | Placeholder digests (artifact resolution era) |

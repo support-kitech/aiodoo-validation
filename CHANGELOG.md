@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- E5 production behavioral wiring: generic `CapabilityRegistry` /
+  `RegisteredCapabilityPack`, `ConfigurableCorpusProvider`,
+  `CapabilityBehaviorPipeline`, `CapabilityBehavioralOracle`, repair-only
+  registration in `production.py`, repair plan behavior stage, request metadata
+  key `evaluation_corpus_path`, integration tests under
+  `tests/integration/test_e5_production_behavior_wiring.py`
 - E4 Repair Capability Pack (`aiodoo_validation.capabilities.repair`):
   `RepairRecordParser`, `RepairCapabilityPack` / `get_repair_capability_pack`,
   `build_repair_specification`, declarative `capability.yaml`, fixtures under
@@ -54,7 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - [implementation_status.md](docs/implementation_status.md) and README reflect Spec v1.0
-  and Capability Delivery E0–E8 (E0–E4 frozen; E5 next)
+  and Capability Delivery E0–E8 (E0–E5 frozen; E6 next)
 - README and engine docs updated to reflect production structural path (no longer
   claiming placeholder-only oracles/scoring/certification/reports for CLI default)
 - Coding profile strategy label: `coding-v1-structural`

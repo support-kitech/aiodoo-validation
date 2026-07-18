@@ -1,0 +1,12 @@
+{
+  "corpus_id": "fixture.repair.eval.behavior",
+  "capability_id": "repair",
+  "role": "evaluation",
+  "dataset_version": "fixture-e5",
+  "fingerprint": "dc418ad42216d8296dce5bb862372c8c38b301a97d508586cbf22d388ecd400f",
+  "source_package": "aiodoo-validation-fixtures",
+  "denied_training_fingerprints": [],
+  "metadata": {
+    "kind": "e5_integration"
+  }
+}

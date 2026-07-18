@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Any
 
+from aiodoo_validation.corpus.provider import EVALUATION_CORPUS_PATH_KEY
 from aiodoo_validation.domain.artifacts import ArtifactBundle
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.enums import (
@@ -51,6 +52,21 @@ def _pipeline(profile: str, phase: str) -> tuple[PipelineStagePlaceholder, ...]:
             phase=phase,
         )
     )
+    return tuple(stages)
+
+
+def _oracle_pipeline_for_profile(profile: str) -> tuple[PipelineStagePlaceholder, ...]:
+    """Structural oracle stages, plus repair-only behavioral stage (E5)."""
+    stages = list(_pipeline(profile, "oracle"))
+    if profile == SupportedValidationProfile.REPAIR.value:
+        stages.append(
+            PipelineStagePlaceholder(
+                stage_id="repair.oracle.behavior.repair",
+                name="Repair Behavior",
+                enabled=True,
+                phase="oracle",
+            )
+        )
     return tuple(stages)
 
 
@@ -141,7 +157,7 @@ class AdapterProfile(ResolvedProfile):
         return cls(
             profile_name=profile,
             odoo_versions=odoo_versions,
-            oracle_pipeline=_pipeline(profile, "oracle"),
+            oracle_pipeline=_oracle_pipeline_for_profile(profile),
             scoring_pipeline=_pipeline(profile, "score"),
             benchmark_pipeline=_pipeline(profile, "benchmark"),
             certification_pipeline=_pipeline(profile, "certification"),
@@ -195,6 +211,11 @@ class AdapterProfile(ResolvedProfile):
                 "protocol_minor": context.protocol_minor,
                 "odoo_versions": context.request.odoo_versions,
                 "bundle_digest": bundle.bundle_digest,
+                **{
+                    key: value
+                    for key, value in dict(context.request.metadata).items()
+                    if key == EVALUATION_CORPUS_PATH_KEY
+                },
             },
         )
 

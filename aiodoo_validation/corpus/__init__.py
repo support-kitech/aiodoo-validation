@@ -21,10 +21,16 @@ from aiodoo_validation.corpus.manifest import (
     corpus_manifest_from_mapping,
     load_corpus_manifest,
 )
+from aiodoo_validation.corpus.provider import (
+    EVALUATION_CORPUS_PATH_KEY,
+    ConfigurableCorpusProvider,
+)
 
 __all__ = [
     "DEFAULT_MANIFEST_NAME",
     "DEFAULT_RECORDS_NAME",
+    "EVALUATION_CORPUS_PATH_KEY",
+    "ConfigurableCorpusProvider",
     "CorpusError",
     "CorpusGateError",
     "CorpusGateResult",

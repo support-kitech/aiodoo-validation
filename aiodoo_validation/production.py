@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from aiodoo_validation.benchmark import BenchmarkEngine
 from aiodoo_validation.benchmark.production import default_production_benchmark_policies
 from aiodoo_validation.benchmark.registry import BenchmarkRegistry
+from aiodoo_validation.capabilities.bootstrap import create_default_capability_registry
 from aiodoo_validation.certification import CertificationEngine
 from aiodoo_validation.certification.production import default_production_certification_policies
 from aiodoo_validation.certification.registry import CertificationRegistry
@@ -23,6 +24,10 @@ from aiodoo_validation.inference.runtime.mock import MockModelRuntime
 from aiodoo_validation.inference.runtime.qwen import QwenModelRuntime
 from aiodoo_validation.inference.stub_runner import StubInferenceRunner
 from aiodoo_validation.oracles import OracleEngine
+from aiodoo_validation.oracles.capability_behavior import (
+    build_capability_behavioral_oracle,
+    repair_behavior_oracle_id,
+)
 from aiodoo_validation.oracles.registry import OracleRegistry
 from aiodoo_validation.oracles.structural import default_production_oracles
 from aiodoo_validation.ports import (
@@ -120,6 +125,25 @@ def _register_profile_stack(
         report_registry.register(template)
 
 
+def _register_repair_behavioral_oracle(
+    *,
+    oracle_registry: OracleRegistry,
+    inference_runner: InferenceRunnerPort,
+) -> None:
+    """Register repair-only capability behavioral oracle (E5)."""
+    capability_registry = create_default_capability_registry()
+    oracle_registry.register(
+        build_capability_behavioral_oracle(
+            capability_id=SupportedValidationProfile.REPAIR.value,
+            oracle_id=repair_behavior_oracle_id(),
+            name="Repair Behavior Oracle",
+            description="Repair capability behavioral evaluation (corpus-gated).",
+            capability_registry=capability_registry,
+            inference_runner=inference_runner,
+        )
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class ProductionPipelineComponents:
     """Ports wired for production filesystem validation."""
@@ -140,6 +164,7 @@ class ProductionPipelineComponents:
         bench_registry = BenchmarkRegistry()
         cert_registry = CertificationRegistry()
         report_registry = ReportRegistry()
+        inference_runner = TierAwareInferenceRunner()
 
         for profile in SupportedValidationProfile:
             _register_profile_stack(
@@ -151,10 +176,15 @@ class ProductionPipelineComponents:
                 report_registry=report_registry,
             )
 
+        _register_repair_behavioral_oracle(
+            oracle_registry=oracle_registry,
+            inference_runner=inference_runner,
+        )
+
         return cls(
             artifact_resolver=FilesystemArtifactResolver.create_default(),
             profile_engine=ProfileEngine.create_default(),
-            inference_runner=TierAwareInferenceRunner(),
+            inference_runner=inference_runner,
             oracle_runner=OracleEngine(registry=oracle_registry),
             scoring_engine=ScoringEngine(registry=score_registry),
             benchmark_engine=BenchmarkEngine(registry=bench_registry),
