@@ -29,7 +29,7 @@ guarantee.
 | Spec v1.0 documentation | Frozen (authoritative in `docs/`) |
 | Production structural validation | Active |
 | Capability Delivery (EEP E0–E8) | E0–E5 frozen — E6 next |
-| Behavioral validation | Architecture ready (no corpora) |
+| Behavioral validation | Repair wired (corpus-gated); others deferred |
 | **Repository** | Spec synced; structural cert ready for v1.x |
 
 **Repository version:** v1.0.0
