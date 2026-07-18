@@ -1,0 +1,14 @@
+{
+  "corpus_id": "fixture.repair.eval",
+  "capability_id": "repair",
+  "role": "evaluation",
+  "dataset_version": "fixture-v1",
+  "fingerprint": "834354fb05b097716e7ed93497f50e0befa78b9a6f09e59651dd227bd347435d",
+  "source_package": "aiodoo-validation-fixtures",
+  "denied_training_fingerprints": [
+    "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+  ],
+  "metadata": {
+    "kind": "unit_fixture"
+  }
+}

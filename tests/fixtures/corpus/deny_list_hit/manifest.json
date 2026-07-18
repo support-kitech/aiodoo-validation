@@ -1,0 +1,1 @@
+{"corpus_id": "fixture.deny", "capability_id": "repair", "role": "evaluation", "dataset_version": "fixture-v1", "fingerprint": "3f5bff0d901b50d68f8a7733b0ee5798a4da04d48b278e8a8fa658c3dc28a53c", "denied_training_fingerprints": ["3f5bff0d901b50d68f8a7733b0ee5798a4da04d48b278e8a8fa658c3dc28a53c"]}

@@ -3,7 +3,7 @@
 **Repository version:** 1.0.0+  
 **Specification:** [SPECIFICATION_V1.md](SPECIFICATION_V1.md) (**frozen**)  
 **Architecture:** Validation Protocol V1 pipeline and public CLI **frozen**  
-**Capability Delivery:** [engineering_execution_plan.md](engineering_execution_plan.md) (**frozen plan**; code not started)
+**Capability Delivery:** [engineering_execution_plan.md](engineering_execution_plan.md) (**frozen plan**; E0–E1 code landed)
 
 ---
 
@@ -14,11 +14,11 @@
 | Architecture | **Complete / frozen** |
 | Planning / Spec v1.0 documentation | **Complete** (materialized in repo) |
 | Capability Delivery implementation | **In progress** |
-| Current execution phase | **E0 frozen** — E1 next |
+| Current execution phase | **E1 frozen** — E2 next (transforms; may parallel E1 historically) |
 | Structural / artifact validation | **Active (production)** |
 | Behavioral validation | Architecture ready — **deferred** without evaluation corpora |
 | Certification | **Structural only**; `require_behavior_pass` **off** |
-| Repository | Spec v1.0 authoritative; E0 domain foundation **frozen** |
+| Repository | Spec v1.0 authoritative; E0–E1 corpus infrastructure **frozen** |
 
 ---
 
@@ -44,8 +44,9 @@
 |-------|--------|
 | E0 docs (Spec materialization) | **Done** |
 | E0 domain types | **Done** — E0.3 identity alignment (`CorpusManifest.capability_id`) |
-| E0 status | **Frozen** — proceed to E1 |
-| E1–E4 | Not started |
+| E0 status | **Frozen** |
+| E1 corpus package | **Done / frozen** — gates, JsonlCorpusLoader, fixtures |
+| E2–E4 | Not started |
 | E5 wiring | Not started |
 | E6 scoring extras | Not started |
 | E7 eval corpus pin | Blocked on datasets eval publish |
@@ -74,7 +75,7 @@
 
 ## Explicitly not done yet
 
-- Capability Delivery code (E0 types onward)  
+- E2+ Capability Delivery (transforms, BehaviorCaseBuilder, Repair pack, production wiring)  
 - Evaluation corpora loaded in production  
 - Semantic / AI similarity comparators  
 - Behavior-gated certification  
@@ -94,4 +95,4 @@ Follow [delivery_governance.md](delivery_governance.md).
 
 - **Protocol V1 / structural certification path:** frozen and active.  
 - **Specification Version 1.0 (docs):** frozen in this repository.  
-- **Capability Delivery code:** E0 frozen; continue at E1.
+- **Capability Delivery code:** E0–E1 frozen; continue at E2 (TransformationEngine).
