@@ -70,12 +70,8 @@ def test_token_similarity_identical_and_partial() -> None:
     expected = ExpectedOutput(text="alpha beta gamma")
     identical = GeneratedOutput(text="alpha beta gamma")
     partial = GeneratedOutput(text="alpha beta")
-    assert TokenSimilarityComparator().compare(
-        expected=expected, generated=identical
-    ).passed
-    partial_result = TokenSimilarityComparator().compare(
-        expected=expected, generated=partial
-    )
+    assert TokenSimilarityComparator().compare(expected=expected, generated=identical).passed
+    partial_result = TokenSimilarityComparator().compare(expected=expected, generated=partial)
     assert partial_result.passed is False
     assert partial_result.similarity is not None
     assert 0.0 < partial_result.similarity < 1.0

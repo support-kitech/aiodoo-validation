@@ -34,17 +34,13 @@ class ConfigurableCorpusProvider:
     """
 
     loader: JsonlCorpusLoader = JsonlCorpusLoader()
-    pin_registry: CorpusPinRegistry | None = field(
-        default_factory=builtin_corpus_pin_registry
-    )
+    pin_registry: CorpusPinRegistry | None = field(default_factory=builtin_corpus_pin_registry)
 
     def resolve_path(self, configured: object | None) -> Path | None:
         if configured is None:
             return None
         if not isinstance(configured, (str, Path)):
-            raise CorpusLoadError(
-                f"{EVALUATION_CORPUS_PATH_KEY} must be a string path when set."
-            )
+            raise CorpusLoadError(f"{EVALUATION_CORPUS_PATH_KEY} must be a string path when set.")
         text = str(configured).strip()
         if not text:
             return None

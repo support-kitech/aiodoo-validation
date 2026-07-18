@@ -126,19 +126,14 @@ class BehaviorGatedCertificationPolicy:
         elif evaluation.certified:
             message = f"Behavior certification granted ({label})."
         else:
-            message = (
-                f"Behavior certification denied ({label}): "
-                + ", ".join(evaluation.reasons)
-            )
+            message = f"Behavior certification denied ({label}): " + ", ".join(evaluation.reasons)
 
         return CertificationResult(
             policy_id=self.metadata.policy_id,
             source_benchmark_policy_id=self.metadata.source_benchmark_policy_id,
             success=True,
             certified=evaluation.certified,
-            certification_score=(
-                float(bench.benchmark_score) if evaluation.certified else 0.0
-            ),
+            certification_score=(float(bench.benchmark_score) if evaluation.certified else 0.0),
             certification_level="PASS" if evaluation.certified else "NOT_CERTIFIED",
             message=message,
             duration_ms=duration_ms,

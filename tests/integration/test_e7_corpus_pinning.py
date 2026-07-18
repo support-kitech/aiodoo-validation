@@ -17,11 +17,7 @@ from aiodoo_validation.domain.request import ValidationRequest
 from aiodoo_validation.profiles.adapter_profile import AdapterProfile
 
 REPAIR_EVAL = (
-    Path(__file__).resolve().parents[1]
-    / "fixtures"
-    / "capabilities"
-    / "repair"
-    / "eval_corpus"
+    Path(__file__).resolve().parents[1] / "fixtures" / "capabilities" / "repair" / "eval_corpus"
 )
 
 

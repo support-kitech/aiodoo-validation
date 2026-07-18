@@ -135,11 +135,7 @@ def _hallucination_from_findings(findings: tuple[str, ...]) -> float | None:
     markers. Without markers, return ``None`` (do not invent a score).
     """
     lowered = tuple(item.lower() for item in findings)
-    if any(
-        marker in finding
-        for finding in lowered
-        for marker in _HALLUCINATION_FINDING_MARKERS
-    ):
+    if any(marker in finding for finding in lowered for marker in _HALLUCINATION_FINDING_MARKERS):
         return 0.0
     return None
 

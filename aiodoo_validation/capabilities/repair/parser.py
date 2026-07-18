@@ -122,9 +122,7 @@ class RepairRecordParser:
         payload = _require_mapping(data, label="Repair training example")
         _check_schema_id(payload)
         if not self._is_training_envelope(payload):
-            raise RepairParseError(
-                "Training example must include instruction and output.tasks."
-            )
+            raise RepairParseError("Training example must include instruction and output.tasks.")
         instruction = _require_str(payload, "instruction", label="Repair training example")
         output = _require_mapping(payload.get("output"), label="output")
         tasks = output.get("tasks")
@@ -220,9 +218,7 @@ class RepairRecordParser:
             for index, item in enumerate(context_raw)
         )
 
-        outcome = _require_mapping(
-            task.get("expected_outcome"), label="expected_outcome"
-        )
+        outcome = _require_mapping(task.get("expected_outcome"), label="expected_outcome")
         operations = outcome.get("operations", [])
         if operations is None:
             operations = []
@@ -278,9 +274,7 @@ class RepairRecordParser:
         artifact_id = _require_str(data, "id", label=f"{source}[{index}]")
         path = _require_str(data, "path", label=f"{source}[{index}]")
         if "content" not in data:
-            raise RepairParseError(
-                f"{source}[{index}] missing required field 'content'."
-            )
+            raise RepairParseError(f"{source}[{index}] missing required field 'content'.")
         content = data["content"]
         if not isinstance(content, str):
             raise RepairParseError(f"{source}[{index}] field 'content' must be a string.")
@@ -322,9 +316,7 @@ class RepairRecordParser:
                     f"only {_REPLACE!r} is supported."
                 )
             if "search" not in op or "replace" not in op:
-                raise RepairParseError(
-                    f"{label}[{index}] must include 'search' and 'replace'."
-                )
+                raise RepairParseError(f"{label}[{index}] must include 'search' and 'replace'.")
             search = op["search"]
             replace = op["replace"]
             if not isinstance(search, str) or not isinstance(replace, str):
@@ -332,21 +324,16 @@ class RepairRecordParser:
                     f"{label}[{index}] fields 'search' and 'replace' must be strings."
                 )
             if search == "":
-                raise RepairParseError(
-                    f"{label}[{index}] field 'search' must be non-empty."
-                )
+                raise RepairParseError(f"{label}[{index}] field 'search' must be non-empty.")
             path = op.get("path")
             if path is None:
                 if default_path is None:
                     raise RepairParseError(
-                        f"{label}[{index}] missing 'path' and artifact path "
-                        "cannot be inferred."
+                        f"{label}[{index}] missing 'path' and artifact path cannot be inferred."
                     )
                 path = default_path
             if not isinstance(path, str) or not path.strip():
-                raise RepairParseError(
-                    f"{label}[{index}] field 'path' must be a non-empty string."
-                )
+                raise RepairParseError(f"{label}[{index}] field 'path' must be a non-empty string.")
             try:
                 descriptors.append(
                     TransformationDescriptor(

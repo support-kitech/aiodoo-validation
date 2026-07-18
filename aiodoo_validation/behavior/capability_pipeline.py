@@ -57,9 +57,7 @@ class CapabilityBehaviorPipeline:
     """
 
     case_builder: BehaviorCaseBuilder = field(default_factory=BehaviorCaseBuilder)
-    transformation_engine: TransformationEngine = field(
-        default_factory=TransformationEngine
-    )
+    transformation_engine: TransformationEngine = field(default_factory=TransformationEngine)
     snapshot_comparator: SnapshotComparator = field(default_factory=SnapshotComparator)
 
     def assemble(
@@ -79,9 +77,7 @@ class CapabilityBehaviorPipeline:
 
         for index, raw in enumerate(loaded.records):
             if not isinstance(raw, Mapping):
-                raise CapabilityPipelineError(
-                    f"Corpus record {index} must be a JSON object."
-                )
+                raise CapabilityPipelineError(f"Corpus record {index} must be a JSON object.")
             parsed_records = self._parse_records(pack, raw, index=index)
             for parsed in parsed_records:
                 built = self.case_builder.build(parsed, pack.specification)
@@ -147,9 +143,7 @@ class CapabilityBehaviorPipeline:
             findings.extend(result.findings)
             snapshot = result.snapshot
 
-        has_expected_artifacts = (
-            built.case.expected.metadata.get("source") == "expected_artifacts"
-        )
+        has_expected_artifacts = built.case.expected.metadata.get("source") == "expected_artifacts"
         if has_expected_artifacts:
             comparison = self.snapshot_comparator.compare(
                 original=built.original_snapshot,

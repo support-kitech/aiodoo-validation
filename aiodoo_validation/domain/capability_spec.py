@@ -49,8 +49,7 @@ class CorpusRequirements:
             )
         if not self.fingerprint_required:
             raise DomainError(
-                "Capability Specification corpus_requirements.fingerprint_required "
-                "must be True."
+                "Capability Specification corpus_requirements.fingerprint_required must be True."
             )
 
 

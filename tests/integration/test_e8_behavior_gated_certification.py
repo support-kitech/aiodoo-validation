@@ -69,9 +69,7 @@ def _behavior_score(
                     "validation_kind": ValidationKind.BEHAVIORAL.value,
                 },
                 "pass_rate": behavior,
-                "transforms_passed": (
-                    None if transform is None else transform >= 100.0
-                ),
+                "transforms_passed": (None if transform is None else transform >= 100.0),
             }
         ),
     )
@@ -259,9 +257,7 @@ class TestBehaviorGatedPolicy:
         assert result.metadata["behavior_gated"] is True
 
     def test_behavior_fail(self) -> None:
-        policy, context = _cert_context(
-            _behavior_score(behavior=0.0, transform=100.0, score=50.0)
-        )
+        policy, context = _cert_context(_behavior_score(behavior=0.0, transform=100.0, score=50.0))
         result = policy.certify(context)
         assert result.certified is False
         assert "behavior_failed" in result.metadata["criteria_reasons"]
@@ -282,9 +278,7 @@ class TestBehaviorGatedPolicy:
         assert "behavior_deferred" in result.metadata["criteria_reasons"]
 
     def test_transform_failure(self) -> None:
-        policy, context = _cert_context(
-            _behavior_score(behavior=100.0, transform=0.0, score=50.0)
-        )
+        policy, context = _cert_context(_behavior_score(behavior=100.0, transform=0.0, score=50.0))
         result = policy.certify(context)
         assert result.certified is False
         assert "transform_failed" in result.metadata["criteria_reasons"]
@@ -381,17 +375,16 @@ class TestProfileRegistration:
         repair_cert = {s.stage_id for s in repair.certification_pipeline}
         assert REPAIR_CERTIFICATION_BEHAVIOR not in coding_cert
         assert REPAIR_CERTIFICATION_BEHAVIOR in repair_cert
-        assert "repair.benchmark.behavior" in {
-            s.stage_id for s in repair.benchmark_pipeline
-        }
+        assert "repair.benchmark.behavior" in {s.stage_id for s in repair.benchmark_pipeline}
         assert "repair.report.behavior" in {s.stage_id for s in repair.report_pipeline}
 
     def test_multiple_profiles_structural_only_by_default(self) -> None:
         for profile in ("planner", "conversation", "approval"):
             policies = default_production_certification_policies(profile=profile)
             assert all(
-                getattr(p, "criteria", default_structural_certification_criteria())
-                .require_behavior_pass
+                getattr(
+                    p, "criteria", default_structural_certification_criteria()
+                ).require_behavior_pass
                 is False
                 or p.metadata.policy_id.endswith(".behavior")
                 for p in policies

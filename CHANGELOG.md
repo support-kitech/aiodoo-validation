@@ -7,206 +7,84 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
+### Notes
 
-- R1 production hardening: shared `domain.freeze.freeze_mapping`, remove
-  scoring→oracle implementation import (use score ID map), mypy fixes for
-  certification typing and behavioral oracle warnings, clarify legacy
-  `reports` stub, add repair production wiring consistency tests
+No unreleased changes after the v1.0.0 release candidate cut.
+
+## [1.0.0] — 2026-07-18
+
+### Overview
+
+First official **v1.0.0** release of **AIODOO Validation**.
+
+Validation Protocol V1 is complete and architecturally frozen. Capability
+Delivery phases E0–E8 are complete and frozen. Production hardening (R1) and
+release-candidate validation (RC1) are complete.
+
+**Distribution model:** this repository is a **source / git-tag release**.
+`pyproject.toml` is intentionally tooling-oriented (no `[build-system]`);
+consumers use a checkout with `PYTHONPATH=.` or an editable install from source.
+PyPI wheel publishing is out of scope for this release policy.
 
 ### Added
 
-- E8 behavior-gated certification: `BehaviorGatedCertificationPolicy`,
-  `CertificationCriteria` transform/behavior thresholds, ScoreResult signal
-  extraction (`certification.score_signals`), repair benchmark/cert/report
-  pipeline stages, explicit denial reasons (`behavior_deferred`,
-  `transform_failed`, …), integration tests in
-  `tests/integration/test_e8_behavior_gated_certification.py`
-- E7 evaluation corpus governance: `CorpusPin` / `CorpusPinRegistry`,
-  `ProductionCorpusLookup`, `evaluation_corpus_id` plan resolution,
-  builtin repair fixture pin, pin verification after load, unit tests in
-  `tests/unit/test_e7_corpus_governance.py`, integration test in
-  `tests/integration/test_e7_corpus_pinning.py`
-- E6 behavioral scoring integration: `scoring.evidence` metadata interpretation,
-  `scoring.policy_loader` / `scoring.policy_defaults` for
-  `default_scoring_policy_ref`, `BehavioralEvidenceScorePolicy`
-  (`repair.score.behavior`), multi-dimension aggregation via
-  `behavior_dimensions_from_evidence`, repair scoring pipeline stage, unit
-  tests in `tests/unit/test_e6_behavioral_scoring.py`
-- E5 production behavioral wiring: generic `CapabilityRegistry` /
-  `RegisteredCapabilityPack`, `ConfigurableCorpusProvider`,
-  `CapabilityBehaviorPipeline`, `CapabilityBehavioralOracle`, repair-only
-  registration in `production.py`, repair plan behavior stage, request metadata
-  key `evaluation_corpus_path`, integration tests under
-  `tests/integration/test_e5_production_behavior_wiring.py`
-- E4 Repair Capability Pack (`aiodoo_validation.capabilities.repair`):
-  `RepairRecordParser`, `RepairCapabilityPack` / `get_repair_capability_pack`,
-  `build_repair_specification`, declarative `capability.yaml`, fixtures under
-  `tests/fixtures/capabilities/repair/`
-- E3 BehaviorCaseBuilder (`aiodoo_validation.behavior.case_builder`):
-  `BehaviorCaseBuilder`, `BehaviorCaseBuildResult`,
-  `descriptor_to_replace_transformation`, `BehaviorCaseBuildError`
-- E2 transforms package (`aiodoo_validation.transforms`): `ArtifactSnapshot`,
-  `ReplaceTransformation`, `TransformationResult`, `TransformationEngine`,
-  `SnapshotComparator` / `SnapshotComparisonResult` (delegates to comparator
-  framework), transformation exceptions
-- E1 corpus package (`aiodoo_validation.corpus`): `JsonlCorpusLoader`,
-  `LoadedCorpus`, manifest parsing, JSONL loading, fingerprinting, fail-closed
-  gates (`evaluate_corpus_manifest` / `require_corpus_manifest`), corpus
-  exceptions, and unit fixtures under `tests/fixtures/corpus/`
-- E0 domain foundation: `CorpusRole`, `CorpusManifest`, `CapabilitySpecification`,
-  `CorpusRequirements`, `RuntimeRequirements`, `ParsedCapabilityRecord`,
-  `CapabilityArtifact`, `TransformationDescriptor`
-- E0.3 identity alignment: `CorpusManifest.capability_id` (was `profile_name`)
-- Spec Version 1.0 documentation freeze: [SPECIFICATION_V1.md](docs/SPECIFICATION_V1.md),
-  [capability_validation_contract.md](docs/capability_validation_contract.md),
-  [capability_specification.md](docs/capability_specification.md),
-  [engineering_execution_plan.md](docs/engineering_execution_plan.md),
-  [delivery_governance.md](docs/delivery_governance.md)
-- Historical banners / cross-links for Artifact Resolution vs Capability Delivery naming
-- Deterministic comparators: AST, XML, JSON, token similarity (no AI)
-- Behavioral validation architecture (`domain.behavior`, `behavior.BehaviorRunner`,
-  `oracles.behavioral`) — prompt → inference → comparator → score hooks
-- Comparator framework registry with semantic/rule deferred stubs
-- Score dimensions architecture (`scoring.dimensions`)
-- Reusable certification criteria (`certification.criteria`)
-- Richer production reports with structural/behavior/score/benchmark/certification
-  summaries and machine-readable `run_summary`
-- Optional `RuntimeBenchmarkMetadata` schema for future runtime metrics
-- `BehaviorStatus` enum; production reports `deferred` without corpora
-- Expanded `ComparatorCapability` descriptive flags
-- Version/kind certification label helpers (`certification_label_versioned`,
-  `certification_label_kind`) — CLI still uses stable `certification_label()`
-- Docs: [behavioral_validation.md](docs/behavioral_validation.md),
-  [extensibility_refinements.md](docs/extensibility_refinements.md)
-- Hardening / extensibility tests
+- Capability Delivery E0–E8 (domain, corpus, transforms, BehaviorCaseBuilder,
+  Repair pack, production behavior wiring, behavioral scoring, corpus pinning,
+  behavior-gated certification)
+- R1 production hardening (shared domain freeze helper, scoring layering cleanup,
+  wiring consistency tests)
+- RC1 release validation (CI format gate green; packaging policy documented)
 
 ### Changed
 
-- [implementation_status.md](docs/implementation_status.md) and README reflect Spec v1.0
-  and Capability Delivery E0–E8 (E0–E5 frozen; E6 next)
-- README and engine docs updated to reflect production structural path (no longer
-  claiming placeholder-only oracles/scoring/certification/reports for CLI default)
-- Coding profile strategy label: `coding-v1-structural`
-- Execution-tier helpers document standard / smoke / full / prod semantics
-- Pipeline execution metadata key: `registry_pipeline` (was `placeholder_pipeline`)
+- Production path is structural oracles/scoring/benchmark/certification/reports
+  (not placeholder-only for the default CLI/production stack)
+- Repair profile includes behavior oracle → score → benchmark → certification →
+  report chain when evaluation corpus id/path is configured
+- [implementation_status.md](docs/implementation_status.md) and README reflect
+  Spec v1.0 + E0–E8 + R1/RC1
 
 ### Compatibility
 
 - Public CLI and Validation Protocol V1 stage order unchanged
 - `prod` remains an alias of `full`
-- Production certification remains structural until behavioral corpora are attached
+- Public API: `aiodoo_validation.api` symbols stable for v1.x
 - Stub/placeholder modules retained for `create_with_stubs()` only
+- Python >= 3.12
 
-## [1.0.0] — 2026-07-17
+### Known limitations (intentional)
 
-### Overview
-
-First official release of **AIODOO Validation** — the canonical evaluation and
-certification framework for AIODOO models. Validation Protocol V1 is complete
-and architecturally frozen. The repository enters **maintenance mode** after
-this release.
-
-### Major architecture
-
-Validation Protocol V1 pipeline (frozen):
-
-```text
-ValidationRequest
-  → Validation Engine
-  → Artifact Resolution
-  → Profile Engine
-  → Inference Runner
-  → Oracle Framework
-  → Scoring Engine
-  → Benchmark Engine
-  → Certification Engine
-  → Report Generator
-  → ValidationRunResult
-```
-
-External consumers integrate via `ValidationService` (`aiodoo_validation.api`).
-The CLI consumes the same public API. Dependency direction is one-way: ecosystem
-repositories depend on validation; validation depends on nobody.
+- Behavioral corpora: prefer `evaluation_corpus_id`; path accepted; deferred if unset
+- Behavior-gated certification enabled for **repair** only
+- Semantic / AI similarity comparators deferred
+- Artifact content fingerprints remain placeholder digests
+- PDF/HTML/Markdown report rendering deferred to consumers
+- `merged` / `foundation` profiles unsupported
+- No PyPI `[build-system]` packaging (source-tag distribution)
 
 ### Public API
 
-Stable symbols exported from `aiodoo_validation.api` (guaranteed for v1.x):
+Stable symbols from `aiodoo_validation.api` (v1.x guarantee):
 
-- `ValidationService` — primary integration entry point
-- `build_coding_request`, `parse_odoo_versions` — request builders
-- `get_repository_metadata`, `ProtocolInfo`, `RepositoryMetadata` — version metadata
-- `list_profiles`, `get_profile_info`, `ProfileInfo`, `capability_labels` — profile discovery
-- `is_protocol_supported`, `is_profile_supported`, `is_odoo_version_supported`, `is_execution_tier_supported` — compatibility
-- `is_successful`, `is_certified`, `report_execution`, `stage_statuses` — result helpers
-- Integration hints: `training_integration_hints`, `colab_integration_hints`, `vscode_integration_hints`, `model_repository_integration_hints`, `summarize_for_promotion`
+- `ValidationService`, `build_coding_request`, `parse_odoo_versions`
+- `get_repository_metadata`, `ProtocolInfo`, `RepositoryMetadata`
+- `list_profiles`, `get_profile_info`, `ProfileInfo`, `capability_labels`
+- Compatibility helpers and result helpers
+- Integration hints (`training_integration_hints`, …)
 
-Top-level re-exports: `ValidationService`, `__version__`.
-
-Internal packages (`engine`, `oracles`, `scoring`, `benchmark`, `certification`,
-`reporting`, `profiles`, `validation_plan`, `ports`, `domain`, `stubs`,
-`resolution`, `inference`) are **not** part of the compatibility guarantee.
+Top-level: `ValidationService`, `__version__` (`1.0.0`).
 
 ### CLI
 
-Commands:
-
 | Command | Description |
 |---------|-------------|
-| `validate` | Run the full validation lifecycle |
-| `version` | Show repository and protocol version |
-| `capabilities` | Show supported profiles and pipeline stages |
-| `help` | Show usage information |
+| `validate` | Full validation lifecycle |
+| `version` | Repository and protocol version |
+| `capabilities` | Profiles and pipeline stages |
+| `help` | Usage |
 
-Entry points:
-
-- `python -m aiodoo_validation`
-- `aiodoo-validation` (console script after `pip install`)
-
-Exit codes: `0` completed, `1` not certified, `2` failed/internal error, `3` invalid request.
-
-### Validation pipeline
-
-- **Profile:** `coding` (only profile in v1.0.0)
-- **Supported Odoo versions:** 17, 18, 19
-- **Execution tiers:** `smoke`, `standard`, `full`
-- **Protocol version:** 1.0
-- **Artifact types:** base model, coding adapter, merged model (optional)
-
-### Known limitations
-
-The following are **intentional** in v1.0.0:
-
-- Placeholder Oracle logic (deterministic stub execution)
-- Placeholder Scoring (deterministic stub scores)
-- Placeholder Benchmark (deterministic stub comparisons)
-- Placeholder Certification (deterministic stub decisions)
-- Placeholder Reports (immutable report objects; no rendering)
-- No PDF, HTML, JSON, or Markdown report rendering
-- No Web UI, async execution, plugin system, or distributed execution
-- No GPU inference in CI (CPU-only tests; optional Qwen runtime available outside CI)
-- No training, dataset generation, model registry, or agent runtime integration
-
-### Breaking changes
-
-None — this is the first stable release.
-
-### Compatibility statement
-
-- **Python:** >= 3.12
-- **Public API:** `aiodoo_validation.api` symbols are stable for the v1.x series
-- **Protocol:** Validation Protocol V1 (major=1) only
-- **Internal modules:** may change without notice; external repositories must not import them
-
-### Future roadmap (post-v1.0.0, maintenance mode)
-
-- Production oracle implementations
-- Production scoring policies
-- Production benchmark comparisons
-- Production certification policies
-- Report renderers (JSON, HTML, PDF) as separate consumer integrations
-- Additional validation profiles (e.g. planner)
-- Ecosystem repository integrations (training, Colab, VS Code, model repository)
+Entry points from a source checkout: `python3 -m aiodoo_validation` and, when
+the console script is installed from source, `aiodoo-validation`.
 
 ---
 
@@ -214,4 +92,4 @@ None — this is the first stable release.
 
 | Version | Date | Notes |
 |---------|------|-------|
-| 1.0.0 | 2026-07-17 | Initial stable release; Validation Protocol V1 frozen |
+| 1.0.0 | 2026-07-18 | Protocol V1 + Capability Delivery E0–E8; source-tag release |

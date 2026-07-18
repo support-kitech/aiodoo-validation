@@ -204,14 +204,8 @@ def test_dimension_aggregation_skips_missing() -> None:
     )
     # Renormalize against full policy weights that have evidence only.
     assert dims.weighted == pytest.approx(
-        (
-            100.0 * policy.weights[DIM_TRANSFORM_CORRECTNESS]
-            + 50.0 * policy.weights[DIM_BEHAVIOR]
-        )
-        / (
-            policy.weights[DIM_TRANSFORM_CORRECTNESS]
-            + policy.weights[DIM_BEHAVIOR]
-        )
+        (100.0 * policy.weights[DIM_TRANSFORM_CORRECTNESS] + 50.0 * policy.weights[DIM_BEHAVIOR])
+        / (policy.weights[DIM_TRANSFORM_CORRECTNESS] + policy.weights[DIM_BEHAVIOR])
     )
     assert expected == pytest.approx(dims.weighted)
 

@@ -131,8 +131,7 @@ def behavior_dimensions_from_evidence(
     values: dict[str, float | None] = dict(evidence.dimension_values())
     if policy.missing_evidence == "zero":
         values = {
-            name: (0.0 if values.get(name) is None else values.get(name))
-            for name in policy.weights
+            name: (0.0 if values.get(name) is None else values.get(name)) for name in policy.weights
         }
 
     weighted = compute_weighted_score(values, policy.weights)

@@ -125,9 +125,7 @@ class BehaviorCorpus:
                 corpus_id=self.corpus_id,
                 profile_name=self.profile_name,
                 cases=(),
-                metadata=MappingProxyType(
-                    {**dict(self.metadata), "limit_applied": 0}
-                ),
+                metadata=MappingProxyType({**dict(self.metadata), "limit_applied": 0}),
             )
         if len(self.cases) <= limit:
             return self
@@ -135,9 +133,7 @@ class BehaviorCorpus:
             corpus_id=self.corpus_id,
             profile_name=self.profile_name,
             cases=self.cases[:limit],
-            metadata=MappingProxyType(
-                {**dict(self.metadata), "limit_applied": limit}
-            ),
+            metadata=MappingProxyType({**dict(self.metadata), "limit_applied": limit}),
         )
 
 

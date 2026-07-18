@@ -108,8 +108,7 @@ class MetadataStructuralOracle(StructuralOracle):
         adapter_type = str(adapter.get("adapter_type", "")).strip().lower()
         if adapter_type and adapter_type != context.profile_name.strip().lower():
             findings.append(
-                f"adapter_type {adapter_type!r} does not match profile "
-                f"{context.profile_name!r}"
+                f"adapter_type {adapter_type!r} does not match profile {context.profile_name!r}"
             )
         if findings:
             return False, "Metadata oracle failed.", tuple(findings)
@@ -125,9 +124,7 @@ class ManifestStructuralOracle(StructuralOracle):
         required = ("artifact.json", "adapter_config.json")
         missing = [name for name in required if not (adapter / name).is_file()]
         # Weights may be .safetensors or .bin
-        has_weights = any(adapter.glob("adapter_model.*")) or any(
-            adapter.glob("*.safetensors")
-        )
+        has_weights = any(adapter.glob("adapter_model.*")) or any(adapter.glob("*.safetensors"))
         if not has_weights:
             missing.append("adapter weights")
         if missing:

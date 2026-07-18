@@ -39,9 +39,7 @@ class BehaviorCaseBuildResult:
             raise TypeError("expected_snapshot must be an ArtifactSnapshot.")
         transforms = tuple(self.transformations)
         if not all(isinstance(item, ReplaceTransformation) for item in transforms):
-            raise TypeError(
-                "transformations must contain ReplaceTransformation values only."
-            )
+            raise TypeError("transformations must contain ReplaceTransformation values only.")
         object.__setattr__(self, "transformations", transforms)
         object.__setattr__(
             self,

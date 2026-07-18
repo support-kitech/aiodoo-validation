@@ -101,12 +101,8 @@ class RuntimeBenchmarkMetadata:
             total_tokens=_optional_int(score_meta.get("total_tokens")),
             peak_gpu_memory_mb=_optional_number(score_meta.get("peak_gpu_memory_mb")),
             peak_cpu_memory_mb=peak_cpu,
-            gpu_utilization_percent=_optional_number(
-                score_meta.get("gpu_utilization_percent")
-            ),
-            cpu_utilization_percent=_optional_number(
-                score_meta.get("cpu_utilization_percent")
-            ),
+            gpu_utilization_percent=_optional_number(score_meta.get("gpu_utilization_percent")),
+            cpu_utilization_percent=_optional_number(score_meta.get("cpu_utilization_percent")),
             throughput_tokens_per_second=throughput,
             model_load_time_ms=_optional_number(score_meta.get("model_load_time_ms")),
             warmup_time_ms=_optional_number(score_meta.get("warmup_time_ms")),

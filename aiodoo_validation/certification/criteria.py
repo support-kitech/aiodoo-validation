@@ -28,9 +28,7 @@ class CertificationCriteria:
     min_transform_score: float | None = None
     min_weighted_score: float | None = None
     min_benchmark_score: float | None = 100.0
-    profile_thresholds: Mapping[str, float] = field(
-        default_factory=lambda: MappingProxyType({})
-    )
+    profile_thresholds: Mapping[str, float] = field(default_factory=lambda: MappingProxyType({}))
     metadata: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
 
 

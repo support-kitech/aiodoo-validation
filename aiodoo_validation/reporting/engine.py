@@ -379,9 +379,7 @@ def _build_run_summary(context: RunContext) -> dict[str, object]:
         "overall_certified": overall_certified,
         "validation_kind": validation_kind,
         "report_version": "1.1.0",
-        "protocol_version": (
-            f"{SUPPORTED_PROTOCOL_MAJOR}.{context.protocol_minor}"
-        ),
+        "protocol_version": (f"{SUPPORTED_PROTOCOL_MAJOR}.{context.protocol_minor}"),
         "profile_version": profile_version,
         "execution_mode": execution_mode,
         "behavior_status": behavior_status.value,

@@ -14,11 +14,11 @@
 | Architecture | **Complete / frozen** |
 | Planning / Spec v1.0 documentation | **Complete** (materialized in repo) |
 | Capability Delivery implementation | **Complete (E0–E8)** |
-| Current execution phase | **R1 complete** — production hardening; Capability Delivery E0–E8 frozen |
+| Current execution phase | **RC1 complete** — v1.0.0 source-tag release candidate |
 | Structural / artifact validation | **Active (production)** |
 | Behavioral validation | **Repair wired** — deferred without corpus id/path; active when configured |
 | Certification | **Structural + repair behavior gate** (`BehaviorGatedCertificationPolicy`) |
-| Repository | Spec v1.0 authoritative; E0–E8 frozen; **R1 release readiness** applied |
+| Repository | Spec v1.0 authoritative; E0–E8 frozen; R1+RC1 complete |
 
 ---
 
@@ -55,18 +55,25 @@
 | E7 eval corpus pin | **Done / frozen** — pin registry, identity→path resolution, fixture pin for repair |
 | E8 behavior-gated cert | **Done / frozen** — `BehaviorGatedCertificationPolicy`, criteria reasons, ScoreResult signals |
 | R1 production hardening | **Done** — typing, layering cleanup, wiring consistency tests, docs |
+| RC1 release validation | **Done** — quality gates green; source-tag packaging policy confirmed |
 
 ---
 
-## Release readiness (R1)
+## Release readiness (R1 / RC1)
 
 | Check | Status |
 |-------|--------|
-| Full unit/integration suite | Green |
+| Full unit/integration suite | Green (454 passed) |
+| ruff check | Green |
+| ruff format | Green |
+| mypy strict | Green |
+| coverage | ≥85% (86%) |
 | Public API surface (`aiodoo_validation.api`) | Stable; internals not exported |
 | Repair delivery chain IDs | Aligned (oracle→score→bench→cert→report) |
 | Capability Delivery redesign | **Forbidden** — frozen |
-| Known deferred (non-blocking) | `aiodoo-datasets` validation-layout pins; `build_repair_request` helper; content fingerprints |
+| PyPI `[build-system]` wheel | **Out of scope** (intentional tooling-only pyproject) |
+| Recommended publish | **git tag `v1.0.0`** source release |
+| Known deferred (non-blocking) | `aiodoo-datasets` validation-layout pins; `build_repair_request`; content fingerprints |
 
 ---
 
@@ -113,4 +120,5 @@ Follow [delivery_governance.md](delivery_governance.md).
 - **Protocol V1 / structural certification path:** frozen and active.  
 - **Specification Version 1.0 (docs):** frozen in this repository.  
 - **Capability Delivery code:** E0–E8 frozen (spine complete).  
-- **R1:** hardening only — no Capability Delivery architecture changes.
+- **R1 / RC1:** hardening + release validation only — no Capability Delivery architecture changes.  
+- **v1.0.0 distribution:** source / git-tag (not PyPI wheel).

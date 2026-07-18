@@ -76,13 +76,10 @@ def verify_loaded_corpus_against_pin(
     manifest = loaded.manifest
 
     if manifest.corpus_id != pin.corpus_id:
-        reasons.append(
-            f"corpus_id_mismatch:manifest={manifest.corpus_id!r},pin={pin.corpus_id!r}"
-        )
+        reasons.append(f"corpus_id_mismatch:manifest={manifest.corpus_id!r},pin={pin.corpus_id!r}")
     if require_capability_match and manifest.capability_id != pin.capability_id:
         reasons.append(
-            "capability_id_mismatch:"
-            f"manifest={manifest.capability_id!r},pin={pin.capability_id!r}"
+            f"capability_id_mismatch:manifest={manifest.capability_id!r},pin={pin.capability_id!r}"
         )
     if manifest.fingerprint != pin.fingerprint:
         reasons.append("fingerprint_mismatch_against_pin")
@@ -102,8 +99,7 @@ def verify_loaded_corpus_against_pin(
 
     if reasons:
         raise CorpusPinError(
-            f"Corpus pin verification failed for {pin.corpus_id!r}: "
-            + ", ".join(reasons)
+            f"Corpus pin verification failed for {pin.corpus_id!r}: " + ", ".join(reasons)
         )
 
 
@@ -137,13 +133,11 @@ def resolve_pin_location(
         path = Path(overrides[pin.corpus_id])
         if not path.exists():
             raise CorpusLoadError(
-                f"Pinned corpus override path does not exist for "
-                f"{pin.corpus_id!r}: {path}"
+                f"Pinned corpus override path does not exist for {pin.corpus_id!r}: {path}"
             )
         if not path.is_dir():
             raise CorpusLoadError(
-                f"Pinned corpus override path is not a directory for "
-                f"{pin.corpus_id!r}: {path}"
+                f"Pinned corpus override path is not a directory for {pin.corpus_id!r}: {path}"
             )
         return path.resolve()
 
@@ -157,8 +151,7 @@ def resolve_pin_location(
     roots = tuple(Path(root) for root in search_roots if str(root).strip())
     if not roots:
         raise CorpusPinError(
-            f"Corpus pin {pin.corpus_id!r} requires search_roots to resolve "
-            f"location_hint={hint!r}."
+            f"Corpus pin {pin.corpus_id!r} requires search_roots to resolve location_hint={hint!r}."
         )
 
     candidates = [root / hint for root in roots]
@@ -166,8 +159,7 @@ def resolve_pin_location(
     if not existing:
         searched = ", ".join(str(path) for path in candidates)
         raise CorpusLoadError(
-            f"Pinned corpus {pin.corpus_id!r} not found under search roots. "
-            f"Tried: {searched}"
+            f"Pinned corpus {pin.corpus_id!r} not found under search roots. Tried: {searched}"
         )
     if len(existing) > 1:
         raise CorpusPinError(

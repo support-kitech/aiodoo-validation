@@ -115,12 +115,10 @@ class BehavioralOracle:
             oracle_id=self.metadata.oracle_id,
             success=passed,
             message=(
-                f"Behavioral suite {suite.suite_id}: "
-                f"{suite.pass_count}/{suite.case_count} passed."
+                f"Behavioral suite {suite.suite_id}: {suite.pass_count}/{suite.case_count} passed."
             ),
             findings=tuple(
-                f"{item.case_id}:{'pass' if item.passed else 'fail'}"
-                for item in suite.results
+                f"{item.case_id}:{'pass' if item.passed else 'fail'}" for item in suite.results
             ),
             duration_ms=duration_ms,
             metadata=MappingProxyType(
@@ -132,9 +130,7 @@ class BehavioralOracle:
                     "pass_count": suite.pass_count,
                     "fail_count": suite.fail_count,
                     "pass_rate": (
-                        (100.0 * suite.pass_count / suite.case_count)
-                        if suite.case_count
-                        else None
+                        (100.0 * suite.pass_count / suite.case_count) if suite.case_count else None
                     ),
                     "tokens_per_sec": _tokens_per_sec(suite.results),
                     "memory_mb": _max_memory(suite.results),
@@ -180,9 +176,7 @@ def default_behavioral_oracle_specs(profile: str) -> tuple[tuple[str, str, str],
         ("approval", "Approval Behavior Oracle", "Approval decision checks."),
         ("evaluation", "Evaluation Behavior Oracle", "Evaluation rubric checks."),
     )
-    return tuple(
-        (f"{profile}.oracle.behavior.{key}", title, desc) for key, title, desc in names
-    )
+    return tuple((f"{profile}.oracle.behavior.{key}", title, desc) for key, title, desc in names)
 
 
 def build_deferred_behavioral_oracles(

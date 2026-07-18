@@ -128,10 +128,7 @@ def test_comparator_registry_includes_deferred_kinds() -> None:
     assert registry.get(ComparatorKind.AST).metadata.capabilities.implemented is True
     assert registry.get(ComparatorKind.XML).metadata.capabilities.implemented is True
     assert registry.get(ComparatorKind.JSON).metadata.capabilities.implemented is True
-    assert (
-        registry.get(ComparatorKind.TOKEN_SIMILARITY).metadata.capabilities.implemented
-        is True
-    )
+    assert registry.get(ComparatorKind.TOKEN_SIMILARITY).metadata.capabilities.implemented is True
 
 
 def test_behavior_runner_defers_empty_corpus() -> None:
@@ -214,7 +211,6 @@ def test_build_deferred_behavioral_oracles_for_profiles() -> None:
     oracles = build_deferred_behavioral_oracles(profile="planner")
     assert oracles
     assert all(
-        item.metadata.capabilities.validation_kind is ValidationKind.BEHAVIORAL
-        for item in oracles
+        item.metadata.capabilities.validation_kind is ValidationKind.BEHAVIORAL for item in oracles
     )
     assert any("planner.oracle.behavior" in item.metadata.oracle_id for item in oracles)

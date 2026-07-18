@@ -167,9 +167,7 @@ class OracleEngine:
                 if result.errors:
                     errors.extend(result.errors)
                 else:
-                    warnings.append(
-                        f"Oracle {result.oracle_id} did not pass: {result.message}"
-                    )
+                    warnings.append(f"Oracle {result.oracle_id} did not pass: {result.message}")
 
         duration_ms = int((perf_counter() - started) * 1000)
         success_count = sum(1 for item in results if item.success)

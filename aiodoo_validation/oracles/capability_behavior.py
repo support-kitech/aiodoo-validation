@@ -176,10 +176,7 @@ class CapabilityBehavioralOracle:
 
         findings = [
             f"transform:{'pass' if transform_ok else 'fail'}",
-            *(
-                f"{item.case_id}:{'pass' if item.passed else 'fail'}"
-                for item in suite.results
-            ),
+            *(f"{item.case_id}:{'pass' if item.passed else 'fail'}" for item in suite.results),
         ]
         if suite.deferred:
             findings.insert(0, "behavioral_deferred")
@@ -212,11 +209,7 @@ class CapabilityBehavioralOracle:
             success=success if not suite.deferred else True,
             message=message,
             findings=tuple(findings),
-            warnings=(
-                (suite.deferred_reason,)
-                if suite.deferred and suite.deferred_reason
-                else ()
-            ),
+            warnings=((suite.deferred_reason,) if suite.deferred and suite.deferred_reason else ()),
             duration_ms=duration_ms,
             metadata=MappingProxyType(provenance),
         )

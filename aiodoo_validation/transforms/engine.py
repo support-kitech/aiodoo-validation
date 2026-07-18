@@ -54,8 +54,7 @@ class TransformationEngine:
                 occurrence_count=0,
                 findings=("search_not_found",),
                 message=(
-                    f"Search text not found in snapshot {snapshot.snapshot_id!r} "
-                    f"path {path!r}."
+                    f"Search text not found in snapshot {snapshot.snapshot_id!r} path {path!r}."
                 ),
                 metadata={"path": path, "search_length": len(search)},
             )

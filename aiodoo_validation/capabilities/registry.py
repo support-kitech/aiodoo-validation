@@ -28,17 +28,13 @@ class CapabilityRegistry:
                 f"pack={pack.parser_id!r} spec={pack.specification.parser_id!r}."
             )
         if capability_id in self._packs:
-            raise CapabilityRegistryError(
-                f"Capability {capability_id!r} is already registered."
-            )
+            raise CapabilityRegistryError(f"Capability {capability_id!r} is already registered.")
         self._packs[capability_id] = pack
 
     def get(self, capability_id: str) -> RegisteredCapabilityPack:
         pack = self._packs.get(capability_id)
         if pack is None:
-            raise CapabilityRegistryError(
-                f"Capability {capability_id!r} is not registered."
-            )
+            raise CapabilityRegistryError(f"Capability {capability_id!r} is not registered.")
         return pack
 
     def get_optional(self, capability_id: str) -> RegisteredCapabilityPack | None:

@@ -40,8 +40,7 @@ def _artifact_role(artifact: CapabilityArtifact) -> str:
     raw = artifact.metadata.get(_SNAPSHOT_ROLE_KEY, _ROLE_ORIGINAL)
     if not isinstance(raw, str) or not raw.strip():
         raise BehaviorCaseBuildError(
-            f"Artifact {artifact.artifact_id!r} has invalid "
-            f"metadata[{_SNAPSHOT_ROLE_KEY!r}]."
+            f"Artifact {artifact.artifact_id!r} has invalid metadata[{_SNAPSHOT_ROLE_KEY!r}]."
         )
     role = raw.strip()
     if role not in {_ROLE_ORIGINAL, _ROLE_EXPECTED}:
@@ -87,9 +86,7 @@ def _resolve_comparator_kind(
     try:
         kind = ComparatorKind(kind_value)
     except ValueError as exc:
-        raise BehaviorCaseBuildError(
-            f"Unsupported comparator_kind {kind_value!r}."
-        ) from exc
+        raise BehaviorCaseBuildError(f"Unsupported comparator_kind {kind_value!r}.") from exc
 
     if kind.value not in specification.supported_comparator_kinds:
         raise BehaviorCaseBuildError(
@@ -165,12 +162,8 @@ class BehaviorCaseBuilder:
                 "and/or at least one artifact."
             )
 
-        original_contents = _contents_from_artifacts(
-            record.artifacts, role=_ROLE_ORIGINAL
-        )
-        expected_contents = _contents_from_artifacts(
-            record.artifacts, role=_ROLE_EXPECTED
-        )
+        original_contents = _contents_from_artifacts(record.artifacts, role=_ROLE_ORIGINAL)
+        expected_contents = _contents_from_artifacts(record.artifacts, role=_ROLE_EXPECTED)
 
         # Expected artifacts are optional. When absent, expected starts as a
         # copy of original content — gold may be expressed as transformations
@@ -197,10 +190,7 @@ class BehaviorCaseBuilder:
 
         mapped: list[ReplaceTransformation] = []
         for index, descriptor in enumerate(record.transformations):
-            if (
-                descriptor.transformation_type
-                not in specification.supported_transformation_types
-            ):
+            if descriptor.transformation_type not in specification.supported_transformation_types:
                 raise BehaviorCaseBuildError(
                     f"Transformation type {descriptor.transformation_type!r} "
                     f"at index {index} is not declared in Capability "
@@ -227,11 +217,7 @@ class BehaviorCaseBuilder:
         if record.explanation is not None:
             case_metadata["explanation"] = record.explanation
         case_metadata.update(
-            {
-                key: value
-                for key, value in dict(record.metadata).items()
-                if key != "comparator_kind"
-            }
+            {key: value for key, value in dict(record.metadata).items() if key != "comparator_kind"}
         )
 
         case = BehaviorCase(
@@ -252,8 +238,7 @@ class BehaviorCaseBuilder:
                         "source": (
                             "expected_artifacts"
                             if any(
-                                _artifact_role(item) == _ROLE_EXPECTED
-                                for item in record.artifacts
+                                _artifact_role(item) == _ROLE_EXPECTED for item in record.artifacts
                             )
                             else "original_copy"
                         )
@@ -299,14 +284,10 @@ class BehaviorCaseBuilder:
         Fall back to explanation, then empty string for transform-only gold.
         """
         expected_artifacts = [
-            item
-            for item in record.artifacts
-            if _artifact_role(item) == _ROLE_EXPECTED
+            item for item in record.artifacts if _artifact_role(item) == _ROLE_EXPECTED
         ]
         if expected_artifacts:
-            parts = [
-                expected_snapshot.require(item.path) for item in expected_artifacts
-            ]
+            parts = [expected_snapshot.require(item.path) for item in expected_artifacts]
             return "\n".join(parts)
         if record.explanation is not None:
             return record.explanation

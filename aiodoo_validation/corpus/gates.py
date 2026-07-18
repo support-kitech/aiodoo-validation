@@ -95,8 +95,7 @@ def require_corpus_manifest(
     )
     if not result.allowed:
         raise CorpusGateError(
-            "Corpus gate rejected corpus "
-            f"{manifest.corpus_id!r}: {', '.join(result.reasons)}"
+            f"Corpus gate rejected corpus {manifest.corpus_id!r}: {', '.join(result.reasons)}"
         )
     return result
 

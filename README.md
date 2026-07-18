@@ -29,11 +29,12 @@ guarantee.
 | Spec v1.0 documentation | Frozen (authoritative in `docs/`) |
 | Production structural validation | Active |
 | Capability Delivery (EEP E0–E8) | E0–E8 frozen (complete) |
-| Production hardening (R1) | Complete — release readiness review |
+| Production hardening (R1) | Complete |
+| Release candidate (RC1) | Complete — source-tag v1.0.0 |
 | Behavioral validation | Repair wired (corpus-gated); others deferred |
 | **Repository** | Spec synced; structural + repair behavior cert ready for v1.x |
 
-**Repository version:** v1.0.0
+**Repository version:** v1.0.0 (**source / git-tag** release; not a PyPI wheel)
 
 ## Current capabilities
 
@@ -62,6 +63,7 @@ guarantee.
 | PDF / HTML / Markdown report rendering | Future consumer integrations |
 | `merged` / `foundation` profiles | Intentionally unsupported |
 | GPU inference in CI | Not required (CPU-only tests) |
+| PyPI wheel packaging | Out of scope — no `[build-system]` by policy |
 
 See [behavioral_validation.md](docs/behavioral_validation.md) for structural vs behavioral honesty.
 
@@ -82,13 +84,14 @@ result = service.validate(request)
 
 See [Integration guide](docs/integration.md).
 
-## Quick start
+## Quick start (source checkout)
 
 ```bash
 python3 -m pip install -r requirements/dev.txt
+export PYTHONPATH=.
 python3 -m pytest
 python3 -m aiodoo_validation help
-aiodoo-validation validate \
+python3 -m aiodoo_validation validate \
     --profile coding \
     --base-model ./base \
     --adapter ./adapter \
@@ -96,12 +99,15 @@ aiodoo-validation validate \
     --odoo-versions 18
 ```
 
+Optional inference extras: `pip install -r requirements/inference.txt`.
+
 ## Scope
 
-**In scope:** validate trained artifacts, structural certification, profile-aware evidence.
+**In scope:** validate trained artifacts, structural certification, repair behavior
+evaluation when a corpus is configured, profile-aware evidence.
 
-**Out of scope:** training, dataset generation, model registry, agent runtime, deployment,
-invented evaluation corpora, fake semantic scoring.
+**Out of scope:** training, dataset generation, model registry, agent runtime,
+deployment, invented evaluation corpora, fake semantic scoring, PyPI packaging.
 
 ## Documentation
 

@@ -21,9 +21,7 @@ EVAL_CORPUS_ROOT_ENV = "AIODOO_EVAL_CORPUS_ROOT"
 # Repair evaluation fixture pin (validation-owned held-out smoke corpus).
 # Identity matches tests/fixtures/capabilities/repair/eval_corpus/manifest.json.
 REPAIR_EVAL_FIXTURE_CORPUS_ID = "fixture.repair.eval.behavior"
-REPAIR_EVAL_FIXTURE_FINGERPRINT = (
-    "dc418ad42216d8296dce5bb862372c8c38b301a97d508586cbf22d388ecd400f"
-)
+REPAIR_EVAL_FIXTURE_FINGERPRINT = "dc418ad42216d8296dce5bb862372c8c38b301a97d508586cbf22d388ecd400f"
 REPAIR_EVAL_FIXTURE_VERSION = "fixture-e5"
 
 
@@ -56,9 +54,7 @@ class CorpusPinRegistry:
     _pins: Mapping[str, CorpusPin] = field(default_factory=lambda: MappingProxyType({}))
     _aliases: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
     _locations: Mapping[str, Path] = field(default_factory=lambda: MappingProxyType({}))
-    _capability_defaults: Mapping[str, str] = field(
-        default_factory=lambda: MappingProxyType({})
-    )
+    _capability_defaults: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
     search_roots: tuple[Path, ...] = ()
 
     @classmethod
@@ -88,17 +84,13 @@ class CorpusPinRegistry:
             if not key or not value:
                 raise CorpusPinError("Alias keys and targets must be non-empty.")
             if value not in pin_map:
-                raise CorpusPinError(
-                    f"Alias {key!r} targets unknown corpus_id {value!r}."
-                )
+                raise CorpusPinError(f"Alias {key!r} targets unknown corpus_id {value!r}.")
             alias_map[key] = value
 
         location_map: dict[str, Path] = {}
         for corpus_id, raw in dict(locations or {}).items():
             if corpus_id not in pin_map:
-                raise CorpusPinError(
-                    f"Location registered for unknown corpus_id {corpus_id!r}."
-                )
+                raise CorpusPinError(f"Location registered for unknown corpus_id {corpus_id!r}.")
             location_map[corpus_id] = Path(raw)
 
         defaults: dict[str, str] = {}
@@ -109,8 +101,7 @@ class CorpusPinRegistry:
                 raise CorpusPinError("capability_defaults entries must be non-empty.")
             if cid not in pin_map:
                 raise CorpusPinError(
-                    f"capability default for {cap!r} references unknown "
-                    f"corpus_id {cid!r}."
+                    f"capability default for {cap!r} references unknown corpus_id {cid!r}."
                 )
             if pin_map[cid].capability_id != cap:
                 raise CorpusPinError(
@@ -221,9 +212,7 @@ def builtin_corpus_pin_registry(
         locations=locations,
         # Documented default identity — not auto-loaded without configuration.
         capability_defaults={"repair": repair_pin.corpus_id},
-        search_roots=search_roots_from_environment(
-            extra_roots=(fixture_root, *extra_search_roots)
-        ),
+        search_roots=search_roots_from_environment(extra_roots=(fixture_root, *extra_search_roots)),
     )
 
 

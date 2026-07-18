@@ -91,9 +91,7 @@ class ParsedCapabilityRecord:
 
         transforms = tuple(self.transformations)
         if not all(isinstance(item, TransformationDescriptor) for item in transforms):
-            raise DomainError(
-                "transformations must contain TransformationDescriptor values only."
-            )
+            raise DomainError("transformations must contain TransformationDescriptor values only.")
 
         tags = tuple(str(tag) for tag in self.tags)
         if any(not tag.strip() for tag in tags):

@@ -125,8 +125,7 @@ class CertificationSummaryReportTemplate:
                 "Benchmark Summary",
                 (
                     f"policy_count={bench_summary.get('policy_count')}",
-                    f"aggregate_benchmark_score="
-                    f"{bench_summary.get('aggregate_benchmark_score')}",
+                    f"aggregate_benchmark_score={bench_summary.get('aggregate_benchmark_score')}",
                     f"success_count={bench_summary.get('success_count')}",
                 ),
             ),

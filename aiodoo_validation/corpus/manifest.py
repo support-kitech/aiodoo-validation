@@ -33,9 +33,7 @@ def corpus_manifest_from_mapping(data: Mapping[str, Any]) -> CorpusManifest:
     try:
         role = CorpusRole(role_raw.strip())
     except ValueError as exc:
-        raise CorpusLoadError(
-            f"Manifest field 'role' has unsupported value {role_raw!r}."
-        ) from exc
+        raise CorpusLoadError(f"Manifest field 'role' has unsupported value {role_raw!r}.") from exc
 
     denied_raw = data.get("denied_training_fingerprints", ())
     if denied_raw is None:
@@ -87,9 +85,7 @@ def load_corpus_manifest(path: Path | str) -> CorpusManifest:
     except OSError as exc:
         raise CorpusLoadError(f"Failed to read corpus manifest: {manifest_path}") from exc
     except json.JSONDecodeError as exc:
-        raise CorpusLoadError(
-            f"Corpus manifest is not valid JSON: {manifest_path}"
-        ) from exc
+        raise CorpusLoadError(f"Corpus manifest is not valid JSON: {manifest_path}") from exc
     if not isinstance(data, dict):
         raise CorpusLoadError("Corpus manifest root must be a JSON object.")
     return corpus_manifest_from_mapping(data)

@@ -27,9 +27,7 @@ class SnapshotComparisonResult:
     metadata: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
 
     def __post_init__(self) -> None:
-        object.__setattr__(
-            self, "path_results", MappingProxyType(dict(self.path_results))
-        )
+        object.__setattr__(self, "path_results", MappingProxyType(dict(self.path_results)))
         object.__setattr__(
             self,
             "original_vs_expected",
@@ -72,15 +70,9 @@ class SnapshotComparator:
         if not isinstance(expected, ArtifactSnapshot):
             raise TypeError("expected must be an ArtifactSnapshot.")
 
-        paths = sorted(
-            set(original.contents)
-            | set(transformed.contents)
-            | set(expected.contents)
-        )
+        paths = sorted(set(original.contents) | set(transformed.contents) | set(expected.contents))
         if not paths:
-            raise TransformationValidationError(
-                "Cannot compare empty snapshots (no paths)."
-            )
+            raise TransformationValidationError("Cannot compare empty snapshots (no paths).")
 
         findings: list[str] = []
         path_results: dict[str, ComparatorResult] = {}
@@ -118,8 +110,7 @@ class SnapshotComparator:
         # Primary verdict: every expected path present in transformed and matching.
         expected_paths = set(expected.contents)
         passed = bool(expected_paths) and all(
-            path in transformed.contents and path_results[path].passed
-            for path in expected_paths
+            path in transformed.contents and path_results[path].passed for path in expected_paths
         )
         if not expected_paths:
             findings.append("expected_empty")

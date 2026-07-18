@@ -222,9 +222,7 @@ class AdapterProfile(ResolvedProfile):
             benchmark_pipeline=_benchmark_pipeline_for_profile(profile),
             certification_pipeline=_certification_pipeline_for_profile(profile),
             report_pipeline=_report_pipeline_for_profile(profile),
-            metadata=MappingProxyType(
-                {"odoo_versions": odoo_versions, "adapter_type": profile}
-            ),
+            metadata=MappingProxyType({"odoo_versions": odoo_versions, "adapter_type": profile}),
         )
 
     def validate_compatibility(self, bundle: ArtifactBundle) -> tuple[ProfileError, ...]:

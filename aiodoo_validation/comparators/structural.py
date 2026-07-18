@@ -105,9 +105,7 @@ class XmlComparator:
         root = ET.fromstring(source)
 
         def normalize(node: ET.Element) -> str:
-            attrs = "".join(
-                f' {key}="{node.attrib[key]}"' for key in sorted(node.attrib)
-            )
+            attrs = "".join(f' {key}="{node.attrib[key]}"' for key in sorted(node.attrib))
             text = (node.text or "").strip()
             children = "".join(normalize(child) for child in list(node))
             tail = (node.tail or "").strip()
@@ -255,10 +253,7 @@ class TokenSimilarityComparator:
         return ComparatorResult(
             passed=passed,
             similarity=similarity,
-            message=(
-                f"Token similarity {similarity:.3f} "
-                f"(threshold={self._pass_threshold:.3f})."
-            ),
+            message=(f"Token similarity {similarity:.3f} (threshold={self._pass_threshold:.3f})."),
             findings=("token_similarity_pass",) if passed else ("token_similarity_fail",),
             metadata={
                 "implemented": True,

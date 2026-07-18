@@ -167,9 +167,7 @@ class TestBehaviorCaseBuilder:
             record_id="r4",
             capability_id="repair",
             problem="prompt only is ok with artifacts",
-            artifacts=(
-                CapabilityArtifact(artifact_id="a1", path="x.py", content=""),
-            ),
+            artifacts=(CapabilityArtifact(artifact_id="a1", path="x.py", content=""),),
         )
         result = self.builder.build(record, self.spec)
         assert result.transformations == ()
@@ -203,9 +201,7 @@ class TestBehaviorCaseBuilder:
             record_id="r6",
             capability_id="linux",
             problem="nope",
-            artifacts=(
-                CapabilityArtifact(artifact_id="a1", path="a.py", content="x"),
-            ),
+            artifacts=(CapabilityArtifact(artifact_id="a1", path="a.py", content="x"),),
         )
         with pytest.raises(BehaviorCaseBuildError, match="does not match"):
             self.builder.build(record, self.spec)
@@ -236,9 +232,7 @@ class TestBehaviorCaseBuilder:
             record_id="r9",
             capability_id="repair",
             problem="bad path",
-            artifacts=(
-                CapabilityArtifact(artifact_id="a1", path="a.py", content="x"),
-            ),
+            artifacts=(CapabilityArtifact(artifact_id="a1", path="a.py", content="x"),),
             transformations=(_replace(path="missing.py"),),
         )
         with pytest.raises(BehaviorCaseBuildError, match="absent from the original"):
@@ -249,12 +243,8 @@ class TestBehaviorCaseBuilder:
             record_id="r10",
             capability_id="repair",
             problem="patch",
-            artifacts=(
-                CapabilityArtifact(artifact_id="a1", path="a.py", content="x"),
-            ),
-            transformations=(
-                TransformationDescriptor(transformation_type="yaml", payload={}),
-            ),
+            artifacts=(CapabilityArtifact(artifact_id="a1", path="a.py", content="x"),),
+            transformations=(TransformationDescriptor(transformation_type="yaml", payload={}),),
         )
         with pytest.raises(BehaviorCaseBuildError, match="not declared"):
             self.builder.build(record, self.spec)
@@ -294,9 +284,7 @@ class TestBehaviorCaseBuilder:
             record_id="r13",
             capability_id="repair",
             problem="ast",
-            artifacts=(
-                CapabilityArtifact(artifact_id="a1", path="a.py", content="x=1"),
-            ),
+            artifacts=(CapabilityArtifact(artifact_id="a1", path="a.py", content="x=1"),),
             metadata={"comparator_kind": "ast"},
         )
         result = self.builder.build(record, self.spec)
@@ -307,9 +295,7 @@ class TestBehaviorCaseBuilder:
             record_id="r14",
             capability_id="repair",
             problem="json",
-            artifacts=(
-                CapabilityArtifact(artifact_id="a1", path="a.py", content="{}"),
-            ),
+            artifacts=(CapabilityArtifact(artifact_id="a1", path="a.py", content="{}"),),
             metadata={"comparator_kind": "json"},
         )
         with pytest.raises(BehaviorCaseBuildError, match="not declared"):
@@ -321,17 +307,13 @@ class TestBehaviorCaseBuilder:
                 record_id="m1",
                 capability_id="repair",
                 problem="one",
-                artifacts=(
-                    CapabilityArtifact(artifact_id="a1", path="a.py", content="1"),
-                ),
+                artifacts=(CapabilityArtifact(artifact_id="a1", path="a.py", content="1"),),
             ),
             ParsedCapabilityRecord(
                 record_id="m2",
                 capability_id="repair",
                 problem="two",
-                artifacts=(
-                    CapabilityArtifact(artifact_id="b1", path="b.py", content="2"),
-                ),
+                artifacts=(CapabilityArtifact(artifact_id="b1", path="b.py", content="2"),),
             ),
         )
         results = self.builder.build_many(records, self.spec)
@@ -343,9 +325,7 @@ class TestBehaviorCaseBuilder:
             record_id="r15",
             capability_id="repair",
             problem="imm",
-            artifacts=(
-                CapabilityArtifact(artifact_id="a1", path="a.py", content="x"),
-            ),
+            artifacts=(CapabilityArtifact(artifact_id="a1", path="a.py", content="x"),),
             transformations=(_replace(path="a.py"),),
         )
         result = self.builder.build(record, self.spec)

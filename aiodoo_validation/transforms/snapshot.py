@@ -18,13 +18,9 @@ def _freeze_str_mapping(value: Mapping[str, str]) -> Mapping[str, str]:
         if not isinstance(key, str) or not key.strip():
             raise TransformationValidationError("contents keys must be non-empty paths.")
         if not isinstance(content, str):
-            raise TransformationValidationError(
-                f"contents[{key!r}] must be a string."
-            )
+            raise TransformationValidationError(f"contents[{key!r}] must be a string.")
         if key in frozen:
-            raise TransformationValidationError(
-                f"contents contains duplicate path {key!r}."
-            )
+            raise TransformationValidationError(f"contents contains duplicate path {key!r}.")
         frozen[key] = content
     return MappingProxyType(frozen)
 

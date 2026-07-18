@@ -55,10 +55,7 @@ def test_runtime_metadata_never_fabricates_from_empty() -> None:
 
 def test_certification_label_helpers_are_backward_compatible() -> None:
     assert certification_label(profile_name="coding", certified=True) == "coding-certified"
-    assert (
-        certification_label(profile_name="coding", certified=False)
-        == "coding-not-certified"
-    )
+    assert certification_label(profile_name="coding", certified=False) == "coding-not-certified"
     assert (
         certification_label_versioned(profile_name="planner", certified=True)
         == "planner-certified-v1"
