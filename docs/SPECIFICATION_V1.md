@@ -97,6 +97,7 @@ SPECIFICATION_V1.md  (this index)
 | **ReplaceTransformation** | search/replace transform (first type) | “RepairOperation” |
 | **SnapshotComparator** | Compares snapshots via existing comparators | — |
 | **CorpusManifest** / **CorpusRole** | Corpus metadata; `evaluation` vs `training` | — |
+| **capability_id** | Same identity as Spec `id` and CLI/validation `profile_name` on `CorpusManifest` and `ParsedCapabilityRecord` | Do not invent a second id |
 | **JsonlCorpusLoader** | Generic JSONL + manifest loader | `JsonlBehaviorCorpusLoader` |
 | **BehaviorCaseBuilder** | Parsed record → BehaviorCase[] | — |
 | **RepairRecordParser** | Repair schema → ParsedCapabilityRecord | `RepairCaseAdapter` |

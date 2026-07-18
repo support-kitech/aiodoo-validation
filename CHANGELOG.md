@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- E0 domain foundation: `CorpusRole`, `CorpusManifest`, `CapabilitySpecification`,
+  `CorpusRequirements`, `RuntimeRequirements`, `ParsedCapabilityRecord`,
+  `CapabilityArtifact`, `TransformationDescriptor`
+- E0.3 identity alignment: `CorpusManifest.capability_id` (was `profile_name`)
 - Spec Version 1.0 documentation freeze: [SPECIFICATION_V1.md](docs/SPECIFICATION_V1.md),
   [capability_validation_contract.md](docs/capability_validation_contract.md),
   [capability_specification.md](docs/capability_specification.md),
@@ -35,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - [implementation_status.md](docs/implementation_status.md) and README reflect Spec v1.0
-  and Capability Delivery E0–E8 (code not started)
+  and Capability Delivery E0–E8 (E0 domain types landed; E1 next)
 - README and engine docs updated to reflect production structural path (no longer
   claiming placeholder-only oracles/scoring/certification/reports for CLI default)
 - Coding profile strategy label: `coding-v1-structural`

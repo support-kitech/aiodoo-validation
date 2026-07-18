@@ -105,6 +105,14 @@ class BehaviorStatus(StrEnum):
     UNKNOWN = "unknown"
 
 
+class CorpusRole(StrEnum):
+    """Role of a behavioral evaluation corpus (Capability Delivery)."""
+
+    TRAINING = "training"
+    EVALUATION = "evaluation"
+    SMOKE_FIXTURE = "smoke_fixture"
+
+
 class OdooVersion(IntEnum):
     """Supported Odoo major versions for validation matrix."""
 

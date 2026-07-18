@@ -27,7 +27,7 @@ excluded from the compatibility guarantee.
 | Public API + CLI | Frozen |
 | Spec v1.0 documentation | Frozen (authoritative in `docs/`) |
 | Production structural validation | Active |
-| Capability Delivery (EEP E0–E8) | Planned — code not started (E0 domain types next) |
+| Capability Delivery (EEP E0–E8) | E0 domain types landed — E1 next |
 | Behavioral validation | Architecture ready (no corpora) |
 | **Repository** | Spec synced; structural cert ready for v1.x |
 

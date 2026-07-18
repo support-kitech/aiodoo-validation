@@ -13,12 +13,12 @@
 |------|--------|
 | Architecture | **Complete / frozen** |
 | Planning / Spec v1.0 documentation | **Complete** (materialized in repo) |
-| Capability Delivery implementation | **Not started** |
-| Current execution phase | **E0** — docs landed; **domain types next** |
+| Capability Delivery implementation | **In progress** |
+| Current execution phase | **E0 frozen** — E1 next |
 | Structural / artifact validation | **Active (production)** |
 | Behavioral validation | Architecture ready — **deferred** without evaluation corpora |
 | Certification | **Structural only**; `require_behavior_pass` **off** |
-| Repository | Spec v1.0 docs authoritative; structural cert ready for v1.x |
+| Repository | Spec v1.0 authoritative; E0 domain foundation **frozen** |
 
 ---
 
@@ -42,8 +42,9 @@
 
 | Phase | Status |
 |-------|--------|
-| E0 docs (Spec materialization) | **Done** (this documentation freeze) |
-| E0 domain types | **Next** |
+| E0 docs (Spec materialization) | **Done** |
+| E0 domain types | **Done** — E0.3 identity alignment (`CorpusManifest.capability_id`) |
+| E0 status | **Frozen** — proceed to E1 |
 | E1–E4 | Not started |
 | E5 wiring | Not started |
 | E6 scoring extras | Not started |
@@ -93,4 +94,4 @@ Follow [delivery_governance.md](delivery_governance.md).
 
 - **Protocol V1 / structural certification path:** frozen and active.  
 - **Specification Version 1.0 (docs):** frozen in this repository.  
-- **Capability Delivery code:** begins at E0 domain types under the EEP.
+- **Capability Delivery code:** E0 frozen; continue at E1.
