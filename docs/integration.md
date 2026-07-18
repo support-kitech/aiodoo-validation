@@ -35,6 +35,9 @@ Consumer formatter (CLI, JSON, HTML, dashboard, etc.)
 
 Validation depends on **nobody**. External repositories depend on validation.
 
+After **v1.0.0**, this repository is in **permanent maintenance mode** for
+**v1.0.x**. See [MAINTENANCE.md](MAINTENANCE.md).
+
 ## Public API
 
 **Stability contract:** Only symbols explicitly exported from ``aiodoo_validation.api``

@@ -9,7 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
-No unreleased changes after the v1.0.0 release candidate cut.
+No unreleased feature work after the v1.0.0 cut. Post-tag changes on the
+v1.0.x line are limited to maintenance (bugs, security, docs, pack registration).
+See [docs/MAINTENANCE.md](docs/MAINTENANCE.md).
 
 ## [1.0.0] — 2026-07-18
 
@@ -18,13 +20,14 @@ No unreleased changes after the v1.0.0 release candidate cut.
 First official **v1.0.0** release of **AIODOO Validation**.
 
 Validation Protocol V1 is complete and architecturally frozen. Capability
-Delivery phases E0–E8 are complete and frozen. Production hardening (R1) and
-release-candidate validation (RC1) are complete.
+Delivery phases E0–E8 are complete and frozen. Production hardening (R1),
+release-candidate validation (RC1), and the final release audit (RC2) are
+complete. The repository enters **permanent maintenance mode** for **v1.0.x**.
 
 **Distribution model:** this repository is a **source / git-tag release**.
 `pyproject.toml` is intentionally tooling-oriented (no `[build-system]`);
-consumers use a checkout with `PYTHONPATH=.` or an editable install from source.
-PyPI wheel publishing is out of scope for this release policy.
+consumers use a checkout with `PYTHONPATH=.` (preferred) or another source
+install path. PyPI wheel publishing is out of scope for this release policy.
 
 ### Added
 
@@ -34,6 +37,7 @@ PyPI wheel publishing is out of scope for this release policy.
 - R1 production hardening (shared domain freeze helper, scoring layering cleanup,
   wiring consistency tests)
 - RC1 release validation (CI format gate green; packaging policy documented)
+- RC2 final release audit (contract freeze, maintenance policy, GO for git tag)
 
 ### Changed
 
@@ -92,4 +96,4 @@ the console script is installed from source, `aiodoo-validation`.
 
 | Version | Date | Notes |
 |---------|------|-------|
-| 1.0.0 | 2026-07-18 | Protocol V1 + Capability Delivery E0–E8; source-tag release |
+| 1.0.0 | 2026-07-18 | Protocol V1 + E0–E8; R1/RC1/RC2; source-tag; v1.0.x maintenance |

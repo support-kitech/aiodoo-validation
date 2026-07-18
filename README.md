@@ -30,11 +30,15 @@ guarantee.
 | Production structural validation | Active |
 | Capability Delivery (EEP E0–E8) | E0–E8 frozen (complete) |
 | Production hardening (R1) | Complete |
-| Release candidate (RC1) | Complete — source-tag v1.0.0 |
+| Release candidate (RC1) | Complete — quality gates + packaging policy |
+| Final release audit (RC2) | Complete — infrastructure freeze for v1.0.x |
 | Behavioral validation | Repair wired (corpus-gated); others deferred |
-| **Repository** | Spec synced; structural + repair behavior cert ready for v1.x |
+| **Repository** | **Permanent maintenance mode** for v1.0.x (infrastructure, not features) |
 
 **Repository version:** v1.0.0 (**source / git-tag** release; not a PyPI wheel)
+
+**Maintenance:** v1.0.x accepts bug fixes, security fixes, documentation, and
+future capability pack registrations only. See [MAINTENANCE.md](docs/MAINTENANCE.md).
 
 ## Current capabilities
 
@@ -126,6 +130,7 @@ deployment, invented evaluation corpora, fake semantic scoring, PyPI packaging.
 - [Report Generation](docs/report_generation.md)
 - [Production CLI](docs/cli.md)
 - [Ecosystem Integration](docs/integration.md)
+- [Maintenance policy (v1.0.x)](docs/MAINTENANCE.md)
 - [Changelog](CHANGELOG.md)
 
 ## License

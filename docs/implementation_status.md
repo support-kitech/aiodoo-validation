@@ -14,11 +14,11 @@
 | Architecture | **Complete / frozen** |
 | Planning / Spec v1.0 documentation | **Complete** (materialized in repo) |
 | Capability Delivery implementation | **Complete (E0–E8)** |
-| Current execution phase | **RC1 complete** — v1.0.0 source-tag release candidate |
+| Current execution phase | **RC2 complete** — GO for git tag `v1.0.0`; v1.0.x maintenance mode |
 | Structural / artifact validation | **Active (production)** |
 | Behavioral validation | **Repair wired** — deferred without corpus id/path; active when configured |
 | Certification | **Structural + repair behavior gate** (`BehaviorGatedCertificationPolicy`) |
-| Repository | Spec v1.0 authoritative; E0–E8 frozen; R1+RC1 complete |
+| Repository | Spec v1.0 authoritative; E0–E8 frozen; R1+RC1+RC2 complete; **infrastructure freeze** |
 
 ---
 
@@ -56,10 +56,11 @@
 | E8 behavior-gated cert | **Done / frozen** — `BehaviorGatedCertificationPolicy`, criteria reasons, ScoreResult signals |
 | R1 production hardening | **Done** — typing, layering cleanup, wiring consistency tests, docs |
 | RC1 release validation | **Done** — quality gates green; source-tag packaging policy confirmed |
+| RC2 final release audit | **Done** — contracts inventoried; maintenance policy published; GO for tag |
 
 ---
 
-## Release readiness (R1 / RC1)
+## Release readiness (R1 / RC1 / RC2)
 
 | Check | Status |
 |-------|--------|
@@ -73,6 +74,7 @@
 | Capability Delivery redesign | **Forbidden** — frozen |
 | PyPI `[build-system]` wheel | **Out of scope** (intentional tooling-only pyproject) |
 | Recommended publish | **git tag `v1.0.0`** source release |
+| RC2 recommendation | **GO** for `v1.0.0` git tag (NO-GO for PyPI wheel under policy) |
 | Known deferred (non-blocking) | `aiodoo-datasets` validation-layout pins; `build_repair_request`; content fingerprints |
 
 ---
@@ -86,7 +88,8 @@
 - [delivery_governance.md](delivery_governance.md)  
 - [architecture.md](architecture.md)  
 - [behavioral_validation.md](behavioral_validation.md)  
-- [cli.md](cli.md)
+- [cli.md](cli.md)  
+- [MAINTENANCE.md](MAINTENANCE.md) — **v1.0.x maintenance policy**
 
 ## Historical (do not treat as live Capability Delivery plan)
 
@@ -111,7 +114,15 @@
 
 Do not add new top-level pipeline stages or redesign the CLI. Extend ports,
 registries, and domain types inside the frozen Protocol V1 lifecycle.
-Follow [delivery_governance.md](delivery_governance.md).
+Follow [delivery_governance.md](delivery_governance.md) and
+[MAINTENANCE.md](MAINTENANCE.md).
+
+**v1.0.x allowed:** bug fixes, security fixes, documentation, capability pack
+registration via the existing pack contract.
+
+**v1.0.x forbidden:** architecture changes, new profiles, new behavioral
+capability implementations for non-repair profiles, feature work framed as
+Capability Delivery.
 
 ---
 
@@ -120,5 +131,6 @@ Follow [delivery_governance.md](delivery_governance.md).
 - **Protocol V1 / structural certification path:** frozen and active.  
 - **Specification Version 1.0 (docs):** frozen in this repository.  
 - **Capability Delivery code:** E0–E8 frozen (spine complete).  
-- **R1 / RC1:** hardening + release validation only — no Capability Delivery architecture changes.  
-- **v1.0.0 distribution:** source / git-tag (not PyPI wheel).
+- **R1 / RC1 / RC2:** hardening + release validation + final audit only — no Capability Delivery architecture changes.  
+- **v1.0.0 distribution:** source / git-tag (not PyPI wheel).  
+- **Post-tag posture:** permanent maintenance mode for **v1.0.x**.
