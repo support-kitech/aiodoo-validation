@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- E3 BehaviorCaseBuilder (`aiodoo_validation.behavior.case_builder`):
+  `BehaviorCaseBuilder`, `BehaviorCaseBuildResult`,
+  `descriptor_to_replace_transformation`, `BehaviorCaseBuildError`
 - E2 transforms package (`aiodoo_validation.transforms`): `ArtifactSnapshot`,
   `ReplaceTransformation`, `TransformationResult`, `TransformationEngine`,
   `SnapshotComparator` / `SnapshotComparisonResult` (delegates to comparator
@@ -47,7 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - [implementation_status.md](docs/implementation_status.md) and README reflect Spec v1.0
-  and Capability Delivery E0–E8 (E0–E2 frozen; E3 next)
+  and Capability Delivery E0–E8 (E0–E3 frozen; E4 next)
 - README and engine docs updated to reflect production structural path (no longer
   claiming placeholder-only oracles/scoring/certification/reports for CLI default)
 - Coding profile strategy label: `coding-v1-structural`

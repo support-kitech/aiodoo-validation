@@ -1,4 +1,4 @@
-"""Behavioral evaluation runner — prompt → inference → compare."""
+"""Behavioral evaluation — runner and Capability Delivery case builder."""
 
 from __future__ import annotations
 
@@ -6,6 +6,12 @@ from dataclasses import dataclass
 from time import perf_counter
 from types import MappingProxyType
 
+from aiodoo_validation.behavior.build_result import BehaviorCaseBuildResult
+from aiodoo_validation.behavior.case_builder import (
+    BehaviorCaseBuilder,
+    descriptor_to_replace_transformation,
+)
+from aiodoo_validation.behavior.exceptions import BehaviorCaseBuildError
 from aiodoo_validation.comparators import ComparatorRegistry
 from aiodoo_validation.domain.behavior import (
     BehaviorCase,
@@ -155,4 +161,10 @@ class BehaviorRunner:
         )
 
 
-__all__ = ["BehaviorRunner"]
+__all__ = [
+    "BehaviorCaseBuildError",
+    "BehaviorCaseBuildResult",
+    "BehaviorCaseBuilder",
+    "BehaviorRunner",
+    "descriptor_to_replace_transformation",
+]

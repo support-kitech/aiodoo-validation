@@ -27,7 +27,7 @@ Internal implementation packages — `engine`, `oracles`, `scoring`, `benchmark`
 | Public API + CLI | Frozen |
 | Spec v1.0 documentation | Frozen (authoritative in `docs/`) |
 | Production structural validation | Active |
-| Capability Delivery (EEP E0–E8) | E0–E2 frozen — E3 next |
+| Capability Delivery (EEP E0–E8) | E0–E3 frozen — E4 next |
 | Behavioral validation | Architecture ready (no corpora) |
 | **Repository** | Spec synced; structural cert ready for v1.x |
 
@@ -52,7 +52,7 @@ Internal implementation packages — `engine`, `oracles`, `scoring`, `benchmark`
 | Limitation | Status |
 |------------|--------|
 | Behavioral evaluation corpora | Not loaded — deferred by design |
-| Capability Delivery implementation | E0–E2 done; E3+ not started (see EEP) |
+| Capability Delivery implementation | E0–E3 done; E4+ not started (see EEP) |
 | Semantic / rule-based AI comparators | Deferred (no fake similarity) |
 | Behavior-gated certification | Criteria exist; gate off until E8 + approval |
 | Content fingerprint hashing | Placeholder digests (artifact resolution era) |
