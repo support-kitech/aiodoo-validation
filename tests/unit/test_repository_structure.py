@@ -15,6 +15,7 @@ REQUIRED_DIRS = [
     ".github/workflows",
     "aiodoo_validation/domain",
     "aiodoo_validation/corpus",
+    "aiodoo_validation/transforms",
     "aiodoo_validation/ports",
     "aiodoo_validation/stubs",
     "aiodoo_validation/engine",

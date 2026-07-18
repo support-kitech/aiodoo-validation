@@ -3,7 +3,7 @@
 **Repository version:** 1.0.0+  
 **Specification:** [SPECIFICATION_V1.md](SPECIFICATION_V1.md) (**frozen**)  
 **Architecture:** Validation Protocol V1 pipeline and public CLI **frozen**  
-**Capability Delivery:** [engineering_execution_plan.md](engineering_execution_plan.md) (**frozen plan**; E0–E1 code landed)
+**Capability Delivery:** [engineering_execution_plan.md](engineering_execution_plan.md) (**frozen plan**; E0–E2 code landed)
 
 ---
 
@@ -14,11 +14,11 @@
 | Architecture | **Complete / frozen** |
 | Planning / Spec v1.0 documentation | **Complete** (materialized in repo) |
 | Capability Delivery implementation | **In progress** |
-| Current execution phase | **E1 frozen** — E2 next (transforms; may parallel E1 historically) |
+| Current execution phase | **E2 frozen** — E3 next (BehaviorCaseBuilder) |
 | Structural / artifact validation | **Active (production)** |
 | Behavioral validation | Architecture ready — **deferred** without evaluation corpora |
 | Certification | **Structural only**; `require_behavior_pass` **off** |
-| Repository | Spec v1.0 authoritative; E0–E1 corpus infrastructure **frozen** |
+| Repository | Spec v1.0 authoritative; E0–E2 transforms infrastructure **frozen** |
 
 ---
 
@@ -46,7 +46,8 @@
 | E0 domain types | **Done** — E0.3 identity alignment (`CorpusManifest.capability_id`) |
 | E0 status | **Frozen** |
 | E1 corpus package | **Done / frozen** — gates, JsonlCorpusLoader, fixtures |
-| E2–E4 | Not started |
+| E2 transforms package | **Done / frozen** — replace-only TransformationEngine + SnapshotComparator |
+| E3–E4 | Not started |
 | E5 wiring | Not started |
 | E6 scoring extras | Not started |
 | E7 eval corpus pin | Blocked on datasets eval publish |
@@ -75,7 +76,7 @@
 
 ## Explicitly not done yet
 
-- E2+ Capability Delivery (transforms, BehaviorCaseBuilder, Repair pack, production wiring)  
+- E3+ Capability Delivery (BehaviorCaseBuilder, Repair pack, production wiring)  
 - Evaluation corpora loaded in production  
 - Semantic / AI similarity comparators  
 - Behavior-gated certification  
@@ -95,4 +96,4 @@ Follow [delivery_governance.md](delivery_governance.md).
 
 - **Protocol V1 / structural certification path:** frozen and active.  
 - **Specification Version 1.0 (docs):** frozen in this repository.  
-- **Capability Delivery code:** E0–E1 frozen; continue at E2 (TransformationEngine).
+- **Capability Delivery code:** E0–E2 frozen; continue at E3 (BehaviorCaseBuilder).
