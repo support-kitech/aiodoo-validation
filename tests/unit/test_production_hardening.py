@@ -38,7 +38,12 @@ def test_production_report_includes_machine_readable_summary() -> None:
     assert isinstance(summary, dict)
     assert "structural_validation" in summary
     assert "behavior_validation" in summary
-    assert summary["behavior_validation"]["status"] == "deferred_no_corpus"
+    assert summary["behavior_validation"]["status"] == "deferred"
+    assert summary["behavior_status"] == "deferred"
+    assert summary["validation_kind"] == "structural"
+    assert summary["certification_label"]
+    assert summary["repository_version"]
+    assert summary["report_version"] == "1.1.0"
     assert "score_summary" in summary
     assert "benchmark_summary" in summary
     assert "certification_decision" in summary

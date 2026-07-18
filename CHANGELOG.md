@@ -17,8 +17,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reusable certification criteria (`certification.criteria`)
 - Richer production reports with structural/behavior/score/benchmark/certification
   summaries and machine-readable `run_summary`
-- Docs: [behavioral_validation.md](docs/behavioral_validation.md)
-- Hardening tests for comparators, reports, planner profile, tiers
+- Optional `RuntimeBenchmarkMetadata` schema for future runtime metrics
+- `BehaviorStatus` enum; production reports `deferred` without corpora
+- Expanded `ComparatorCapability` descriptive flags
+- Version/kind certification label helpers (`certification_label_versioned`,
+  `certification_label_kind`) — CLI still uses stable `certification_label()`
+- Docs: [behavioral_validation.md](docs/behavioral_validation.md),
+  [extensibility_refinements.md](docs/extensibility_refinements.md)
+- Hardening / extensibility tests
 
 ### Changed
 

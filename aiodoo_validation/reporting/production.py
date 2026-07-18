@@ -106,7 +106,7 @@ class CertificationSummaryReportTemplate:
                 f"{self.metadata.template_id}.behavior",
                 "Behavior Validation",
                 (
-                    f"status={behavior.get('status', 'deferred_no_corpus')}",
+                    f"status={behavior.get('status', 'deferred')}",
                     f"enabled={behavior.get('enabled', False)}",
                     f"oracle_ids={behavior.get('oracle_ids', ())}",
                 ),

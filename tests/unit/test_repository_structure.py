@@ -45,6 +45,7 @@ REQUIRED_FILES = [
     "CONTRIBUTING.md",
     "docs/architecture.md",
     "docs/behavioral_validation.md",
+    "docs/extensibility_refinements.md",
     "docs/implementation_status.md",
     "docs/adr/0000-adr-template.md",
     ".github/workflows/ci.yml",

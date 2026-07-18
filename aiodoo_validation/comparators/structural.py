@@ -26,7 +26,14 @@ class AstComparator:
             name="AST Comparison",
             description="Compare Python AST structure after parsing.",
             version="1.0.0",
-            capabilities=ComparatorCapability(implemented=True, requires_ast=True),
+            capabilities=ComparatorCapability(
+                implemented=True,
+                requires_ast=True,
+                requires_python=True,
+                supports_cpu=True,
+                deterministic=True,
+                behavioral_only=True,
+            ),
         )
 
     @property
@@ -81,7 +88,11 @@ class XmlComparator:
             version="1.0.0",
             capabilities=ComparatorCapability(
                 implemented=True,
+                requires_xml=True,
                 requires_xml_parser=True,
+                supports_cpu=True,
+                deterministic=True,
+                behavioral_only=True,
             ),
         )
 
@@ -145,7 +156,13 @@ class JsonComparator:
             name="JSON Comparison",
             description="Compare JSON documents after canonical encoding.",
             version="1.0.0",
-            capabilities=ComparatorCapability(implemented=True, requires_json=True),
+            capabilities=ComparatorCapability(
+                implemented=True,
+                requires_json=True,
+                supports_cpu=True,
+                deterministic=True,
+                behavioral_only=True,
+            ),
         )
 
     @property
@@ -203,7 +220,13 @@ class TokenSimilarityComparator:
             name="Token Similarity",
             description="Jaccard similarity over whitespace tokens.",
             version="1.0.0",
-            capabilities=ComparatorCapability(implemented=True),
+            capabilities=ComparatorCapability(
+                implemented=True,
+                requires_tokenization=True,
+                supports_cpu=True,
+                deterministic=True,
+                behavioral_only=True,
+            ),
         )
 
     @property

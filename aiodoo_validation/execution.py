@@ -80,9 +80,37 @@ def behavior_case_limit(tier: ExecutionTier | str) -> int | None:
 
 
 def certification_label(*, profile_name: str, certified: bool) -> str:
-    """Profile-driven certification label (e.g. ``coding-certified``)."""
+    """Profile-driven certification label (e.g. ``coding-certified``).
+
+    Stable CLI / Protocol V1 label. Prefer richer helpers for future report
+    consumers that need version or validation-kind suffixes.
+    """
     profile = profile_name.strip().lower() or "unknown"
     return f"{profile}-certified" if certified else f"{profile}-not-certified"
+
+
+def certification_label_versioned(
+    *,
+    profile_name: str,
+    certified: bool,
+    version: str = "v1",
+) -> str:
+    """Version-aware label for future consumers (e.g. ``coding-certified-v1``)."""
+    base = certification_label(profile_name=profile_name, certified=certified)
+    suffix = version.strip().lower().lstrip("-") or "v1"
+    return f"{base}-{suffix}"
+
+
+def certification_label_kind(
+    *,
+    profile_name: str,
+    certified: bool,
+    kind: str = "structural",
+) -> str:
+    """Kind-aware label for future consumers (e.g. ``coding-certified-structural``)."""
+    base = certification_label(profile_name=profile_name, certified=certified)
+    kind_suffix = kind.strip().lower().lstrip("-") or "structural"
+    return f"{base}-{kind_suffix}"
 
 
 __all__ = [
@@ -91,6 +119,8 @@ __all__ = [
     "allows_certification",
     "behavior_case_limit",
     "certification_label",
+    "certification_label_kind",
+    "certification_label_versioned",
     "is_framework_only_tier",
     "is_full_tier",
     "is_smoke_tier",

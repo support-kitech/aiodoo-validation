@@ -92,6 +92,19 @@ class ScoreDimensionName(StrEnum):
     WEIGHTED = "weighted"
 
 
+class BehaviorStatus(StrEnum):
+    """Lifecycle status for behavioral validation in a run."""
+
+    NOT_AVAILABLE = "not_available"
+    DEFERRED = "deferred"
+    DISABLED = "disabled"
+    SKIPPED = "skipped"
+    ACTIVE = "active"
+    PASSED = "passed"
+    FAILED = "failed"
+    UNKNOWN = "unknown"
+
+
 class OdooVersion(IntEnum):
     """Supported Odoo major versions for validation matrix."""
 

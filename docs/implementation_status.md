@@ -12,16 +12,18 @@
 | Adapter profiles | coding, planner, repair, conversation, execution, approval, evaluation |
 | Execution tiers | standard (no cert), smoke, full, prod alias |
 | Structural / artifact validation | Active |
-| Behavioral validation | Architecture ready — no corpora |
+| Behavioral validation | Architecture ready — `BehaviorStatus.DEFERRED` without corpora |
 | Scoring dimensions | Architecture + structural 100/0 primary score |
 | Certification criteria | Reusable policy architecture; structural/benchmark signals |
-| Reports | Machine-readable structural/behavior summaries |
-| Comparators | Exact, normalized, AST, XML, JSON, token similarity implemented; semantic/rule deferred |
+| Reports | Machine-readable structural/behavior summaries + convenience fields |
+| Comparators | Exact, normalized, AST, XML, JSON, token similarity; semantic/rule deferred |
+| Extensibility metadata | Runtime metrics schema, comparator capabilities, versioned label helpers |
 
 ## Documentation
 
 - [Architecture](architecture.md)
 - [Structural vs Behavioral Validation](behavioral_validation.md)
+- [Extensibility refinements](extensibility_refinements.md)
 - [Oracle Framework](oracle_framework.md)
 - [CLI](cli.md)
 

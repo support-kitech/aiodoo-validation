@@ -20,8 +20,10 @@ Incorrect:
 
 Production policies pass when the source score meets the threshold (100 for
 structural oracles). Metadata records real metrics when scoring/oracle results
-provide them (`latency_ms`, `tokens_per_sec`, `memory_mb`); otherwise values
-remain `None` — never fabricated.
+provide them. The full optional runtime schema lives under
+`metadata["runtime"]` (see [extensibility_refinements.md](extensibility_refinements.md));
+legacy top-level `latency_ms` / `tokens_per_sec` / `memory_mb` keys remain.
+Unavailable values stay `None` — never fabricated.
 
 Stub/placeholder policies remain available for `create_with_stubs()` tests only.
 

@@ -10,7 +10,7 @@ not parse artifacts from disk.
 Production templates include sections for execution tier, profile, structural
 validation, behavior validation status, scores, benchmark, certification
 decision/reasons, timing, artifacts, and warnings. Behavior sections report
-`deferred_no_corpus` until behavioral oracles are enabled.
+`deferred` (`BehaviorStatus.DEFERRED`) until behavioral oracles are enabled.
 
 ## Architecture & dependency rule
 

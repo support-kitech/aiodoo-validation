@@ -12,6 +12,7 @@ from aiodoo_validation.domain.benchmark import (
     BenchmarkMetadata,
     BenchmarkResult,
 )
+from aiodoo_validation.domain.runtime_metrics import RuntimeBenchmarkMetadata
 
 _PASS_THRESHOLD = 100.0
 
@@ -39,21 +40,6 @@ def _metadata(
     )
 
 
-def _optional_float(value: object) -> float | None:
-    if value is None:
-        return None
-    if isinstance(value, bool):
-        return None
-    if isinstance(value, (int, float)):
-        return float(value)
-    if isinstance(value, str):
-        try:
-            return float(value)
-        except ValueError:
-            return None
-    return None
-
-
 @dataclass(frozen=True, slots=True)
 class ScoreThresholdBenchmarkPolicy:
     """Pass when score meets the production threshold; capture real metrics only."""
@@ -68,11 +54,21 @@ class ScoreThresholdBenchmarkPolicy:
         duration_ms = max(0, int((perf_counter() - started) * 1000))
         score_meta = context.score_result.metadata
         oracle_latency = int(score_meta.get("oracle_duration_ms", 0) or 0)
-        tokens_per_sec = _optional_float(score_meta.get("tokens_per_sec"))
-        memory_mb = _optional_float(score_meta.get("memory_mb"))
-        latency_ms = _optional_float(score_meta.get("latency_ms"))
-        if latency_ms is None and oracle_latency:
-            latency_ms = float(oracle_latency)
+        runtime = RuntimeBenchmarkMetadata.from_score_metadata(
+            score_meta,
+            oracle_latency_ms=float(oracle_latency) if oracle_latency else None,
+        )
+        payload = {
+            "placeholder": False,
+            "threshold": self.threshold,
+            "oracle_latency_ms": oracle_latency,
+            "dimensions": score_meta.get("dimensions"),
+            "runtime": dict(runtime.as_mapping()),
+            # Backward-compatible top-level keys
+            "latency_ms": runtime.latency_ms,
+            "tokens_per_sec": runtime.tokens_per_sec,
+            "memory_mb": runtime.memory_mb,
+        }
         return BenchmarkResult(
             policy_id=self.metadata.policy_id,
             source_score_policy_id=self.metadata.source_score_policy_id,
@@ -85,17 +81,7 @@ class ScoreThresholdBenchmarkPolicy:
                 f"(score={score:.1f}, threshold={self.threshold:.1f})."
             ),
             duration_ms=duration_ms,
-            metadata=MappingProxyType(
-                {
-                    "placeholder": False,
-                    "threshold": self.threshold,
-                    "oracle_latency_ms": oracle_latency,
-                    "latency_ms": latency_ms,
-                    "tokens_per_sec": tokens_per_sec,
-                    "memory_mb": memory_mb,
-                    "dimensions": score_meta.get("dimensions"),
-                }
-            ),
+            metadata=MappingProxyType(payload),
         )
 
 

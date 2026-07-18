@@ -72,7 +72,12 @@ class ExactMatchComparator:
             name="Exact Match",
             description="Byte-for-byte equality of generated and expected text.",
             version="1.0.0",
-            capabilities=ComparatorCapability(implemented=True),
+            capabilities=ComparatorCapability(
+                implemented=True,
+                supports_cpu=True,
+                deterministic=True,
+                behavioral_only=True,
+            ),
         )
 
     @property
@@ -105,7 +110,12 @@ class NormalizedTextComparator:
             name="Normalized Text",
             description="Compare after stripping and collapsing whitespace.",
             version="1.0.0",
-            capabilities=ComparatorCapability(implemented=True),
+            capabilities=ComparatorCapability(
+                implemented=True,
+                supports_cpu=True,
+                deterministic=True,
+                behavioral_only=True,
+            ),
         )
 
     @property
@@ -145,6 +155,10 @@ def deferred_comparator(kind: ComparatorKind, *, name: str, description: str) ->
             capabilities=ComparatorCapability(
                 implemented=False,
                 requires_model=kind is ComparatorKind.SEMANTIC,
+                supports_cpu=True,
+                deterministic=kind is not ComparatorKind.SEMANTIC,
+                behavioral_only=True,
+                placeholder=True,
             ),
         )
     )

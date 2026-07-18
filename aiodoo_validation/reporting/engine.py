@@ -315,6 +315,15 @@ class ReportGenerator:
 
 def _build_run_summary(context: RunContext) -> dict[str, object]:
     """Machine-readable summary for richer production reports."""
+    from aiodoo_validation.__version__ import __version__
+    from aiodoo_validation.domain.enums import BehaviorStatus, ValidationKind
+    from aiodoo_validation.domain.request import SUPPORTED_PROTOCOL_MAJOR
+    from aiodoo_validation.execution import (
+        certification_label,
+        is_framework_only_tier,
+        normalize_execution_tier,
+    )
+
     oracle = context.oracle_execution
     scores = context.score_execution
     bench = context.benchmark_execution
@@ -329,7 +338,56 @@ def _build_run_summary(context: RunContext) -> dict[str, object]:
                 behavior_ids.append(result.oracle_id)
             else:
                 structural_ids.append(result.oracle_id)
+
+    if behavior_ids:
+        behavior_status = BehaviorStatus.ACTIVE
+        validation_kind = ValidationKind.BEHAVIORAL.value
+    else:
+        behavior_status = BehaviorStatus.DEFERRED
+        validation_kind = ValidationKind.STRUCTURAL.value
+
+    overall_certified = None if cert is None else cert.overall_certified
+    certified_bool = bool(overall_certified) if overall_certified is not None else False
+    label = certification_label(
+        profile_name=context.request.profile_name,
+        certified=certified_bool,
+    )
+    if overall_certified is True:
+        overall_status = "certified"
+    elif overall_certified is False:
+        overall_status = "not_certified"
+    else:
+        overall_status = "unknown"
+
+    tier = normalize_execution_tier(context.execution_tier)
+    if is_framework_only_tier(tier):
+        execution_mode = "framework"
+    else:
+        execution_mode = tier.value
+
+    profile = context.validation_profile
+    profile_version = "v1"
+    if profile is not None:
+        strategy = getattr(profile, "validation_strategy", None)
+        if isinstance(strategy, str) and strategy.strip():
+            profile_version = strategy
+
     return {
+        # Convenience top-level fields for CLI / API / dashboard consumers
+        "overall_status": overall_status,
+        "overall_score": None if scores is None else scores.aggregate_score,
+        "overall_certified": overall_certified,
+        "validation_kind": validation_kind,
+        "report_version": "1.1.0",
+        "protocol_version": (
+            f"{SUPPORTED_PROTOCOL_MAJOR}.{context.protocol_minor}"
+        ),
+        "profile_version": profile_version,
+        "execution_mode": execution_mode,
+        "behavior_status": behavior_status.value,
+        "certification_label": label,
+        "repository_version": __version__,
+        # Existing nested structures
         "execution_tier": context.execution_tier.value,
         "profile": context.request.profile_name,
         "warnings": tuple(context.warnings),
@@ -348,7 +406,7 @@ def _build_run_summary(context: RunContext) -> dict[str, object]:
         "behavior_validation": {
             "oracle_ids": tuple(behavior_ids),
             "enabled": bool(behavior_ids),
-            "status": "active" if behavior_ids else "deferred_no_corpus",
+            "status": behavior_status.value,
         },
         "oracle_summary": None
         if oracle is None

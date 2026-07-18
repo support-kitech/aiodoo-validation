@@ -53,7 +53,7 @@ When evaluation corpora are attached:
 
 Until then, behavioral oracles remain **unregistered** in
 `ProductionPipelineComponents`, and reports mark behavior validation as
-`deferred_no_corpus`.
+`BehaviorStatus.DEFERRED` (`"deferred"`).
 
 ## Packages
 
