@@ -32,13 +32,16 @@ guarantee.
 | Production hardening (R1) | Complete |
 | Release candidate (RC1) | Complete — quality gates + packaging policy |
 | Final release audit (RC2) | Complete — infrastructure freeze for v1.0.x |
+| Phase 10 consolidation | Complete |
+| Phase 11 final release audit | Complete — permanently frozen for v1.x |
 | Behavioral validation | All seven profiles wired (corpus-gated; deferred without corpus) |
-| **Repository** | **Permanent maintenance mode** for v1.0.x (infrastructure, not features) |
+| **Repository** | **Permanently frozen** for v1.x maintenance (bugs/security/docs only) |
 
 **Repository version:** v1.0.0 (**source / git-tag** release; not a PyPI wheel)
 
 **Maintenance:** v1.0.x accepts bug fixes, security fixes, documentation, and
-future capability pack registrations only. See [MAINTENANCE.md](docs/MAINTENANCE.md).
+future capability pack registrations only. Capability Delivery and Protocol V1
+are permanently frozen. See [MAINTENANCE.md](docs/MAINTENANCE.md).
 
 ## Current capabilities
 

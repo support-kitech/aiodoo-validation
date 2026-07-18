@@ -14,7 +14,7 @@
 | Architecture | **Complete / frozen** |
 | Planning / Spec v1.0 documentation | **Complete** (materialized in repo) |
 | Capability Delivery implementation | **Complete (E0–E8)** |
-| Current execution phase | **Phase 10 — Repository Consolidation** (stabilization; no new features) |
+| Current execution phase | **Phase 11 — Final Release Audit** — repository permanently frozen for **v1.x** maintenance |
 | Structural / artifact validation | **Active (production)** |
 | Behavioral validation | **All seven profiles wired** (approval/coding/conversation/evaluation/execution/planner/repair) — deferred without corpus id/path; active when configured |
 | Approval Capability Pack | **Complete** |
@@ -25,7 +25,7 @@
 | Planner Capability Pack | **Complete** |
 | Repair Capability Pack | **Complete** |
 | Certification | **Structural + full behavior gates for all seven profiles** |
-| Repository | Spec v1.0 authoritative; E0–E8 frozen; R1+RC1+RC2 complete; Capability Delivery profiles complete; Phase 10 consolidation |
+| Repository | Spec v1.0 authoritative; E0–E8 frozen; R1+RC1+RC2 complete; Capability Delivery complete; Phase 10 consolidation done; **Phase 11 freeze confirmed** |
 
 ---
 
@@ -65,6 +65,7 @@
 | RC1 release validation | **Done** — quality gates green; source-tag packaging policy confirmed |
 | RC2 final release audit | **Done** — contracts inventoried; maintenance policy published; GO for tag |
 | Phase 10 consolidation | **Done** — profile parity audit, docs sync, deterministic ordering |
+| Phase 11 final release audit | **Done** — production audit green; permanently frozen for v1.x maintenance |
 
 ---
 
@@ -72,7 +73,7 @@
 
 | Check | Status |
 |-------|--------|
-| Full unit/integration suite | Green (660+ passed) |
+| Full unit/integration suite | Green (662 passed) |
 | ruff check | Green |
 | ruff format | Green |
 | mypy strict | Green |
@@ -143,5 +144,6 @@ feature work framed as Capability Delivery redesign.
 - **Capability Delivery code:** E0–E8 frozen (spine complete; all seven profiles).  
 - **R1 / RC1 / RC2:** hardening + release validation + final audit only — no Capability Delivery architecture changes.  
 - **Phase 10:** consolidation / documentation / ordering only — no new validation features.  
+- **Phase 11:** final release audit confirmed — permanently frozen for **v1.x** maintenance.  
 - **v1.0.0 distribution:** source / git-tag (not PyPI wheel).  
 - **Post-tag posture:** permanent maintenance mode for **v1.0.x**.

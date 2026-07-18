@@ -2,29 +2,24 @@
 
 ### Notes
 
-**Phase 10 — Repository Consolidation** completed: engineering audit of all seven
-Capability Delivery profiles, documentation synchronization, and deterministic
-ordering of public builders / production registration helpers. No Protocol V1 or
-behavioral pipeline changes.
+**Phase 11 — Final Release Audit** confirmed: public API inventory, all seven
+profile lifecycle chains, production registries, deterministic ordering, and
+quality gates verified green. The repository is permanently frozen for the
+**v1.x** maintenance lifecycle.
 
-**Final Capability Delivery Completion** remains in place: Approval and Evaluation
-joined Repair, Coding, Planner, Conversation, and Execution on the frozen spine.
+**Phase 10 — Repository Consolidation** and Final Capability Delivery Completion
+remain in place.
 
 Repair ✓ · Coding ✓ · Planner ✓ · Conversation ✓ · Execution ✓ · Approval ✓ ·
 Evaluation ✓
 
-Post-tag v1.0.x changes otherwise remain limited to maintenance (bugs, security,
-docs, pack registration). See [docs/MAINTENANCE.md](docs/MAINTENANCE.md).
-
-### Added
-
-- Docs: `docs/repair_profile.md` (parity with other profile docs)
+Post-tag v1.0.x changes are limited to bug fixes, security fixes, documentation,
+test coverage, and pack registration via the existing contract. See
+[docs/MAINTENANCE.md](docs/MAINTENANCE.md).
 
 ### Changed
 
-- README / implementation status / integration docs reflect all-profile behavior
-- Alphabetical ordering for API builders and production registration helpers
-- Stale “structural-only” / repair-only wording removed from live status docs
+- `implementation_status.md` records Phase 11 freeze confirmation
 
 ## [1.0.0] — 2026-07-18
 
