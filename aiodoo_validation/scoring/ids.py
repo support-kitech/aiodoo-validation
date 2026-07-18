@@ -63,3 +63,9 @@ REPAIR_SCORE_BEHAVIOR = "repair.score.behavior"
 REPAIR_SCORE_TO_ORACLE: dict[str, str] = {
     REPAIR_SCORE_BEHAVIOR: "repair.oracle.behavior.repair",
 }
+
+# Planner behavioral scoring — source oracle: planner.oracle.behavior.planner
+PLANNER_SCORE_BEHAVIOR = "planner.score.behavior"
+PLANNER_SCORE_TO_ORACLE: dict[str, str] = {
+    PLANNER_SCORE_BEHAVIOR: "planner.oracle.behavior.planner",
+}

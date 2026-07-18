@@ -65,3 +65,9 @@ REPAIR_CERTIFICATION_BEHAVIOR = "repair.certification.behavior"
 REPAIR_CERTIFICATION_TO_BENCHMARK: dict[str, str] = {
     REPAIR_CERTIFICATION_BEHAVIOR: "repair.benchmark.behavior",
 }
+
+# Planner behavior-gated certification
+PLANNER_CERTIFICATION_BEHAVIOR = "planner.certification.behavior"
+PLANNER_CERTIFICATION_TO_BENCHMARK: dict[str, str] = {
+    PLANNER_CERTIFICATION_BEHAVIOR: "planner.benchmark.behavior",
+}

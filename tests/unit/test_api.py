@@ -10,6 +10,7 @@ import pytest
 from aiodoo_validation import ValidationService, __version__
 from aiodoo_validation.api import (
     build_coding_request,
+    build_planner_request,
     capability_labels,
     colab_integration_hints,
     get_profile_info,
@@ -91,6 +92,20 @@ def test_build_coding_request_and_parse_odoo_versions() -> None:
     assert request.odoo_versions == (17, 18)
     assert request.metadata["evaluation_corpus_id"] == "future.coding.eval"
     assert parse_odoo_versions("17,18,19") == (17, 18, 19)
+
+
+def test_build_planner_request() -> None:
+    request = build_planner_request(
+        base_model_ref="base",
+        adapter_ref="adapter",
+        execution_tier="smoke",
+        odoo_versions="18",
+        metadata={"evaluation_corpus_id": "planner.eval"},
+    )
+    assert request.profile_name == "planner"
+    assert request.execution_tier is ExecutionTier.SMOKE
+    assert request.odoo_versions == (18,)
+    assert request.metadata["evaluation_corpus_id"] == "planner.eval"
 
 
 def test_validation_service_runs_with_stubs() -> None:

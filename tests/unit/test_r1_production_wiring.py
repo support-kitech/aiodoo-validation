@@ -5,6 +5,7 @@ from __future__ import annotations
 from aiodoo_validation.benchmark.production import default_production_benchmark_policies
 from aiodoo_validation.certification.ids import (
     CODING_CERTIFICATION_BEHAVIOR,
+    PLANNER_CERTIFICATION_BEHAVIOR,
     REPAIR_CERTIFICATION_BEHAVIOR,
 )
 from aiodoo_validation.certification.production import (
@@ -16,7 +17,11 @@ from aiodoo_validation.profiles.adapter_profile import AdapterProfile
 from aiodoo_validation.profiles.coding.profile import CodingProfile
 from aiodoo_validation.reporting.ids import CODING_REPORT_BEHAVIOR
 from aiodoo_validation.reporting.production import default_production_report_templates
-from aiodoo_validation.scoring.ids import CODING_SCORE_BEHAVIOR, REPAIR_SCORE_BEHAVIOR
+from aiodoo_validation.scoring.ids import (
+    CODING_SCORE_BEHAVIOR,
+    PLANNER_SCORE_BEHAVIOR,
+    REPAIR_SCORE_BEHAVIOR,
+)
 from aiodoo_validation.scoring.production import default_production_score_policies
 
 
@@ -90,9 +95,45 @@ def test_coding_behavior_pipeline_and_registry_ids_align() -> None:
     assert reports[CODING_REPORT_BEHAVIOR] == CODING_CERTIFICATION_BEHAVIOR
 
 
-def test_production_registers_repair_and_coding_behavior_oracles() -> None:
+def test_production_registers_repair_coding_and_planner_behavior_oracles() -> None:
     components = ProductionPipelineComponents.create()
     engine = components.oracle_runner
     registry = engine.registry
     assert registry.get("repair.oracle.behavior.repair") is not None
     assert registry.get(CODING_ORACLE_BEHAVIOR) is not None
+    assert registry.get("planner.oracle.behavior.planner") is not None
+
+
+def test_planner_behavior_pipeline_and_registry_ids_align() -> None:
+    profile = AdapterProfile.create("planner", odoo_versions=(18,))
+    pipeline = {
+        "oracle": [s.stage_id for s in profile.oracle_pipeline],
+        "score": [s.stage_id for s in profile.scoring_pipeline],
+        "benchmark": [s.stage_id for s in profile.benchmark_pipeline],
+        "certification": [s.stage_id for s in profile.certification_pipeline],
+        "report": [s.stage_id for s in profile.report_pipeline],
+    }
+    assert "planner.oracle.behavior.planner" in pipeline["oracle"]
+    assert PLANNER_SCORE_BEHAVIOR in pipeline["score"]
+    assert "planner.benchmark.behavior" in pipeline["benchmark"]
+    assert PLANNER_CERTIFICATION_BEHAVIOR in pipeline["certification"]
+    assert "planner.report.behavior" in pipeline["report"]
+
+    score_ids = {p.metadata.policy_id for p in default_production_score_policies(profile="planner")}
+    benches = {
+        p.metadata.policy_id: p.metadata.source_score_policy_id
+        for p in default_production_benchmark_policies(profile="planner")
+    }
+    certs = {
+        p.metadata.policy_id: p.metadata.source_benchmark_policy_id
+        for p in default_production_certification_policies(profile="planner")
+    }
+    reports = {
+        t.metadata.template_id: t.metadata.source_certification_policy_id
+        for t in default_production_report_templates(profile="planner")
+    }
+
+    assert PLANNER_SCORE_BEHAVIOR in score_ids
+    assert benches["planner.benchmark.behavior"] == PLANNER_SCORE_BEHAVIOR
+    assert certs[PLANNER_CERTIFICATION_BEHAVIOR] == "planner.benchmark.behavior"
+    assert reports["planner.report.behavior"] == PLANNER_CERTIFICATION_BEHAVIOR

@@ -15,11 +15,18 @@ def register_builtin_capability_packs(registry: CapabilityRegistry) -> Capabilit
     from aiodoo_validation.capabilities.coding.registration import (
         get_coding_capability_pack,
     )
+    from aiodoo_validation.capabilities.planner.registration import (
+        get_planner_capability_pack,
+    )
     from aiodoo_validation.capabilities.repair.registration import (
         get_repair_capability_pack,
     )
 
-    for get_pack in (get_coding_capability_pack, get_repair_capability_pack):
+    for get_pack in (
+        get_coding_capability_pack,
+        get_planner_capability_pack,
+        get_repair_capability_pack,
+    ):
         pack = get_pack()
         registry.register(
             RegisteredCapabilityPack(

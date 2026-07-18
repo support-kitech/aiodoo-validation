@@ -9,30 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
-Coding Profile Completion **Phase 2 — Behavioral Validation Pipeline** landed:
-Coding reuses the Repair Capability Delivery spine (behavior oracle, scoring,
-benchmark, certification, reports, corpus pins) with Coding-specific IDs,
-pack/parser, fixture corpus, and production registration.
+**Planner Profile Completion** landed: Planner Capability Pack, eval corpus pin,
+behavior oracle→score→bench→cert→report chain, production registration, and
+`build_planner_request`. Planner is feature-equivalent to Repair/Coding on the
+frozen Capability Delivery spine.
 
-Phase 1 foundation (Capability Pack / parser / registration) remains in place.
+Coding Profile Completion Phase 1–2 remains in place.
 
 Post-tag v1.0.x changes otherwise remain limited to maintenance (bugs, security,
 docs, pack registration). See [docs/MAINTENANCE.md](docs/MAINTENANCE.md).
 
 ### Added
 
-- Coding behavioral pipeline stages on `CodingProfile` (oracle→score→bench→cert→report)
-- Coding evaluation corpus fixture + pin (`fixture.coding.eval.behavior`, aliases `coding.eval`)
-- `BehavioralEvidenceScorePolicy.create_for_coding()` / `BehaviorGatedCertificationPolicy.create_for_coding()`
-- Production registration of Coding capability behavioral oracle alongside Repair
-- Integration tests: `tests/integration/test_coding_behavior_pipeline.py`
+- `capabilities/planner/` Capability Pack (`PlannerRecordParser`, spec, registration)
+- Planner evaluation corpus fixture + pin (`fixture.planner.eval.behavior`)
+- Planner behavior stages on `AdapterProfile` + production DI
+- `BehavioralEvidenceScorePolicy.create_for_planner()` /
+  `BehaviorGatedCertificationPolicy.create_for_planner()`
+- `api.build_planner_request`
+- Docs: `docs/planner_profile.md`
+- Tests: `test_planner_capability_pack.py`, `test_planner_behavior_pipeline.py`
 
 ### Changed
 
-- `capabilities/bootstrap` / production DI register Coding behavior with Repair
-- Corpus catalog includes Coding fixture pin and capability default
-- Coding plan builder resolves evaluation corpus configuration like Repair
-- Docs: `coding_profile.md`, `implementation_status.md`, `MAINTENANCE.md`
+- Corpus catalog, bootstrap, production score/bench/cert/report helpers include Planner
+- Maintenance / implementation status allow Planner behavior (remaining profiles still structural-only)
 
 ## [1.0.0] — 2026-07-18
 

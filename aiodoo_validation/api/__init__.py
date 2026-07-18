@@ -5,7 +5,11 @@ External repositories should depend on this package only — never on internal
 engine, oracle, scoring, benchmark, certification, or reporting modules.
 """
 
-from aiodoo_validation.api.builders import build_coding_request, parse_odoo_versions
+from aiodoo_validation.api.builders import (
+    build_coding_request,
+    build_planner_request,
+    parse_odoo_versions,
+)
 from aiodoo_validation.api.compatibility import (
     is_execution_tier_supported,
     is_odoo_version_supported,
@@ -40,6 +44,7 @@ __all__ = [
     "RepositoryMetadata",
     "ValidationService",
     "build_coding_request",
+    "build_planner_request",
     "capability_labels",
     "colab_integration_hints",
     "get_profile_info",

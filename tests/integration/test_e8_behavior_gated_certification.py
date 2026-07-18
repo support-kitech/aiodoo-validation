@@ -383,7 +383,7 @@ class TestProfileRegistration:
         assert CODING_REPORT_BEHAVIOR in {s.stage_id for s in coding.report_pipeline}
 
     def test_multiple_profiles_structural_only_by_default(self) -> None:
-        for profile in ("planner", "conversation", "approval"):
+        for profile in ("conversation", "approval", "execution", "evaluation"):
             policies = default_production_certification_policies(profile=profile)
             assert all(
                 getattr(
@@ -396,6 +396,20 @@ class TestProfileRegistration:
             assert not any(
                 p.metadata.policy_id.endswith(".certification.behavior") for p in policies
             )
+
+    def test_planner_registers_behavior_gate(self) -> None:
+        from aiodoo_validation.certification.ids import PLANNER_CERTIFICATION_BEHAVIOR
+
+        assert any(
+            p.metadata.policy_id == PLANNER_CERTIFICATION_BEHAVIOR
+            for p in default_production_certification_policies(profile="planner")
+        )
+        planner = AdapterProfile.create("planner", odoo_versions=(18,))
+        assert PLANNER_CERTIFICATION_BEHAVIOR in {
+            s.stage_id for s in planner.certification_pipeline
+        }
+        assert "planner.benchmark.behavior" in {s.stage_id for s in planner.benchmark_pipeline}
+        assert "planner.report.behavior" in {s.stage_id for s in planner.report_pipeline}
 
 
 class TestReportOutput:

@@ -63,7 +63,8 @@ def test_planner_profile_production_path() -> None:
         odoo_versions=(18,),
     )
     result = ValidationEngine.with_filesystem().run(request)
-    assert result.exit_status is ExitStatus.COMPLETED
+    # Behavior gate is registered; without corpus config certification is deferred/denied.
+    assert result.exit_status is ExitStatus.NOT_CERTIFIED
     assert result.run_context.validation_profile is not None
     assert result.run_context.validation_profile.profile_name == "planner"
     assert certification_label(profile_name="planner", certified=True) == "planner-certified"

@@ -1,0 +1,18 @@
+{
+  "record_id": "planner.bad_op",
+  "problem": "Invalid replace payload",
+  "artifacts": [
+    {
+      "id": "mod_py",
+      "path": "models/mod.py",
+      "type": "python",
+      "content": "x = 1\n"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "replace",
+      "replace": "y = 1"
+    }
+  ]
+}

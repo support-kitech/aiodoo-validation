@@ -1,0 +1,38 @@
+id: planner
+name: Planner
+description: Independent planner capability adapter validation
+version: "1.0.0"
+supported_artifact_types:
+  - base_model
+  - coding_adapter
+supported_languages:
+  - python
+  - xml
+supported_transformation_types:
+  - replace
+supported_comparator_kinds:
+  - exact
+  - json
+  - ast
+  - xml
+  - token_similarity
+supported_evaluation_dimensions:
+  - transform_correctness
+  - syntax
+  - minimal_change
+  - intent_preservation
+  - hallucination
+  - explanation
+  - safety
+supported_certification_kinds:
+  - structural
+  - behavioral
+corpus_schema_id: planner_tasks_v1
+corpus_requirements:
+  role: evaluation
+  fingerprint_required: true
+default_scoring_policy_ref: scoring_policy.yaml
+default_certification_policy_ref: certification_defaults.yaml
+runtime_requirements:
+  behavior_certification: real_inference
+parser_id: planner_v1

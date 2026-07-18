@@ -130,7 +130,7 @@ def default_production_certification_policies(
     """
     Structural certification for every adapter profile.
 
-    Repair and Coding additionally register behavior-gated policies.
+    Repair, Coding, and Planner additionally register behavior-gated policies.
     """
     names = ("metadata", "manifest", "python", "xml", "security", "module_structure")
     criteria = default_structural_certification_criteria()
@@ -150,6 +150,8 @@ def default_production_certification_policies(
         policies.append(BehaviorGatedCertificationPolicy.create_for_repair())
     if profile == "coding":
         policies.append(BehaviorGatedCertificationPolicy.create_for_coding())
+    if profile == "planner":
+        policies.append(BehaviorGatedCertificationPolicy.create_for_planner())
     return tuple(policies)
 
 

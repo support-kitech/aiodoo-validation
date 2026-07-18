@@ -1,0 +1,12 @@
+{
+  "corpus_id": "fixture.planner.eval.behavior",
+  "capability_id": "planner",
+  "role": "evaluation",
+  "dataset_version": "fixture-planner-e5",
+  "fingerprint": "28804a8d7c25ce39eb5ac27605c157c1fccd3b7eac770d39c5cb57dd7bf3eaab",
+  "source_package": "aiodoo-validation-fixtures",
+  "denied_training_fingerprints": [],
+  "metadata": {
+    "kind": "planner_behavior_integration"
+  }
+}

@@ -55,29 +55,39 @@ def _pipeline(profile: str, phase: str) -> tuple[PipelineStagePlaceholder, ...]:
     return tuple(stages)
 
 
+_BEHAVIOR_PROFILES = frozenset(
+    {
+        SupportedValidationProfile.REPAIR.value,
+        SupportedValidationProfile.PLANNER.value,
+    }
+)
+
+
+def _behavior_oracle_stage(profile: str) -> PipelineStagePlaceholder:
+    return PipelineStagePlaceholder(
+        stage_id=f"{profile}.oracle.behavior.{profile}",
+        name=f"{profile.title()} Behavior",
+        enabled=True,
+        phase="oracle",
+    )
+
+
 def _oracle_pipeline_for_profile(profile: str) -> tuple[PipelineStagePlaceholder, ...]:
-    """Structural oracle stages, plus repair-only behavioral stage (E5)."""
+    """Structural oracle stages, plus capability behavioral stage when wired."""
     stages = list(_pipeline(profile, "oracle"))
-    if profile == SupportedValidationProfile.REPAIR.value:
-        stages.append(
-            PipelineStagePlaceholder(
-                stage_id="repair.oracle.behavior.repair",
-                name="Repair Behavior",
-                enabled=True,
-                phase="oracle",
-            )
-        )
+    if profile in _BEHAVIOR_PROFILES:
+        stages.append(_behavior_oracle_stage(profile))
     return tuple(stages)
 
 
 def _scoring_pipeline_for_profile(profile: str) -> tuple[PipelineStagePlaceholder, ...]:
-    """Structural score stages, plus repair-only behavioral score stage (E6)."""
+    """Structural score stages, plus capability behavioral score when wired."""
     stages = list(_pipeline(profile, "score"))
-    if profile == SupportedValidationProfile.REPAIR.value:
+    if profile in _BEHAVIOR_PROFILES:
         stages.append(
             PipelineStagePlaceholder(
-                stage_id="repair.score.behavior",
-                name="Repair Behavior Score",
+                stage_id=f"{profile}.score.behavior",
+                name=f"{profile.title()} Behavior Score",
                 enabled=True,
                 phase="score",
             )
@@ -86,13 +96,13 @@ def _scoring_pipeline_for_profile(profile: str) -> tuple[PipelineStagePlaceholde
 
 
 def _benchmark_pipeline_for_profile(profile: str) -> tuple[PipelineStagePlaceholder, ...]:
-    """Structural benchmarks, plus repair-only behavioral benchmark (E8)."""
+    """Structural benchmarks, plus capability behavioral benchmark when wired."""
     stages = list(_pipeline(profile, "benchmark"))
-    if profile == SupportedValidationProfile.REPAIR.value:
+    if profile in _BEHAVIOR_PROFILES:
         stages.append(
             PipelineStagePlaceholder(
-                stage_id="repair.benchmark.behavior",
-                name="Repair Behavior Benchmark",
+                stage_id=f"{profile}.benchmark.behavior",
+                name=f"{profile.title()} Behavior Benchmark",
                 enabled=True,
                 phase="benchmark",
             )
@@ -101,13 +111,13 @@ def _benchmark_pipeline_for_profile(profile: str) -> tuple[PipelineStagePlacehol
 
 
 def _certification_pipeline_for_profile(profile: str) -> tuple[PipelineStagePlaceholder, ...]:
-    """Structural certification, plus repair-only behavior gate (E8)."""
+    """Structural certification, plus capability behavior gate when wired."""
     stages = list(_pipeline(profile, "certification"))
-    if profile == SupportedValidationProfile.REPAIR.value:
+    if profile in _BEHAVIOR_PROFILES:
         stages.append(
             PipelineStagePlaceholder(
-                stage_id="repair.certification.behavior",
-                name="Repair Behavior Certification",
+                stage_id=f"{profile}.certification.behavior",
+                name=f"{profile.title()} Behavior Certification",
                 enabled=True,
                 phase="certification",
             )
@@ -116,13 +126,13 @@ def _certification_pipeline_for_profile(profile: str) -> tuple[PipelineStagePlac
 
 
 def _report_pipeline_for_profile(profile: str) -> tuple[PipelineStagePlaceholder, ...]:
-    """Structural reports, plus repair-only behavior certification report (E8)."""
+    """Structural reports, plus capability behavior certification report when wired."""
     stages = list(_pipeline(profile, "report"))
-    if profile == SupportedValidationProfile.REPAIR.value:
+    if profile in _BEHAVIOR_PROFILES:
         stages.append(
             PipelineStagePlaceholder(
-                stage_id="repair.report.behavior",
-                name="Repair Behavior Report",
+                stage_id=f"{profile}.report.behavior",
+                name=f"{profile.title()} Behavior Report",
                 enabled=True,
                 phase="report",
             )

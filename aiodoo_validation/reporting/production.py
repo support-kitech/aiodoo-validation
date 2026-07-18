@@ -221,6 +221,17 @@ def default_production_report_templates(
                 )
             )
         )
+    if profile == "planner":
+        templates.append(
+            CertificationSummaryReportTemplate(
+                metadata=_metadata(
+                    template_id="planner.report.behavior",
+                    name="Planner Behavior Report",
+                    source_certification_policy_id="planner.certification.behavior",
+                    supported_profile="planner",
+                )
+            )
+        )
     return tuple(templates)
 
 
