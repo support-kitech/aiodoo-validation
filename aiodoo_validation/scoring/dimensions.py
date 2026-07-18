@@ -13,6 +13,18 @@ from types import MappingProxyType
 from typing import Any
 
 from aiodoo_validation.domain.enums import ScoreDimensionName, ValidationKind
+from aiodoo_validation.scoring.evidence import (
+    DIM_BEHAVIOR,
+    DIM_EXPLANATION,
+    DIM_HALLUCINATION,
+    DIM_INTENT_PRESERVATION,
+    DIM_MINIMAL_CHANGE,
+    DIM_SAFETY,
+    DIM_SYNTAX,
+    DIM_TRANSFORM_CORRECTNESS,
+    BehavioralOracleEvidence,
+)
+from aiodoo_validation.scoring.policy_defaults import BehavioralScoringPolicyData
 
 
 @dataclass(frozen=True, slots=True)
@@ -104,8 +116,59 @@ def behavior_dimensions_from_suite(
     )
 
 
+def behavior_dimensions_from_evidence(
+    *,
+    evidence: BehavioralOracleEvidence,
+    policy: BehavioralScoringPolicyData,
+) -> ScoreDimensions:
+    """
+    Build multi-dimension behavioral scores from interpreted oracle evidence.
+
+    Spec dimensions without evidence stay ``None`` and are recorded only when
+    present (in ``extras`` / first-class fields). Weighted aggregate skips
+    missing terms when ``policy.missing_evidence == 'skip'``.
+    """
+    values: dict[str, float | None] = dict(evidence.dimension_values())
+    if policy.missing_evidence == "zero":
+        values = {
+            name: (0.0 if values.get(name) is None else values.get(name))
+            for name in policy.weights
+        }
+
+    weighted = compute_weighted_score(values, policy.weights)
+    extras: dict[str, Any] = {}
+    for key in (
+        DIM_TRANSFORM_CORRECTNESS,
+        DIM_MINIMAL_CHANGE,
+        DIM_INTENT_PRESERVATION,
+        DIM_HALLUCINATION,
+        DIM_EXPLANATION,
+        DIM_SAFETY,
+    ):
+        value = values.get(key)
+        if value is not None:
+            extras[key] = value
+
+    oracle_score = weighted
+    if oracle_score is None and evidence.behavior is not None:
+        oracle_score = evidence.behavior
+
+    return ScoreDimensions(
+        oracle=oracle_score,
+        behavior=values.get(DIM_BEHAVIOR),
+        syntax=values.get(DIM_SYNTAX),
+        structural=None,
+        policy=None,
+        weighted=weighted,
+        validation_kind=ValidationKind.BEHAVIORAL,
+        weights=MappingProxyType(dict(policy.weights)),
+        extras=MappingProxyType(extras),
+    )
+
+
 __all__ = [
     "ScoreDimensions",
+    "behavior_dimensions_from_evidence",
     "behavior_dimensions_from_suite",
     "compute_weighted_score",
     "structural_dimensions_from_oracle",

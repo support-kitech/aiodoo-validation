@@ -70,6 +70,21 @@ def _oracle_pipeline_for_profile(profile: str) -> tuple[PipelineStagePlaceholder
     return tuple(stages)
 
 
+def _scoring_pipeline_for_profile(profile: str) -> tuple[PipelineStagePlaceholder, ...]:
+    """Structural score stages, plus repair-only behavioral score stage (E6)."""
+    stages = list(_pipeline(profile, "score"))
+    if profile == SupportedValidationProfile.REPAIR.value:
+        stages.append(
+            PipelineStagePlaceholder(
+                stage_id="repair.score.behavior",
+                name="Repair Behavior Score",
+                enabled=True,
+                phase="score",
+            )
+        )
+    return tuple(stages)
+
+
 def validate_adapter_profile_compatibility(
     bundle: ArtifactBundle,
     *,
@@ -158,7 +173,7 @@ class AdapterProfile(ResolvedProfile):
             profile_name=profile,
             odoo_versions=odoo_versions,
             oracle_pipeline=_oracle_pipeline_for_profile(profile),
-            scoring_pipeline=_pipeline(profile, "score"),
+            scoring_pipeline=_scoring_pipeline_for_profile(profile),
             benchmark_pipeline=_pipeline(profile, "benchmark"),
             certification_pipeline=_pipeline(profile, "certification"),
             report_pipeline=_pipeline(profile, "report"),

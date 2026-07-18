@@ -53,3 +53,9 @@ CODING_SCORE_TO_ORACLE: dict[str, str] = {
 }
 
 PLACEHOLDER_SCORE_VALUE = 100.0
+
+# Repair behavioral scoring (E6) — source oracle: repair.oracle.behavior.repair
+REPAIR_SCORE_BEHAVIOR = "repair.score.behavior"
+REPAIR_SCORE_TO_ORACLE: dict[str, str] = {
+    REPAIR_SCORE_BEHAVIOR: "repair.oracle.behavior.repair",
+}

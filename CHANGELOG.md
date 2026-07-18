@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- E6 behavioral scoring integration: `scoring.evidence` metadata interpretation,
+  `scoring.policy_loader` / `scoring.policy_defaults` for
+  `default_scoring_policy_ref`, `BehavioralEvidenceScorePolicy`
+  (`repair.score.behavior`), multi-dimension aggregation via
+  `behavior_dimensions_from_evidence`, repair scoring pipeline stage, unit
+  tests in `tests/unit/test_e6_behavioral_scoring.py`
 - E5 production behavioral wiring: generic `CapabilityRegistry` /
   `RegisteredCapabilityPack`, `ConfigurableCorpusProvider`,
   `CapabilityBehaviorPipeline`, `CapabilityBehavioralOracle`, repair-only

@@ -13,10 +13,12 @@ from aiodoo_validation.domain.scoring import (
     ScoreMetadata,
     ScoreResult,
 )
+from aiodoo_validation.scoring.behavioral import BehavioralEvidenceScorePolicy
 from aiodoo_validation.scoring.dimensions import (
     behavior_dimensions_from_suite,
     structural_dimensions_from_oracle,
 )
+from aiodoo_validation.scoring.evidence import interpret_behavioral_oracle_evidence
 
 
 def _metadata(
@@ -61,12 +63,19 @@ class OracleOutcomeScorePolicy:
         kind = str(oracle_meta.get("validation_kind", ValidationKind.STRUCTURAL.value))
 
         if kind == ValidationKind.BEHAVIORAL.value:
-            if deferred:
+            # Prefer interpreted suite evidence (pass_rate or pass_count/case_count).
+            evidence = interpret_behavioral_oracle_evidence(context.oracle_result)
+            if evidence.pass_rate is not None:
+                score = float(evidence.pass_rate)
+                dimensions = behavior_dimensions_from_suite(
+                    pass_rate=score,
+                    oracle_score=score,
+                )
+            elif deferred:
                 score = 0.0
                 dimensions = behavior_dimensions_from_suite(pass_rate=None, oracle_score=0.0)
             else:
-                pass_rate = oracle_meta.get("pass_rate")
-                score = float(pass_rate) if pass_rate is not None else (100.0 if success else 0.0)
+                score = 100.0 if success else 0.0
                 dimensions = behavior_dimensions_from_suite(
                     pass_rate=score,
                     oracle_score=score,
@@ -108,9 +117,15 @@ class OracleOutcomeScorePolicy:
 def default_production_score_policies(
     *,
     profile: str = "coding",
-) -> tuple[OracleOutcomeScorePolicy, ...]:
+) -> tuple[OracleOutcomeScorePolicy | BehavioralEvidenceScorePolicy, ...]:
+    """
+    Structural outcome policies for every adapter profile.
+
+    Repair additionally registers the E6 behavioral evidence policy. Registration
+    stays in this helper so ``production.py`` need not change (E6 freeze).
+    """
     names = ("metadata", "manifest", "python", "xml", "security", "module_structure")
-    return tuple(
+    policies: list[OracleOutcomeScorePolicy | BehavioralEvidenceScorePolicy] = [
         OracleOutcomeScorePolicy(
             metadata=_metadata(
                 policy_id=f"{profile}.score.{name}",
@@ -120,17 +135,21 @@ def default_production_score_policies(
             )
         )
         for name in names
-    )
+    ]
+    if profile == "repair":
+        policies.append(BehavioralEvidenceScorePolicy.create_for_repair())
+    return tuple(policies)
 
 
 def default_production_coding_score_policies(
     *,
     supported_profile: str = "coding",
-) -> tuple[OracleOutcomeScorePolicy, ...]:
+) -> tuple[OracleOutcomeScorePolicy | BehavioralEvidenceScorePolicy, ...]:
     return default_production_score_policies(profile=supported_profile)
 
 
 __all__ = [
+    "BehavioralEvidenceScorePolicy",
     "OracleOutcomeScorePolicy",
     "default_production_coding_score_policies",
     "default_production_score_policies",
