@@ -130,7 +130,8 @@ def default_production_certification_policies(
     """
     Structural certification for every adapter profile.
 
-    Repair, Coding, and Planner additionally register behavior-gated policies.
+    Profiles with Capability Delivery behavior packs additionally register
+    behavior-gated policies.
     """
     names = ("metadata", "manifest", "python", "xml", "security", "module_structure")
     criteria = default_structural_certification_criteria()
@@ -146,20 +147,20 @@ def default_production_certification_policies(
         )
         for name in names
     ]
-    if profile == "repair":
-        policies.append(BehaviorGatedCertificationPolicy.create_for_repair())
-    if profile == "coding":
-        policies.append(BehaviorGatedCertificationPolicy.create_for_coding())
-    if profile == "planner":
-        policies.append(BehaviorGatedCertificationPolicy.create_for_planner())
-    if profile == "conversation":
-        policies.append(BehaviorGatedCertificationPolicy.create_for_conversation())
-    if profile == "execution":
-        policies.append(BehaviorGatedCertificationPolicy.create_for_execution())
     if profile == "approval":
         policies.append(BehaviorGatedCertificationPolicy.create_for_approval())
+    if profile == "coding":
+        policies.append(BehaviorGatedCertificationPolicy.create_for_coding())
+    if profile == "conversation":
+        policies.append(BehaviorGatedCertificationPolicy.create_for_conversation())
     if profile == "evaluation":
         policies.append(BehaviorGatedCertificationPolicy.create_for_evaluation())
+    if profile == "execution":
+        policies.append(BehaviorGatedCertificationPolicy.create_for_execution())
+    if profile == "planner":
+        policies.append(BehaviorGatedCertificationPolicy.create_for_planner())
+    if profile == "repair":
+        policies.append(BehaviorGatedCertificationPolicy.create_for_repair())
     return tuple(policies)
 
 

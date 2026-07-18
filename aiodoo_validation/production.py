@@ -140,10 +140,10 @@ def _register_capability_behavioral_oracles(
     capability_registry = create_default_capability_registry()
     for capability_id, oracle_id, name, description in (
         (
-            SupportedValidationProfile.REPAIR.value,
-            repair_behavior_oracle_id(),
-            "Repair Behavior Oracle",
-            "Repair capability behavioral evaluation (corpus-gated).",
+            SupportedValidationProfile.APPROVAL.value,
+            approval_behavior_oracle_id(),
+            "Approval Behavior Oracle",
+            "Approval capability behavioral evaluation (corpus-gated).",
         ),
         (
             SupportedValidationProfile.CODING.value,
@@ -152,16 +152,16 @@ def _register_capability_behavioral_oracles(
             "Coding capability behavioral evaluation (corpus-gated).",
         ),
         (
-            SupportedValidationProfile.PLANNER.value,
-            planner_behavior_oracle_id(),
-            "Planner Behavior Oracle",
-            "Planner capability behavioral evaluation (corpus-gated).",
-        ),
-        (
             SupportedValidationProfile.CONVERSATION.value,
             conversation_behavior_oracle_id(),
             "Conversation Behavior Oracle",
             "Conversation capability behavioral evaluation (corpus-gated).",
+        ),
+        (
+            SupportedValidationProfile.EVALUATION.value,
+            evaluation_behavior_oracle_id(),
+            "Evaluation Behavior Oracle",
+            "Evaluation capability behavioral evaluation (corpus-gated).",
         ),
         (
             SupportedValidationProfile.EXECUTION.value,
@@ -170,16 +170,16 @@ def _register_capability_behavioral_oracles(
             "Execution capability behavioral evaluation (corpus-gated).",
         ),
         (
-            SupportedValidationProfile.APPROVAL.value,
-            approval_behavior_oracle_id(),
-            "Approval Behavior Oracle",
-            "Approval capability behavioral evaluation (corpus-gated).",
+            SupportedValidationProfile.PLANNER.value,
+            planner_behavior_oracle_id(),
+            "Planner Behavior Oracle",
+            "Planner capability behavioral evaluation (corpus-gated).",
         ),
         (
-            SupportedValidationProfile.EVALUATION.value,
-            evaluation_behavior_oracle_id(),
-            "Evaluation Behavior Oracle",
-            "Evaluation capability behavioral evaluation (corpus-gated).",
+            SupportedValidationProfile.REPAIR.value,
+            repair_behavior_oracle_id(),
+            "Repair Behavior Oracle",
+            "Repair capability behavioral evaluation (corpus-gated).",
         ),
     ):
         oracle_registry.register(

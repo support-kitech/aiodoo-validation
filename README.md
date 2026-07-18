@@ -32,7 +32,7 @@ guarantee.
 | Production hardening (R1) | Complete |
 | Release candidate (RC1) | Complete — quality gates + packaging policy |
 | Final release audit (RC2) | Complete — infrastructure freeze for v1.0.x |
-| Behavioral validation | Repair wired (corpus-gated); others deferred |
+| Behavioral validation | All seven profiles wired (corpus-gated; deferred without corpus) |
 | **Repository** | **Permanent maintenance mode** for v1.0.x (infrastructure, not features) |
 
 **Repository version:** v1.0.0 (**source / git-tag** release; not a PyPI wheel)
@@ -45,10 +45,11 @@ future capability pack registrations only. See [MAINTENANCE.md](docs/MAINTENANCE
 - **Validation Engine** — frozen Protocol V1 lifecycle
 - **Public Integration API** — `ValidationService`, metadata, builders, helpers
 - **CLI** — `validate`, `version`, `capabilities`, `help`
-- **Profiles** — coding, planner, repair, conversation, execution, approval, evaluation
+- **Profiles** — approval, coding, conversation, evaluation, execution, planner, repair
 - **Execution tiers** — `standard` (never certifies), `smoke`, `full`, `prod`≡`full`
 - **Structural / artifact validation** — production oracles on resolved artifacts
-- **Scoring / benchmark / certification** — structural policies; repair behavioral scoring (E6) + behavior-gated cert (E8)
+- **Scoring / benchmark / certification** — structural policies plus behavioral
+  scoring (E6) and behavior-gated certification (E8) for all seven profiles
 - **Corpus governance** — pin by `evaluation_corpus_id` (path is location detail); fingerprint-verified (E7)
 - **Profile-aware labels** — e.g. `coding-certified` / `coding-not-certified`
 - **Reports** — machine-readable structural/behavior summaries with certification reasons
@@ -62,7 +63,7 @@ future capability pack registrations only. See [MAINTENANCE.md](docs/MAINTENANCE
 | Behavioral evaluation corpora | Prefer `evaluation_corpus_id`; path still accepted; deferred if unset |
 | Capability Delivery implementation | E0–E8 complete (see EEP) |
 | Semantic / rule-based AI comparators | Deferred (no fake similarity) |
-| Behavior-gated certification | **Enabled for repair**; other profiles remain structural-only |
+| Behavior-gated certification | **Enabled for all seven profiles**; deferred without corpus config |
 | Content fingerprint hashing | Placeholder digests (artifact resolution era) |
 | PDF / HTML / Markdown report rendering | Future consumer integrations |
 | `merged` / `foundation` profiles | Intentionally unsupported |
@@ -107,8 +108,9 @@ Optional inference extras: `pip install -r requirements/inference.txt`.
 
 ## Scope
 
-**In scope:** validate trained artifacts, structural certification, repair behavior
-evaluation when a corpus is configured, profile-aware evidence.
+**In scope:** validate trained artifacts, structural certification, behavioral
+evaluation for all seven profiles when a corpus is configured, profile-aware
+evidence.
 
 **Out of scope:** training, dataset generation, model registry, agent runtime,
 deployment, invented evaluation corpora, fake semantic scoring, PyPI packaging.
@@ -123,6 +125,13 @@ deployment, invented evaluation corpora, fake semantic scoring, PyPI packaging.
 - [Architecture summary](docs/architecture.md)
 - [Structural vs Behavioral Validation](docs/behavioral_validation.md)
 - [Implementation status](docs/implementation_status.md)
+- [Repair profile](docs/repair_profile.md)
+- [Coding profile](docs/coding_profile.md)
+- [Planner profile](docs/planner_profile.md)
+- [Conversation profile](docs/conversation_profile.md)
+- [Execution profile](docs/execution_profile.md)
+- [Approval profile](docs/approval_profile.md)
+- [Evaluation profile](docs/evaluation_profile.md)
 - [Oracle Framework](docs/oracle_framework.md)
 - [Scoring Engine](docs/scoring_engine.md)
 - [Benchmark Engine](docs/benchmark_engine.md)

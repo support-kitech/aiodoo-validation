@@ -14,17 +14,18 @@
 | Architecture | **Complete / frozen** |
 | Planning / Spec v1.0 documentation | **Complete** (materialized in repo) |
 | Capability Delivery implementation | **Complete (E0–E8)** |
-| Current execution phase | **Capability Delivery complete** — all seven adapter profiles behavioral |
+| Current execution phase | **Phase 10 — Repository Consolidation** (stabilization; no new features) |
 | Structural / artifact validation | **Active (production)** |
-| Behavioral validation | **All profiles wired** (Repair/Coding/Planner/Conversation/Execution/Approval/Evaluation) — deferred without corpus id/path; active when configured |
-| Coding Capability Pack | **Complete** (spec/parser/registration + behavior chain) |
-| Planner Capability Pack | **Complete** (spec/parser/registration + behavior chain) |
-| Conversation Capability Pack | **Complete** (spec/parser/registration + behavior chain) |
-| Execution Capability Pack | **Complete** (spec/parser/registration + behavior chain) |
-| Approval Capability Pack | **Complete** (spec/parser/registration + behavior chain) |
-| Evaluation Capability Pack | **Complete** (spec/parser/registration + behavior chain) |
+| Behavioral validation | **All seven profiles wired** (approval/coding/conversation/evaluation/execution/planner/repair) — deferred without corpus id/path; active when configured |
+| Approval Capability Pack | **Complete** |
+| Coding Capability Pack | **Complete** |
+| Conversation Capability Pack | **Complete** |
+| Evaluation Capability Pack | **Complete** |
+| Execution Capability Pack | **Complete** |
+| Planner Capability Pack | **Complete** |
+| Repair Capability Pack | **Complete** |
 | Certification | **Structural + full behavior gates for all seven profiles** |
-| Repository | Spec v1.0 authoritative; E0–E8 frozen; R1+RC1+RC2 complete; Capability Delivery profiles complete |
+| Repository | Spec v1.0 authoritative; E0–E8 frozen; R1+RC1+RC2 complete; Capability Delivery profiles complete; Phase 10 consolidation |
 
 ---
 
@@ -33,7 +34,7 @@
 | Area | Status |
 |------|--------|
 | CLI / public API | Stable |
-| Adapter profiles | coding, planner, repair, conversation, execution, approval, evaluation |
+| Adapter profiles | approval, coding, conversation, evaluation, execution, planner, repair |
 | Execution tiers | standard (no cert), smoke, full, prod alias |
 | Structural oracles | Active |
 | Behavioral oracles in production plans | **All seven profiles** — deferred without corpus; gated by `evaluation_corpus_id` / `evaluation_corpus_path` |
@@ -63,6 +64,7 @@
 | R1 production hardening | **Done** — typing, layering cleanup, wiring consistency tests, docs |
 | RC1 release validation | **Done** — quality gates green; source-tag packaging policy confirmed |
 | RC2 final release audit | **Done** — contracts inventoried; maintenance policy published; GO for tag |
+| Phase 10 consolidation | **Done** — profile parity audit, docs sync, deterministic ordering |
 
 ---
 
@@ -70,13 +72,13 @@
 
 | Check | Status |
 |-------|--------|
-| Full unit/integration suite | Green (454 passed) |
+| Full unit/integration suite | Green (660+ passed) |
 | ruff check | Green |
 | ruff format | Green |
 | mypy strict | Green |
-| coverage | ≥85% (86%) |
+| coverage | ≥85% (85%) |
 | Public API surface (`aiodoo_validation.api`) | Stable; internals not exported |
-| Repair delivery chain IDs | Aligned (oracle→score→bench→cert→report) |
+| Delivery chain IDs (all profiles) | Aligned (oracle→score→bench→cert→report) |
 | Capability Delivery redesign | **Forbidden** — frozen |
 | PyPI `[build-system]` wheel | **Out of scope** (intentional tooling-only pyproject) |
 | Recommended publish | **git tag `v1.0.0`** source release |
@@ -95,7 +97,8 @@
 - [architecture.md](architecture.md)  
 - [behavioral_validation.md](behavioral_validation.md)  
 - [cli.md](cli.md)  
-- [MAINTENANCE.md](MAINTENANCE.md) — **v1.0.x maintenance policy**
+- [MAINTENANCE.md](MAINTENANCE.md) — **v1.0.x maintenance policy**  
+- Profile docs: [approval](approval_profile.md), [coding](coding_profile.md), [conversation](conversation_profile.md), [evaluation](evaluation_profile.md), [execution](execution_profile.md), [planner](planner_profile.md), [repair](repair_profile.md)
 
 ## Historical (do not treat as live Capability Delivery plan)
 
@@ -113,6 +116,7 @@
 - Pack-local scoring policy files (E6 ships scoring defaults for known refs)  
 - Edit-distance / syntax evidence in oracle metadata (dimensions stay deferred until evidence exists)  
 - Coding Quality Oracle pipeline (still disabled placeholder stage)  
+- Dedicated `build_repair_request` public helper (optional convenience; other builders exist)
 
 ---
 
@@ -123,9 +127,9 @@ registries, and domain types inside the frozen Protocol V1 lifecycle.
 Follow [delivery_governance.md](delivery_governance.md) and
 [MAINTENANCE.md](MAINTENANCE.md).
 
-**v1.0.x allowed:** bug fixes, security fixes, documentation, and capability pack
-registration via the existing pack contract that reuses the frozen Capability
-Delivery spine (all seven adapter profiles are complete).
+**v1.0.x allowed:** bug fixes, security fixes, documentation, test coverage, and
+capability pack registration via the existing pack contract that reuses the
+frozen Capability Delivery spine (all seven adapter profiles are complete).
 
 **v1.0.x forbidden:** architecture changes, new profiles beyond the frozen set,
 feature work framed as Capability Delivery redesign.
@@ -136,7 +140,8 @@ feature work framed as Capability Delivery redesign.
 
 - **Protocol V1 / structural certification path:** frozen and active.  
 - **Specification Version 1.0 (docs):** frozen in this repository.  
-- **Capability Delivery code:** E0–E8 frozen (spine complete).  
+- **Capability Delivery code:** E0–E8 frozen (spine complete; all seven profiles).  
 - **R1 / RC1 / RC2:** hardening + release validation + final audit only — no Capability Delivery architecture changes.  
+- **Phase 10:** consolidation / documentation / ordering only — no new validation features.  
 - **v1.0.0 distribution:** source / git-tag (not PyPI wheel).  
 - **Post-tag posture:** permanent maintenance mode for **v1.0.x**.

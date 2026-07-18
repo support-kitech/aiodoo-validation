@@ -18,6 +18,38 @@ def parse_odoo_versions(raw: str) -> tuple[int, ...]:
     return tuple(int(part) for part in parts)
 
 
+def build_approval_request(
+    *,
+    base_model_ref: str,
+    adapter_ref: str,
+    merged_model_ref: str | None = None,
+    execution_tier: ExecutionTier | str = ExecutionTier.STANDARD,
+    odoo_versions: tuple[int, ...] | str = (
+        OdooVersion.V17,
+        OdooVersion.V18,
+        OdooVersion.V19,
+    ),
+    run_id: str | None = None,
+    metadata: Mapping[str, Any] | None = None,
+) -> ValidationRequest:
+    """Build an approval profile ``ValidationRequest``."""
+    tier = normalize_execution_tier(execution_tier)
+    if isinstance(odoo_versions, str):
+        versions = parse_odoo_versions(odoo_versions)
+    else:
+        versions = odoo_versions
+    return ValidationRequest(
+        profile_name="approval",
+        base_model_ref=base_model_ref,
+        adapter_ref=adapter_ref,
+        merged_model_ref=merged_model_ref,
+        execution_tier=tier,
+        odoo_versions=versions,
+        run_id=run_id,
+        metadata={} if metadata is None else metadata,
+    )
+
+
 def build_coding_request(
     *,
     base_model_ref: str,
@@ -40,38 +72,6 @@ def build_coding_request(
         versions = odoo_versions
     return ValidationRequest(
         profile_name="coding",
-        base_model_ref=base_model_ref,
-        adapter_ref=adapter_ref,
-        merged_model_ref=merged_model_ref,
-        execution_tier=tier,
-        odoo_versions=versions,
-        run_id=run_id,
-        metadata={} if metadata is None else metadata,
-    )
-
-
-def build_planner_request(
-    *,
-    base_model_ref: str,
-    adapter_ref: str,
-    merged_model_ref: str | None = None,
-    execution_tier: ExecutionTier | str = ExecutionTier.STANDARD,
-    odoo_versions: tuple[int, ...] | str = (
-        OdooVersion.V17,
-        OdooVersion.V18,
-        OdooVersion.V19,
-    ),
-    run_id: str | None = None,
-    metadata: Mapping[str, Any] | None = None,
-) -> ValidationRequest:
-    """Build a planner profile ``ValidationRequest``."""
-    tier = normalize_execution_tier(execution_tier)
-    if isinstance(odoo_versions, str):
-        versions = parse_odoo_versions(odoo_versions)
-    else:
-        versions = odoo_versions
-    return ValidationRequest(
-        profile_name="planner",
         base_model_ref=base_model_ref,
         adapter_ref=adapter_ref,
         merged_model_ref=merged_model_ref,
@@ -114,6 +114,38 @@ def build_conversation_request(
     )
 
 
+def build_evaluation_request(
+    *,
+    base_model_ref: str,
+    adapter_ref: str,
+    merged_model_ref: str | None = None,
+    execution_tier: ExecutionTier | str = ExecutionTier.STANDARD,
+    odoo_versions: tuple[int, ...] | str = (
+        OdooVersion.V17,
+        OdooVersion.V18,
+        OdooVersion.V19,
+    ),
+    run_id: str | None = None,
+    metadata: Mapping[str, Any] | None = None,
+) -> ValidationRequest:
+    """Build an evaluation profile ``ValidationRequest``."""
+    tier = normalize_execution_tier(execution_tier)
+    if isinstance(odoo_versions, str):
+        versions = parse_odoo_versions(odoo_versions)
+    else:
+        versions = odoo_versions
+    return ValidationRequest(
+        profile_name="evaluation",
+        base_model_ref=base_model_ref,
+        adapter_ref=adapter_ref,
+        merged_model_ref=merged_model_ref,
+        execution_tier=tier,
+        odoo_versions=versions,
+        run_id=run_id,
+        metadata={} if metadata is None else metadata,
+    )
+
+
 def build_execution_request(
     *,
     base_model_ref: str,
@@ -146,7 +178,7 @@ def build_execution_request(
     )
 
 
-def build_approval_request(
+def build_planner_request(
     *,
     base_model_ref: str,
     adapter_ref: str,
@@ -160,46 +192,14 @@ def build_approval_request(
     run_id: str | None = None,
     metadata: Mapping[str, Any] | None = None,
 ) -> ValidationRequest:
-    """Build an approval profile ``ValidationRequest``."""
+    """Build a planner profile ``ValidationRequest``."""
     tier = normalize_execution_tier(execution_tier)
     if isinstance(odoo_versions, str):
         versions = parse_odoo_versions(odoo_versions)
     else:
         versions = odoo_versions
     return ValidationRequest(
-        profile_name="approval",
-        base_model_ref=base_model_ref,
-        adapter_ref=adapter_ref,
-        merged_model_ref=merged_model_ref,
-        execution_tier=tier,
-        odoo_versions=versions,
-        run_id=run_id,
-        metadata={} if metadata is None else metadata,
-    )
-
-
-def build_evaluation_request(
-    *,
-    base_model_ref: str,
-    adapter_ref: str,
-    merged_model_ref: str | None = None,
-    execution_tier: ExecutionTier | str = ExecutionTier.STANDARD,
-    odoo_versions: tuple[int, ...] | str = (
-        OdooVersion.V17,
-        OdooVersion.V18,
-        OdooVersion.V19,
-    ),
-    run_id: str | None = None,
-    metadata: Mapping[str, Any] | None = None,
-) -> ValidationRequest:
-    """Build an evaluation profile ``ValidationRequest``."""
-    tier = normalize_execution_tier(execution_tier)
-    if isinstance(odoo_versions, str):
-        versions = parse_odoo_versions(odoo_versions)
-    else:
-        versions = odoo_versions
-    return ValidationRequest(
-        profile_name="evaluation",
+        profile_name="planner",
         base_model_ref=base_model_ref,
         adapter_ref=adapter_ref,
         merged_model_ref=merged_model_ref,

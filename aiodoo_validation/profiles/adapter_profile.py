@@ -57,12 +57,12 @@ def _pipeline(profile: str, phase: str) -> tuple[PipelineStagePlaceholder, ...]:
 
 _BEHAVIOR_PROFILES = frozenset(
     {
-        SupportedValidationProfile.REPAIR.value,
-        SupportedValidationProfile.PLANNER.value,
-        SupportedValidationProfile.CONVERSATION.value,
-        SupportedValidationProfile.EXECUTION.value,
         SupportedValidationProfile.APPROVAL.value,
+        SupportedValidationProfile.CONVERSATION.value,
         SupportedValidationProfile.EVALUATION.value,
+        SupportedValidationProfile.EXECUTION.value,
+        SupportedValidationProfile.PLANNER.value,
+        SupportedValidationProfile.REPAIR.value,
     }
 )
 

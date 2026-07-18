@@ -2,11 +2,13 @@
 
 ### Notes
 
-**Final Capability Delivery Completion** landed: Approval and Evaluation Capability
-Packs, eval corpus pins, behavior oracle→score→bench→cert→report chains,
-production registration, and `build_approval_request` /
-`build_evaluation_request`. All seven adapter profiles are now
-feature-equivalent on the frozen Capability Delivery spine:
+**Phase 10 — Repository Consolidation** completed: engineering audit of all seven
+Capability Delivery profiles, documentation synchronization, and deterministic
+ordering of public builders / production registration helpers. No Protocol V1 or
+behavioral pipeline changes.
+
+**Final Capability Delivery Completion** remains in place: Approval and Evaluation
+joined Repair, Coding, Planner, Conversation, and Execution on the frozen spine.
 
 Repair ✓ · Coding ✓ · Planner ✓ · Conversation ✓ · Execution ✓ · Approval ✓ ·
 Evaluation ✓
@@ -16,21 +18,13 @@ docs, pack registration). See [docs/MAINTENANCE.md](docs/MAINTENANCE.md).
 
 ### Added
 
-- `capabilities/approval/` and `capabilities/evaluation/` Capability Packs
-- Approval/Evaluation evaluation corpus fixtures + pins
-  (`fixture.approval.eval.behavior`, `fixture.evaluation.eval.behavior`)
-- Approval/Evaluation behavior stages on `AdapterProfile` + production DI
-- `BehavioralEvidenceScorePolicy.create_for_approval()` /
-  `create_for_evaluation()` and matching certification factories
-- `api.build_approval_request` / `api.build_evaluation_request`
-- Docs: `docs/approval_profile.md`, `docs/evaluation_profile.md`
-- Tests: approval/evaluation capability pack + behavior pipeline suites
+- Docs: `docs/repair_profile.md` (parity with other profile docs)
 
 ### Changed
 
-- Corpus catalog, bootstrap, production score/bench/cert/report helpers include
-  Approval and Evaluation
-- Maintenance / implementation status mark Capability Delivery profiles complete
+- README / implementation status / integration docs reflect all-profile behavior
+- Alphabetical ordering for API builders and production registration helpers
+- Stale “structural-only” / repair-only wording removed from live status docs
 
 ## [1.0.0] — 2026-07-18
 

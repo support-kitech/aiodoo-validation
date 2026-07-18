@@ -199,14 +199,14 @@ def default_production_report_templates(
         )
         for name in names
     ]
-    if profile == "repair":
+    if profile == "approval":
         templates.append(
             CertificationSummaryReportTemplate(
                 metadata=_metadata(
-                    template_id="repair.report.behavior",
-                    name="Repair Behavior Report",
-                    source_certification_policy_id="repair.certification.behavior",
-                    supported_profile="repair",
+                    template_id="approval.report.behavior",
+                    name="Approval Behavior Report",
+                    source_certification_policy_id="approval.certification.behavior",
+                    supported_profile="approval",
                 )
             )
         )
@@ -221,17 +221,6 @@ def default_production_report_templates(
                 )
             )
         )
-    if profile == "planner":
-        templates.append(
-            CertificationSummaryReportTemplate(
-                metadata=_metadata(
-                    template_id="planner.report.behavior",
-                    name="Planner Behavior Report",
-                    source_certification_policy_id="planner.certification.behavior",
-                    supported_profile="planner",
-                )
-            )
-        )
     if profile == "conversation":
         templates.append(
             CertificationSummaryReportTemplate(
@@ -240,6 +229,17 @@ def default_production_report_templates(
                     name="Conversation Behavior Report",
                     source_certification_policy_id="conversation.certification.behavior",
                     supported_profile="conversation",
+                )
+            )
+        )
+    if profile == "evaluation":
+        templates.append(
+            CertificationSummaryReportTemplate(
+                metadata=_metadata(
+                    template_id="evaluation.report.behavior",
+                    name="Evaluation Behavior Report",
+                    source_certification_policy_id="evaluation.certification.behavior",
+                    supported_profile="evaluation",
                 )
             )
         )
@@ -254,25 +254,25 @@ def default_production_report_templates(
                 )
             )
         )
-    if profile == "approval":
+    if profile == "planner":
         templates.append(
             CertificationSummaryReportTemplate(
                 metadata=_metadata(
-                    template_id="approval.report.behavior",
-                    name="Approval Behavior Report",
-                    source_certification_policy_id="approval.certification.behavior",
-                    supported_profile="approval",
+                    template_id="planner.report.behavior",
+                    name="Planner Behavior Report",
+                    source_certification_policy_id="planner.certification.behavior",
+                    supported_profile="planner",
                 )
             )
         )
-    if profile == "evaluation":
+    if profile == "repair":
         templates.append(
             CertificationSummaryReportTemplate(
                 metadata=_metadata(
-                    template_id="evaluation.report.behavior",
-                    name="Evaluation Behavior Report",
-                    source_certification_policy_id="evaluation.certification.behavior",
-                    supported_profile="evaluation",
+                    template_id="repair.report.behavior",
+                    name="Repair Behavior Report",
+                    source_certification_policy_id="repair.certification.behavior",
+                    supported_profile="repair",
                 )
             )
         )

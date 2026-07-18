@@ -76,7 +76,12 @@ from aiodoo_validation.api import (
 | Component | Purpose |
 |-----------|---------|
 | `ValidationService` | Stable entry point — `validate(request)` |
+| `build_approval_request` | Request builder for approval profile |
 | `build_coding_request` | Request builder for coding profile |
+| `build_conversation_request` | Request builder for conversation profile |
+| `build_evaluation_request` | Request builder for evaluation profile |
+| `build_execution_request` | Request builder for execution profile |
+| `build_planner_request` | Request builder for planner profile |
 | `parse_odoo_versions` | Parse comma-separated Odoo versions |
 | `get_repository_metadata` | Repository and protocol version metadata |
 | `get_profile_info` / `list_profiles` | Profile discovery |
@@ -113,7 +118,7 @@ No orchestration changes. No new validation logic.
 ```python
 from aiodoo_validation.api import get_profile_info, list_profiles
 
-profiles = list_profiles()  # ("coding",)
+profiles = list_profiles()  # alphabetically sorted seven profiles
 profile = get_profile_info("coding")
 profile.supported_runtimes
 profile.capabilities.supports_reports

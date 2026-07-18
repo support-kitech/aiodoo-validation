@@ -92,7 +92,8 @@ def default_production_benchmark_policies(
     """
     Structural benchmarks for every adapter profile.
 
-    Repair, Coding, and Planner additionally benchmark their behavioral score policies.
+    Profiles with Capability Delivery behavior packs additionally benchmark their
+    behavioral score policies.
     """
     names = ("metadata", "manifest", "python", "xml", "security", "module_structure")
     policies: list[ScoreThresholdBenchmarkPolicy] = [
@@ -106,14 +107,14 @@ def default_production_benchmark_policies(
         )
         for name in names
     ]
-    if profile == "repair":
+    if profile == "approval":
         policies.append(
             ScoreThresholdBenchmarkPolicy(
                 metadata=_metadata(
-                    policy_id="repair.benchmark.behavior",
-                    name="Repair Behavior Benchmark",
-                    source_score_policy_id="repair.score.behavior",
-                    supported_profile="repair",
+                    policy_id="approval.benchmark.behavior",
+                    name="Approval Behavior Benchmark",
+                    source_score_policy_id="approval.score.behavior",
+                    supported_profile="approval",
                 )
             )
         )
@@ -128,17 +129,6 @@ def default_production_benchmark_policies(
                 )
             )
         )
-    if profile == "planner":
-        policies.append(
-            ScoreThresholdBenchmarkPolicy(
-                metadata=_metadata(
-                    policy_id="planner.benchmark.behavior",
-                    name="Planner Behavior Benchmark",
-                    source_score_policy_id="planner.score.behavior",
-                    supported_profile="planner",
-                )
-            )
-        )
     if profile == "conversation":
         policies.append(
             ScoreThresholdBenchmarkPolicy(
@@ -147,6 +137,17 @@ def default_production_benchmark_policies(
                     name="Conversation Behavior Benchmark",
                     source_score_policy_id="conversation.score.behavior",
                     supported_profile="conversation",
+                )
+            )
+        )
+    if profile == "evaluation":
+        policies.append(
+            ScoreThresholdBenchmarkPolicy(
+                metadata=_metadata(
+                    policy_id="evaluation.benchmark.behavior",
+                    name="Evaluation Behavior Benchmark",
+                    source_score_policy_id="evaluation.score.behavior",
+                    supported_profile="evaluation",
                 )
             )
         )
@@ -161,25 +162,25 @@ def default_production_benchmark_policies(
                 )
             )
         )
-    if profile == "approval":
+    if profile == "planner":
         policies.append(
             ScoreThresholdBenchmarkPolicy(
                 metadata=_metadata(
-                    policy_id="approval.benchmark.behavior",
-                    name="Approval Behavior Benchmark",
-                    source_score_policy_id="approval.score.behavior",
-                    supported_profile="approval",
+                    policy_id="planner.benchmark.behavior",
+                    name="Planner Behavior Benchmark",
+                    source_score_policy_id="planner.score.behavior",
+                    supported_profile="planner",
                 )
             )
         )
-    if profile == "evaluation":
+    if profile == "repair":
         policies.append(
             ScoreThresholdBenchmarkPolicy(
                 metadata=_metadata(
-                    policy_id="evaluation.benchmark.behavior",
-                    name="Evaluation Behavior Benchmark",
-                    source_score_policy_id="evaluation.score.behavior",
-                    supported_profile="evaluation",
+                    policy_id="repair.benchmark.behavior",
+                    name="Repair Behavior Benchmark",
+                    source_score_policy_id="repair.score.behavior",
+                    supported_profile="repair",
                 )
             )
         )

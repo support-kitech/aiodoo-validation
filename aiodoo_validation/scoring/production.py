@@ -121,8 +121,8 @@ def default_production_score_policies(
     """
     Structural outcome policies for every adapter profile.
 
-    Repair additionally registers the E6 behavioral evidence policy. Registration
-    stays in this helper so ``production.py`` need not change (E6 freeze).
+    Profiles with Capability Delivery behavior packs additionally register the
+    E6 behavioral evidence policy when ``profile`` matches.
     """
     names = ("metadata", "manifest", "python", "xml", "security", "module_structure")
     policies: list[OracleOutcomeScorePolicy | BehavioralEvidenceScorePolicy] = [
@@ -136,20 +136,20 @@ def default_production_score_policies(
         )
         for name in names
     ]
-    if profile == "repair":
-        policies.append(BehavioralEvidenceScorePolicy.create_for_repair())
-    if profile == "coding":
-        policies.append(BehavioralEvidenceScorePolicy.create_for_coding())
-    if profile == "planner":
-        policies.append(BehavioralEvidenceScorePolicy.create_for_planner())
-    if profile == "conversation":
-        policies.append(BehavioralEvidenceScorePolicy.create_for_conversation())
-    if profile == "execution":
-        policies.append(BehavioralEvidenceScorePolicy.create_for_execution())
     if profile == "approval":
         policies.append(BehavioralEvidenceScorePolicy.create_for_approval())
+    if profile == "coding":
+        policies.append(BehavioralEvidenceScorePolicy.create_for_coding())
+    if profile == "conversation":
+        policies.append(BehavioralEvidenceScorePolicy.create_for_conversation())
     if profile == "evaluation":
         policies.append(BehavioralEvidenceScorePolicy.create_for_evaluation())
+    if profile == "execution":
+        policies.append(BehavioralEvidenceScorePolicy.create_for_execution())
+    if profile == "planner":
+        policies.append(BehavioralEvidenceScorePolicy.create_for_planner())
+    if profile == "repair":
+        policies.append(BehavioralEvidenceScorePolicy.create_for_repair())
     return tuple(policies)
 
 
