@@ -382,21 +382,6 @@ class TestProfileRegistration:
         assert "coding.benchmark.behavior" in {s.stage_id for s in coding.benchmark_pipeline}
         assert CODING_REPORT_BEHAVIOR in {s.stage_id for s in coding.report_pipeline}
 
-    def test_multiple_profiles_structural_only_by_default(self) -> None:
-        for profile in ("approval", "evaluation"):
-            policies = default_production_certification_policies(profile=profile)
-            assert all(
-                getattr(
-                    p, "criteria", default_structural_certification_criteria()
-                ).require_behavior_pass
-                is False
-                or p.metadata.policy_id.endswith(".behavior")
-                for p in policies
-            )
-            assert not any(
-                p.metadata.policy_id.endswith(".certification.behavior") for p in policies
-            )
-
     def test_planner_registers_behavior_gate(self) -> None:
         from aiodoo_validation.certification.ids import PLANNER_CERTIFICATION_BEHAVIOR
 
@@ -440,6 +425,36 @@ class TestProfileRegistration:
         }
         assert "execution.benchmark.behavior" in {s.stage_id for s in execution.benchmark_pipeline}
         assert "execution.report.behavior" in {s.stage_id for s in execution.report_pipeline}
+
+    def test_approval_registers_behavior_gate(self) -> None:
+        from aiodoo_validation.certification.ids import APPROVAL_CERTIFICATION_BEHAVIOR
+
+        assert any(
+            p.metadata.policy_id == APPROVAL_CERTIFICATION_BEHAVIOR
+            for p in default_production_certification_policies(profile="approval")
+        )
+        approval = AdapterProfile.create("approval", odoo_versions=(18,))
+        assert APPROVAL_CERTIFICATION_BEHAVIOR in {
+            s.stage_id for s in approval.certification_pipeline
+        }
+        assert "approval.benchmark.behavior" in {s.stage_id for s in approval.benchmark_pipeline}
+        assert "approval.report.behavior" in {s.stage_id for s in approval.report_pipeline}
+
+    def test_evaluation_registers_behavior_gate(self) -> None:
+        from aiodoo_validation.certification.ids import EVALUATION_CERTIFICATION_BEHAVIOR
+
+        assert any(
+            p.metadata.policy_id == EVALUATION_CERTIFICATION_BEHAVIOR
+            for p in default_production_certification_policies(profile="evaluation")
+        )
+        evaluation = AdapterProfile.create("evaluation", odoo_versions=(18,))
+        assert EVALUATION_CERTIFICATION_BEHAVIOR in {
+            s.stage_id for s in evaluation.certification_pipeline
+        }
+        assert "evaluation.benchmark.behavior" in {
+            s.stage_id for s in evaluation.benchmark_pipeline
+        }
+        assert "evaluation.report.behavior" in {s.stage_id for s in evaluation.report_pipeline}
 
 
 class TestReportOutput:

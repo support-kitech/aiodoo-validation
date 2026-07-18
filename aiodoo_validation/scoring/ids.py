@@ -81,3 +81,15 @@ EXECUTION_SCORE_BEHAVIOR = "execution.score.behavior"
 EXECUTION_SCORE_TO_ORACLE: dict[str, str] = {
     EXECUTION_SCORE_BEHAVIOR: "execution.oracle.behavior.execution",
 }
+
+# Approval behavioral scoring — source oracle: approval.oracle.behavior.approval
+APPROVAL_SCORE_BEHAVIOR = "approval.score.behavior"
+APPROVAL_SCORE_TO_ORACLE: dict[str, str] = {
+    APPROVAL_SCORE_BEHAVIOR: "approval.oracle.behavior.approval",
+}
+
+# Evaluation behavioral scoring — source oracle: evaluation.oracle.behavior.evaluation
+EVALUATION_SCORE_BEHAVIOR = "evaluation.score.behavior"
+EVALUATION_SCORE_TO_ORACLE: dict[str, str] = {
+    EVALUATION_SCORE_BEHAVIOR: "evaluation.oracle.behavior.evaluation",
+}

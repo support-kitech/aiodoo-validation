@@ -365,6 +365,9 @@ class TestProductionExecutionRegistration:
         assert registry.contains("coding.oracle.behavior.coding")
         assert registry.contains("planner.oracle.behavior.planner")
         assert registry.contains("conversation.oracle.behavior.conversation")
+        assert registry.contains("execution.oracle.behavior.execution")
+        assert registry.contains("approval.oracle.behavior.approval")
+        assert registry.contains("evaluation.oracle.behavior.evaluation")
 
     def test_production_does_not_import_execution_parser_directly(self) -> None:
         import inspect

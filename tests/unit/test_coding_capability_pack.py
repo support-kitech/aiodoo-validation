@@ -55,8 +55,10 @@ class TestCodingRegistration:
     def test_builtin_registry_includes_coding_repair_and_planner(self) -> None:
         registry = create_default_capability_registry()
         assert registry.registered_ids() == (
+            "approval",
             "coding",
             "conversation",
+            "evaluation",
             "execution",
             "planner",
             "repair",

@@ -1,0 +1,22 @@
+{
+  "record_id": "evaluation.simple",
+  "problem": "Add a compute method that returns partner name.",
+  "artifacts": [
+    {
+      "id": "mod_py_original",
+      "path": "models/partner.py",
+      "type": "python",
+      "content": "class ResPartner(models.Model):\n    _name = 'res.partner'\n",
+      "snapshot_role": "original"
+    },
+    {
+      "id": "mod_py_expected",
+      "path": "models/partner.py",
+      "type": "python",
+      "content": "class ResPartner(models.Model):\n    _name = 'res.partner'\n\n    def _compute_display_name(self):\n        for record in self:\n            record.display_name = record.name\n",
+      "snapshot_role": "expected"
+    }
+  ],
+  "operations": [],
+  "explanation": "Implement a simple compute method on res.partner."
+}

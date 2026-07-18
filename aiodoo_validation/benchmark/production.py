@@ -161,6 +161,28 @@ def default_production_benchmark_policies(
                 )
             )
         )
+    if profile == "approval":
+        policies.append(
+            ScoreThresholdBenchmarkPolicy(
+                metadata=_metadata(
+                    policy_id="approval.benchmark.behavior",
+                    name="Approval Behavior Benchmark",
+                    source_score_policy_id="approval.score.behavior",
+                    supported_profile="approval",
+                )
+            )
+        )
+    if profile == "evaluation":
+        policies.append(
+            ScoreThresholdBenchmarkPolicy(
+                metadata=_metadata(
+                    policy_id="evaluation.benchmark.behavior",
+                    name="Evaluation Behavior Benchmark",
+                    source_score_policy_id="evaluation.score.behavior",
+                    supported_profile="evaluation",
+                )
+            )
+        )
     return tuple(policies)
 
 

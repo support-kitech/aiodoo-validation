@@ -104,6 +104,8 @@ def test_production_registers_repair_coding_and_planner_behavior_oracles() -> No
     assert registry.get("planner.oracle.behavior.planner") is not None
     assert registry.get("conversation.oracle.behavior.conversation") is not None
     assert registry.get("execution.oracle.behavior.execution") is not None
+    assert registry.get("approval.oracle.behavior.approval") is not None
+    assert registry.get("evaluation.oracle.behavior.evaluation") is not None
 
 
 def test_planner_behavior_pipeline_and_registry_ids_align() -> None:
@@ -219,3 +221,83 @@ def test_execution_behavior_pipeline_and_registry_ids_align() -> None:
     assert benches["execution.benchmark.behavior"] == EXECUTION_SCORE_BEHAVIOR
     assert certs[EXECUTION_CERTIFICATION_BEHAVIOR] == "execution.benchmark.behavior"
     assert reports["execution.report.behavior"] == EXECUTION_CERTIFICATION_BEHAVIOR
+
+
+def test_approval_behavior_pipeline_and_registry_ids_align() -> None:
+    from aiodoo_validation.certification.ids import APPROVAL_CERTIFICATION_BEHAVIOR
+    from aiodoo_validation.scoring.ids import APPROVAL_SCORE_BEHAVIOR
+
+    profile = AdapterProfile.create("approval", odoo_versions=(18,))
+    pipeline = {
+        "oracle": [s.stage_id for s in profile.oracle_pipeline],
+        "score": [s.stage_id for s in profile.scoring_pipeline],
+        "benchmark": [s.stage_id for s in profile.benchmark_pipeline],
+        "certification": [s.stage_id for s in profile.certification_pipeline],
+        "report": [s.stage_id for s in profile.report_pipeline],
+    }
+    assert "approval.oracle.behavior.approval" in pipeline["oracle"]
+    assert APPROVAL_SCORE_BEHAVIOR in pipeline["score"]
+    assert "approval.benchmark.behavior" in pipeline["benchmark"]
+    assert APPROVAL_CERTIFICATION_BEHAVIOR in pipeline["certification"]
+    assert "approval.report.behavior" in pipeline["report"]
+
+    score_ids = {
+        p.metadata.policy_id for p in default_production_score_policies(profile="approval")
+    }
+    benches = {
+        p.metadata.policy_id: p.metadata.source_score_policy_id
+        for p in default_production_benchmark_policies(profile="approval")
+    }
+    certs = {
+        p.metadata.policy_id: p.metadata.source_benchmark_policy_id
+        for p in default_production_certification_policies(profile="approval")
+    }
+    reports = {
+        t.metadata.template_id: t.metadata.source_certification_policy_id
+        for t in default_production_report_templates(profile="approval")
+    }
+
+    assert APPROVAL_SCORE_BEHAVIOR in score_ids
+    assert benches["approval.benchmark.behavior"] == APPROVAL_SCORE_BEHAVIOR
+    assert certs[APPROVAL_CERTIFICATION_BEHAVIOR] == "approval.benchmark.behavior"
+    assert reports["approval.report.behavior"] == APPROVAL_CERTIFICATION_BEHAVIOR
+
+
+def test_evaluation_behavior_pipeline_and_registry_ids_align() -> None:
+    from aiodoo_validation.certification.ids import EVALUATION_CERTIFICATION_BEHAVIOR
+    from aiodoo_validation.scoring.ids import EVALUATION_SCORE_BEHAVIOR
+
+    profile = AdapterProfile.create("evaluation", odoo_versions=(18,))
+    pipeline = {
+        "oracle": [s.stage_id for s in profile.oracle_pipeline],
+        "score": [s.stage_id for s in profile.scoring_pipeline],
+        "benchmark": [s.stage_id for s in profile.benchmark_pipeline],
+        "certification": [s.stage_id for s in profile.certification_pipeline],
+        "report": [s.stage_id for s in profile.report_pipeline],
+    }
+    assert "evaluation.oracle.behavior.evaluation" in pipeline["oracle"]
+    assert EVALUATION_SCORE_BEHAVIOR in pipeline["score"]
+    assert "evaluation.benchmark.behavior" in pipeline["benchmark"]
+    assert EVALUATION_CERTIFICATION_BEHAVIOR in pipeline["certification"]
+    assert "evaluation.report.behavior" in pipeline["report"]
+
+    score_ids = {
+        p.metadata.policy_id for p in default_production_score_policies(profile="evaluation")
+    }
+    benches = {
+        p.metadata.policy_id: p.metadata.source_score_policy_id
+        for p in default_production_benchmark_policies(profile="evaluation")
+    }
+    certs = {
+        p.metadata.policy_id: p.metadata.source_benchmark_policy_id
+        for p in default_production_certification_policies(profile="evaluation")
+    }
+    reports = {
+        t.metadata.template_id: t.metadata.source_certification_policy_id
+        for t in default_production_report_templates(profile="evaluation")
+    }
+
+    assert EVALUATION_SCORE_BEHAVIOR in score_ids
+    assert benches["evaluation.benchmark.behavior"] == EVALUATION_SCORE_BEHAVIOR
+    assert certs[EVALUATION_CERTIFICATION_BEHAVIOR] == "evaluation.benchmark.behavior"
+    assert reports["evaluation.report.behavior"] == EVALUATION_CERTIFICATION_BEHAVIOR

@@ -12,8 +12,10 @@ from aiodoo_validation.certification.criteria import (
     evaluate_certification_criteria,
 )
 from aiodoo_validation.certification.ids import (
+    APPROVAL_CERTIFICATION_BEHAVIOR,
     CODING_CERTIFICATION_BEHAVIOR,
     CONVERSATION_CERTIFICATION_BEHAVIOR,
+    EVALUATION_CERTIFICATION_BEHAVIOR,
     EXECUTION_CERTIFICATION_BEHAVIOR,
     PLANNER_CERTIFICATION_BEHAVIOR,
     REPAIR_CERTIFICATION_BEHAVIOR,
@@ -31,8 +33,10 @@ from aiodoo_validation.domain.certification import (
 from aiodoo_validation.domain.enums import ValidationKind
 from aiodoo_validation.execution import certification_label, is_framework_only_tier
 from aiodoo_validation.scoring.ids import (
+    APPROVAL_SCORE_BEHAVIOR,
     CODING_SCORE_BEHAVIOR,
     CONVERSATION_SCORE_BEHAVIOR,
+    EVALUATION_SCORE_BEHAVIOR,
     EXECUTION_SCORE_BEHAVIOR,
     PLANNER_SCORE_BEHAVIOR,
     REPAIR_SCORE_BEHAVIOR,
@@ -161,6 +165,40 @@ class BehaviorGatedCertificationPolicy:
                 supported_profile="execution",
             ),
             source_score_policy_id=EXECUTION_SCORE_BEHAVIOR,
+            criteria=criteria or default_behavior_gated_certification_criteria(),
+        )
+
+    @classmethod
+    def create_for_approval(
+        cls,
+        *,
+        criteria: CertificationCriteria | None = None,
+    ) -> BehaviorGatedCertificationPolicy:
+        return cls(
+            metadata=_metadata(
+                policy_id=APPROVAL_CERTIFICATION_BEHAVIOR,
+                name="Approval Behavior Certification",
+                source_benchmark_policy_id="approval.benchmark.behavior",
+                supported_profile="approval",
+            ),
+            source_score_policy_id=APPROVAL_SCORE_BEHAVIOR,
+            criteria=criteria or default_behavior_gated_certification_criteria(),
+        )
+
+    @classmethod
+    def create_for_evaluation(
+        cls,
+        *,
+        criteria: CertificationCriteria | None = None,
+    ) -> BehaviorGatedCertificationPolicy:
+        return cls(
+            metadata=_metadata(
+                policy_id=EVALUATION_CERTIFICATION_BEHAVIOR,
+                name="Evaluation Behavior Certification",
+                source_benchmark_policy_id="evaluation.benchmark.behavior",
+                supported_profile="evaluation",
+            ),
+            source_score_policy_id=EVALUATION_SCORE_BEHAVIOR,
             criteria=criteria or default_behavior_gated_certification_criteria(),
         )
 

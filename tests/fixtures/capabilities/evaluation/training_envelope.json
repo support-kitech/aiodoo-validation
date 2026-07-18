@@ -1,0 +1,35 @@
+{
+  "instruction": "Implement the requested Odoo evaluation change.",
+  "output": {
+    "tasks": [
+      {
+        "id": "train-evaluation-1",
+        "problem": {
+          "description": "Add an empty models package marker."
+        },
+        "context": [
+          {
+            "id": "init_py",
+            "path": "models/__init__.py",
+            "type": "python",
+            "content": ""
+          }
+        ],
+        "expected_outcome": {
+          "artifacts": [
+            {
+              "id": "init_py_expected",
+              "path": "models/__init__.py",
+              "type": "python",
+              "content": "from . import partner\n"
+            }
+          ],
+          "explanation": "Import partner submodule."
+        }
+      }
+    ]
+  },
+  "metadata": {
+    "schema_id": "evaluation_tasks_v1"
+  }
+}

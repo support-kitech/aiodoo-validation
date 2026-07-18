@@ -83,3 +83,15 @@ EXECUTION_CERTIFICATION_BEHAVIOR = "execution.certification.behavior"
 EXECUTION_CERTIFICATION_TO_BENCHMARK: dict[str, str] = {
     EXECUTION_CERTIFICATION_BEHAVIOR: "execution.benchmark.behavior",
 }
+
+# Approval behavior-gated certification
+APPROVAL_CERTIFICATION_BEHAVIOR = "approval.certification.behavior"
+APPROVAL_CERTIFICATION_TO_BENCHMARK: dict[str, str] = {
+    APPROVAL_CERTIFICATION_BEHAVIOR: "approval.benchmark.behavior",
+}
+
+# Evaluation behavior-gated certification
+EVALUATION_CERTIFICATION_BEHAVIOR = "evaluation.certification.behavior"
+EVALUATION_CERTIFICATION_TO_BENCHMARK: dict[str, str] = {
+    EVALUATION_CERTIFICATION_BEHAVIOR: "evaluation.benchmark.behavior",
+}

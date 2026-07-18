@@ -146,6 +146,10 @@ def default_production_score_policies(
         policies.append(BehavioralEvidenceScorePolicy.create_for_conversation())
     if profile == "execution":
         policies.append(BehavioralEvidenceScorePolicy.create_for_execution())
+    if profile == "approval":
+        policies.append(BehavioralEvidenceScorePolicy.create_for_approval())
+    if profile == "evaluation":
+        policies.append(BehavioralEvidenceScorePolicy.create_for_evaluation())
     return tuple(policies)
 
 

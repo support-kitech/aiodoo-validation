@@ -25,9 +25,11 @@ from aiodoo_validation.inference.runtime.qwen import QwenModelRuntime
 from aiodoo_validation.inference.stub_runner import StubInferenceRunner
 from aiodoo_validation.oracles import OracleEngine
 from aiodoo_validation.oracles.capability_behavior import (
+    approval_behavior_oracle_id,
     build_capability_behavioral_oracle,
     coding_behavior_oracle_id,
     conversation_behavior_oracle_id,
+    evaluation_behavior_oracle_id,
     execution_behavior_oracle_id,
     planner_behavior_oracle_id,
     repair_behavior_oracle_id,
@@ -166,6 +168,18 @@ def _register_capability_behavioral_oracles(
             execution_behavior_oracle_id(),
             "Execution Behavior Oracle",
             "Execution capability behavioral evaluation (corpus-gated).",
+        ),
+        (
+            SupportedValidationProfile.APPROVAL.value,
+            approval_behavior_oracle_id(),
+            "Approval Behavior Oracle",
+            "Approval capability behavioral evaluation (corpus-gated).",
+        ),
+        (
+            SupportedValidationProfile.EVALUATION.value,
+            evaluation_behavior_oracle_id(),
+            "Evaluation Behavior Oracle",
+            "Evaluation capability behavioral evaluation (corpus-gated).",
         ),
     ):
         oracle_registry.register(

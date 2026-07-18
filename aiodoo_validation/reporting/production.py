@@ -254,6 +254,28 @@ def default_production_report_templates(
                 )
             )
         )
+    if profile == "approval":
+        templates.append(
+            CertificationSummaryReportTemplate(
+                metadata=_metadata(
+                    template_id="approval.report.behavior",
+                    name="Approval Behavior Report",
+                    source_certification_policy_id="approval.certification.behavior",
+                    supported_profile="approval",
+                )
+            )
+        )
+    if profile == "evaluation":
+        templates.append(
+            CertificationSummaryReportTemplate(
+                metadata=_metadata(
+                    template_id="evaluation.report.behavior",
+                    name="Evaluation Behavior Report",
+                    source_certification_policy_id="evaluation.certification.behavior",
+                    supported_profile="evaluation",
+                )
+            )
+        )
     return tuple(templates)
 
 

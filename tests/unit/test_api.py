@@ -9,8 +9,10 @@ import pytest
 
 from aiodoo_validation import ValidationService, __version__
 from aiodoo_validation.api import (
+    build_approval_request,
     build_coding_request,
     build_conversation_request,
+    build_evaluation_request,
     build_execution_request,
     build_planner_request,
     capability_labels,
@@ -136,6 +138,34 @@ def test_build_execution_request() -> None:
     assert request.execution_tier is ExecutionTier.SMOKE
     assert request.odoo_versions == (18,)
     assert request.metadata["evaluation_corpus_id"] == "execution.eval"
+
+
+def test_build_approval_request() -> None:
+    request = build_approval_request(
+        base_model_ref="base",
+        adapter_ref="adapter",
+        execution_tier="smoke",
+        odoo_versions="18",
+        metadata={"evaluation_corpus_id": "approval.eval"},
+    )
+    assert request.profile_name == "approval"
+    assert request.execution_tier is ExecutionTier.SMOKE
+    assert request.odoo_versions == (18,)
+    assert request.metadata["evaluation_corpus_id"] == "approval.eval"
+
+
+def test_build_evaluation_request() -> None:
+    request = build_evaluation_request(
+        base_model_ref="base",
+        adapter_ref="adapter",
+        execution_tier="smoke",
+        odoo_versions="18",
+        metadata={"evaluation_corpus_id": "evaluation.eval"},
+    )
+    assert request.profile_name == "evaluation"
+    assert request.execution_tier is ExecutionTier.SMOKE
+    assert request.odoo_versions == (18,)
+    assert request.metadata["evaluation_corpus_id"] == "evaluation.eval"
 
 
 def test_validation_service_runs_with_stubs() -> None:

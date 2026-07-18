@@ -12,11 +12,17 @@ def register_builtin_capability_packs(registry: CapabilityRegistry) -> Capabilit
 
     Production imports this bootstrap helper — not pack parser classes.
     """
+    from aiodoo_validation.capabilities.approval.registration import (
+        get_approval_capability_pack,
+    )
     from aiodoo_validation.capabilities.coding.registration import (
         get_coding_capability_pack,
     )
     from aiodoo_validation.capabilities.conversation.registration import (
         get_conversation_capability_pack,
+    )
+    from aiodoo_validation.capabilities.evaluation.registration import (
+        get_evaluation_capability_pack,
     )
     from aiodoo_validation.capabilities.execution.registration import (
         get_execution_capability_pack,
@@ -29,8 +35,10 @@ def register_builtin_capability_packs(registry: CapabilityRegistry) -> Capabilit
     )
 
     for get_pack in (
+        get_approval_capability_pack,
         get_coding_capability_pack,
         get_conversation_capability_pack,
+        get_evaluation_capability_pack,
         get_execution_capability_pack,
         get_planner_capability_pack,
         get_repair_capability_pack,

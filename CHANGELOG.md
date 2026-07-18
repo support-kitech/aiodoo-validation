@@ -2,31 +2,35 @@
 
 ### Notes
 
-**Execution Profile Completion** landed: Execution Capability Pack, eval corpus
-pin, behavior oracle→score→bench→cert→report chain, production registration, and
-`build_execution_request`. Execution is feature-equivalent to
-Repair/Coding/Planner/Conversation on the frozen Capability Delivery spine.
+**Final Capability Delivery Completion** landed: Approval and Evaluation Capability
+Packs, eval corpus pins, behavior oracle→score→bench→cert→report chains,
+production registration, and `build_approval_request` /
+`build_evaluation_request`. All seven adapter profiles are now
+feature-equivalent on the frozen Capability Delivery spine:
 
-Conversation, Planner, and Coding Profile Completion Phase 1–2 remain in place.
+Repair ✓ · Coding ✓ · Planner ✓ · Conversation ✓ · Execution ✓ · Approval ✓ ·
+Evaluation ✓
 
 Post-tag v1.0.x changes otherwise remain limited to maintenance (bugs, security,
 docs, pack registration). See [docs/MAINTENANCE.md](docs/MAINTENANCE.md).
 
 ### Added
 
-- `capabilities/execution/` Capability Pack (`ExecutionRecordParser`, spec, registration)
-- Execution evaluation corpus fixture + pin (`fixture.execution.eval.behavior`)
-- Execution behavior stages on `AdapterProfile` + production DI
-- `BehavioralEvidenceScorePolicy.create_for_execution()` /
-  `BehaviorGatedCertificationPolicy.create_for_execution()`
-- `api.build_execution_request`
-- Docs: `docs/execution_profile.md`
-- Tests: `test_execution_capability_pack.py`, `test_execution_behavior_pipeline.py`
+- `capabilities/approval/` and `capabilities/evaluation/` Capability Packs
+- Approval/Evaluation evaluation corpus fixtures + pins
+  (`fixture.approval.eval.behavior`, `fixture.evaluation.eval.behavior`)
+- Approval/Evaluation behavior stages on `AdapterProfile` + production DI
+- `BehavioralEvidenceScorePolicy.create_for_approval()` /
+  `create_for_evaluation()` and matching certification factories
+- `api.build_approval_request` / `api.build_evaluation_request`
+- Docs: `docs/approval_profile.md`, `docs/evaluation_profile.md`
+- Tests: approval/evaluation capability pack + behavior pipeline suites
 
 ### Changed
 
-- Corpus catalog, bootstrap, production score/bench/cert/report helpers include Execution
-- Maintenance / implementation status allow Execution behavior (approval/evaluation still structural-only)
+- Corpus catalog, bootstrap, production score/bench/cert/report helpers include
+  Approval and Evaluation
+- Maintenance / implementation status mark Capability Delivery profiles complete
 
 ## [1.0.0] — 2026-07-18
 

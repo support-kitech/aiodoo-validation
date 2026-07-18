@@ -156,6 +156,10 @@ def default_production_certification_policies(
         policies.append(BehaviorGatedCertificationPolicy.create_for_conversation())
     if profile == "execution":
         policies.append(BehaviorGatedCertificationPolicy.create_for_execution())
+    if profile == "approval":
+        policies.append(BehaviorGatedCertificationPolicy.create_for_approval())
+    if profile == "evaluation":
+        policies.append(BehaviorGatedCertificationPolicy.create_for_evaluation())
     return tuple(policies)
 
 

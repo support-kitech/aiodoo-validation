@@ -366,6 +366,10 @@ class TestProductionConversationRegistration:
         assert registry.contains("repair.oracle.behavior.repair")
         assert registry.contains("coding.oracle.behavior.coding")
         assert registry.contains("planner.oracle.behavior.planner")
+        assert registry.contains("conversation.oracle.behavior.conversation")
+        assert registry.contains("execution.oracle.behavior.execution")
+        assert registry.contains("approval.oracle.behavior.approval")
+        assert registry.contains("evaluation.oracle.behavior.evaluation")
 
     def test_production_does_not_import_conversation_parser_directly(self) -> None:
         import inspect

@@ -22,10 +22,14 @@ from aiodoo_validation.domain.scoring import (
 from aiodoo_validation.scoring.dimensions import behavior_dimensions_from_evidence
 from aiodoo_validation.scoring.evidence import interpret_behavioral_oracle_evidence
 from aiodoo_validation.scoring.ids import (
+    APPROVAL_SCORE_BEHAVIOR,
+    APPROVAL_SCORE_TO_ORACLE,
     CODING_SCORE_BEHAVIOR,
     CODING_SCORE_TO_ORACLE,
     CONVERSATION_SCORE_BEHAVIOR,
     CONVERSATION_SCORE_TO_ORACLE,
+    EVALUATION_SCORE_BEHAVIOR,
+    EVALUATION_SCORE_TO_ORACLE,
     EXECUTION_SCORE_BEHAVIOR,
     EXECUTION_SCORE_TO_ORACLE,
     PLANNER_SCORE_BEHAVIOR,
@@ -164,6 +168,40 @@ class BehavioralEvidenceScorePolicy:
                 name="Execution Behavior Score",
                 source_oracle_id=EXECUTION_SCORE_TO_ORACLE[EXECUTION_SCORE_BEHAVIOR],
                 supported_profile="execution",
+            ),
+            default_policy_ref=policy_ref,
+        )
+
+    @classmethod
+    def create_for_approval(
+        cls,
+        *,
+        policy_ref: str = DEFAULT_BEHAVIORAL_POLICY_REF,
+    ) -> BehavioralEvidenceScorePolicy:
+        load_behavioral_scoring_policy(policy_ref)
+        return cls(
+            metadata=_metadata(
+                policy_id=APPROVAL_SCORE_BEHAVIOR,
+                name="Approval Behavior Score",
+                source_oracle_id=APPROVAL_SCORE_TO_ORACLE[APPROVAL_SCORE_BEHAVIOR],
+                supported_profile="approval",
+            ),
+            default_policy_ref=policy_ref,
+        )
+
+    @classmethod
+    def create_for_evaluation(
+        cls,
+        *,
+        policy_ref: str = DEFAULT_BEHAVIORAL_POLICY_REF,
+    ) -> BehavioralEvidenceScorePolicy:
+        load_behavioral_scoring_policy(policy_ref)
+        return cls(
+            metadata=_metadata(
+                policy_id=EVALUATION_SCORE_BEHAVIOR,
+                name="Evaluation Behavior Score",
+                source_oracle_id=EVALUATION_SCORE_TO_ORACLE[EVALUATION_SCORE_BEHAVIOR],
+                supported_profile="evaluation",
             ),
             default_policy_ref=policy_ref,
         )

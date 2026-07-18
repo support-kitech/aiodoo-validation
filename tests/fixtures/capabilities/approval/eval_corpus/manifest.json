@@ -1,0 +1,12 @@
+{
+  "corpus_id": "fixture.approval.eval.behavior",
+  "capability_id": "approval",
+  "role": "evaluation",
+  "dataset_version": "fixture-approval-e5",
+  "fingerprint": "8b7e6c1a0526865cde5fb4318c1cfebe4d195aa407a73126fbc85e2176bc5e3a",
+  "source_package": "aiodoo-validation-fixtures",
+  "denied_training_fingerprints": [],
+  "metadata": {
+    "kind": "approval_behavior_integration"
+  }
+}

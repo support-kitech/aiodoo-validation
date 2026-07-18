@@ -235,6 +235,14 @@ def execution_behavior_oracle_id() -> str:
     return "execution.oracle.behavior.execution"
 
 
+def approval_behavior_oracle_id() -> str:
+    return "approval.oracle.behavior.approval"
+
+
+def evaluation_behavior_oracle_id() -> str:
+    return "evaluation.oracle.behavior.evaluation"
+
+
 def build_capability_behavioral_oracle(
     *,
     capability_id: str,
@@ -277,9 +285,11 @@ def build_capability_behavioral_oracle(
 
 __all__ = [
     "CapabilityBehavioralOracle",
+    "approval_behavior_oracle_id",
     "build_capability_behavioral_oracle",
     "coding_behavior_oracle_id",
     "conversation_behavior_oracle_id",
+    "evaluation_behavior_oracle_id",
     "execution_behavior_oracle_id",
     "planner_behavior_oracle_id",
     "repair_behavior_oracle_id",

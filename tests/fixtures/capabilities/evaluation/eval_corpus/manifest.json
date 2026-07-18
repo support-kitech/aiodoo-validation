@@ -1,0 +1,12 @@
+{
+  "corpus_id": "fixture.evaluation.eval.behavior",
+  "capability_id": "evaluation",
+  "role": "evaluation",
+  "dataset_version": "fixture-evaluation-e5",
+  "fingerprint": "0891323d760bc9364260ffe41295d71b54f9ccdd577fe6182c19c203a3bfde4a",
+  "source_package": "aiodoo-validation-fixtures",
+  "denied_training_fingerprints": [],
+  "metadata": {
+    "kind": "evaluation_behavior_integration"
+  }
+}

@@ -1,5 +1,12 @@
 """Capability packs — profile-local parsers and declarative metadata."""
 
+from aiodoo_validation.capabilities.approval import (
+    APPROVAL_PARSER_ID,
+    ApprovalCapabilityPack,
+    ApprovalParseError,
+    ApprovalRecordParser,
+    get_approval_capability_pack,
+)
 from aiodoo_validation.capabilities.bootstrap import (
     create_default_capability_registry,
     register_builtin_capability_packs,
@@ -21,6 +28,13 @@ from aiodoo_validation.capabilities.conversation import (
     ConversationParseError,
     ConversationRecordParser,
     get_conversation_capability_pack,
+)
+from aiodoo_validation.capabilities.evaluation import (
+    EVALUATION_PARSER_ID,
+    EvaluationCapabilityPack,
+    EvaluationParseError,
+    EvaluationRecordParser,
+    get_evaluation_capability_pack,
 )
 from aiodoo_validation.capabilities.execution import (
     EXECUTION_PARSER_ID,
@@ -49,11 +63,16 @@ from aiodoo_validation.capabilities.repair import (
 )
 
 __all__ = [
+    "APPROVAL_PARSER_ID",
     "CODING_PARSER_ID",
     "CONVERSATION_PARSER_ID",
+    "EVALUATION_PARSER_ID",
     "EXECUTION_PARSER_ID",
     "PLANNER_PARSER_ID",
     "REPAIR_PARSER_ID",
+    "ApprovalCapabilityPack",
+    "ApprovalParseError",
+    "ApprovalRecordParser",
     "CapabilityRecordParser",
     "CapabilityRegistry",
     "CapabilityRegistryError",
@@ -63,6 +82,9 @@ __all__ = [
     "ConversationCapabilityPack",
     "ConversationParseError",
     "ConversationRecordParser",
+    "EvaluationCapabilityPack",
+    "EvaluationParseError",
+    "EvaluationRecordParser",
     "ExecutionCapabilityPack",
     "ExecutionParseError",
     "ExecutionRecordParser",
@@ -74,8 +96,10 @@ __all__ = [
     "RepairParseError",
     "RepairRecordParser",
     "create_default_capability_registry",
+    "get_approval_capability_pack",
     "get_coding_capability_pack",
     "get_conversation_capability_pack",
+    "get_evaluation_capability_pack",
     "get_execution_capability_pack",
     "get_planner_capability_pack",
     "get_repair_capability_pack",
