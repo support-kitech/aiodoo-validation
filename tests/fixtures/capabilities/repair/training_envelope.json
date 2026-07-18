@@ -1,0 +1,57 @@
+{
+  "instruction": "Please analyze and repair issues.",
+  "context": {
+    "module_name": "demo"
+  },
+  "output": {
+    "goal": "Repair demo",
+    "workspace": "src/demo",
+    "summary": "one task",
+    "tasks": [
+      {
+        "id": "train-task-1",
+        "problem": {
+          "description": "Fix deprecated attrs.",
+          "severity": "medium",
+          "location": "Line 2"
+        },
+        "root_cause": {
+          "analysis": "attrs deprecated"
+        },
+        "context": [
+          {
+            "id": "view_xml",
+            "path": "views/view.xml",
+            "type": "xml",
+            "content": "<field attrs=\"{'invisible': 1}\"/>"
+          }
+        ],
+        "artifacts": [
+          {
+            "id": "view_xml",
+            "path": "views/view.xml",
+            "type": "xml",
+            "content": "<field attrs=\"{'invisible': 1}\"/>"
+          }
+        ],
+        "expected_outcome": {
+          "operations": [
+            {
+              "operation": "replace",
+              "search": "attrs=\"",
+              "replace": "invisible=\""
+            }
+          ],
+          "explanation": "Replace attrs with invisible."
+        },
+        "constraints": [],
+        "metadata": {}
+      }
+    ]
+  },
+  "metadata": {
+    "module": "demo",
+    "protocol_hash": "abc",
+    "schema_id": "repair_tasks_v1"
+  }
+}

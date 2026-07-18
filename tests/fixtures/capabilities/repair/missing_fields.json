@@ -1,0 +1,11 @@
+{
+  "record_id": "fix.missing",
+  "problem": "incomplete",
+  "artifacts": [
+    {
+      "id": "x",
+      "path": "x.py"
+    }
+  ],
+  "operations": []
+}

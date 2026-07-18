@@ -1,0 +1,14 @@
+{
+  "record_id": "fix.noop",
+  "problem": "No edits required",
+  "artifacts": [
+    {
+      "id": "ok_py",
+      "path": "ok.py",
+      "type": "python",
+      "content": "x = 1\n"
+    }
+  ],
+  "operations": [],
+  "explanation": "Already correct."
+}

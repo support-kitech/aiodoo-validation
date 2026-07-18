@@ -1,0 +1,20 @@
+{
+  "record_id": "fix.simple",
+  "problem": "Use sudo for SQL execute",
+  "artifacts": [
+    {
+      "id": "mod_py",
+      "path": "models/mod.py",
+      "type": "python",
+      "content": "self.env.cr.execute(\"SELECT 1\")\n"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "replace",
+      "search": "self.env.cr.execute",
+      "replace": "self.env.sudo().cr.execute"
+    }
+  ],
+  "explanation": "Direct SQL should use sudo when intentional."
+}

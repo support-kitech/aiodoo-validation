@@ -1,0 +1,13 @@
+{
+  "schema_id": "repair_v99",
+  "record_id": "fix.bad_schema",
+  "problem": "unsupported",
+  "artifacts": [
+    {
+      "id": "x",
+      "path": "x.py",
+      "content": "x"
+    }
+  ],
+  "operations": []
+}

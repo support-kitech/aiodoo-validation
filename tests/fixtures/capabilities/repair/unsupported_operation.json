@@ -1,0 +1,18 @@
+{
+  "record_id": "fix.bad_op",
+  "problem": "regex not allowed",
+  "artifacts": [
+    {
+      "id": "x",
+      "path": "x.py",
+      "content": "abc"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "regex",
+      "search": "a+",
+      "replace": "b"
+    }
+  ]
+}

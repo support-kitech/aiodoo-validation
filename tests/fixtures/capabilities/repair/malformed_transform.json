@@ -1,0 +1,18 @@
+{
+  "record_id": "fix.malformed",
+  "problem": "empty search",
+  "artifacts": [
+    {
+      "id": "x",
+      "path": "x.py",
+      "content": "abc"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "replace",
+      "search": "",
+      "replace": "x"
+    }
+  ]
+}

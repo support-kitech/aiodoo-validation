@@ -1,0 +1,18 @@
+{
+  "record_id": "fix.invalid_payload",
+  "problem": "bad op types",
+  "artifacts": [
+    {
+      "id": "x",
+      "path": "x.py",
+      "content": "abc"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "replace",
+      "search": 123,
+      "replace": "x"
+    }
+  ]
+}

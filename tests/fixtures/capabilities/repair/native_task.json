@@ -1,0 +1,45 @@
+{
+  "id": "native-task-1",
+  "problem": {
+    "description": "Direct SQL execution without sudo bypasses record rules.",
+    "severity": "high",
+    "location": "Line 9"
+  },
+  "root_cause": {
+    "analysis": "Security vulnerability: cr.execute used directly."
+  },
+  "context": [
+    {
+      "id": "models_mod_py",
+      "path": "models/mod.py",
+      "type": "python",
+      "start_line": 1,
+      "end_line": 5,
+      "content": "self.env.cr.execute(\"\"\"\nSELECT 1\n\"\"\")\n"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "models_mod_py",
+      "path": "models/mod.py",
+      "type": "python",
+      "start_line": 1,
+      "end_line": 5,
+      "content": "self.env.cr.execute(\"\"\"\nSELECT 1\n\"\"\")\n"
+    }
+  ],
+  "expected_outcome": {
+    "operations": [
+      {
+        "operation": "replace",
+        "search": "self.env.cr.execute(\"\"\"",
+        "replace": "self.env.sudo().cr.execute(\"\"\""
+      }
+    ],
+    "explanation": "Use sudo for intentional SQL."
+  },
+  "constraints": [],
+  "metadata": {
+    "rule_id": "missing_sudo"
+  }
+}

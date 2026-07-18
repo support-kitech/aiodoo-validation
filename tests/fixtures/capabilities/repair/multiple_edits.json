@@ -1,0 +1,26 @@
+{
+  "record_id": "fix.multi",
+  "problem": "Apply two replacements",
+  "artifacts": [
+    {
+      "id": "a_py",
+      "path": "a.py",
+      "type": "python",
+      "content": "foo = 1\nbar = 2\n"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "replace",
+      "search": "foo",
+      "replace": "FOO"
+    },
+    {
+      "operation": "replace",
+      "search": "bar",
+      "replace": "BAR",
+      "path": "a.py"
+    }
+  ],
+  "explanation": "Rename both symbols."
+}
