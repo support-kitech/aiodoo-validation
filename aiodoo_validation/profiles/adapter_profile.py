@@ -85,6 +85,51 @@ def _scoring_pipeline_for_profile(profile: str) -> tuple[PipelineStagePlaceholde
     return tuple(stages)
 
 
+def _benchmark_pipeline_for_profile(profile: str) -> tuple[PipelineStagePlaceholder, ...]:
+    """Structural benchmarks, plus repair-only behavioral benchmark (E8)."""
+    stages = list(_pipeline(profile, "benchmark"))
+    if profile == SupportedValidationProfile.REPAIR.value:
+        stages.append(
+            PipelineStagePlaceholder(
+                stage_id="repair.benchmark.behavior",
+                name="Repair Behavior Benchmark",
+                enabled=True,
+                phase="benchmark",
+            )
+        )
+    return tuple(stages)
+
+
+def _certification_pipeline_for_profile(profile: str) -> tuple[PipelineStagePlaceholder, ...]:
+    """Structural certification, plus repair-only behavior gate (E8)."""
+    stages = list(_pipeline(profile, "certification"))
+    if profile == SupportedValidationProfile.REPAIR.value:
+        stages.append(
+            PipelineStagePlaceholder(
+                stage_id="repair.certification.behavior",
+                name="Repair Behavior Certification",
+                enabled=True,
+                phase="certification",
+            )
+        )
+    return tuple(stages)
+
+
+def _report_pipeline_for_profile(profile: str) -> tuple[PipelineStagePlaceholder, ...]:
+    """Structural reports, plus repair-only behavior certification report (E8)."""
+    stages = list(_pipeline(profile, "report"))
+    if profile == SupportedValidationProfile.REPAIR.value:
+        stages.append(
+            PipelineStagePlaceholder(
+                stage_id="repair.report.behavior",
+                name="Repair Behavior Report",
+                enabled=True,
+                phase="report",
+            )
+        )
+    return tuple(stages)
+
+
 def validate_adapter_profile_compatibility(
     bundle: ArtifactBundle,
     *,
@@ -174,9 +219,9 @@ class AdapterProfile(ResolvedProfile):
             odoo_versions=odoo_versions,
             oracle_pipeline=_oracle_pipeline_for_profile(profile),
             scoring_pipeline=_scoring_pipeline_for_profile(profile),
-            benchmark_pipeline=_pipeline(profile, "benchmark"),
-            certification_pipeline=_pipeline(profile, "certification"),
-            report_pipeline=_pipeline(profile, "report"),
+            benchmark_pipeline=_benchmark_pipeline_for_profile(profile),
+            certification_pipeline=_certification_pipeline_for_profile(profile),
+            report_pipeline=_report_pipeline_for_profile(profile),
             metadata=MappingProxyType(
                 {"odoo_versions": odoo_versions, "adapter_type": profile}
             ),

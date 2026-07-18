@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- E8 behavior-gated certification: `BehaviorGatedCertificationPolicy`,
+  `CertificationCriteria` transform/behavior thresholds, ScoreResult signal
+  extraction (`certification.score_signals`), repair benchmark/cert/report
+  pipeline stages, explicit denial reasons (`behavior_deferred`,
+  `transform_failed`, …), integration tests in
+  `tests/integration/test_e8_behavior_gated_certification.py`
 - E7 evaluation corpus governance: `CorpusPin` / `CorpusPinRegistry`,
   `ProductionCorpusLookup`, `evaluation_corpus_id` plan resolution,
   builtin repair fixture pin, pin verification after load, unit tests in

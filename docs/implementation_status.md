@@ -3,7 +3,7 @@
 **Repository version:** 1.0.0+  
 **Specification:** [SPECIFICATION_V1.md](SPECIFICATION_V1.md) (**frozen**)  
 **Architecture:** Validation Protocol V1 pipeline and public CLI **frozen**  
-**Capability Delivery:** [engineering_execution_plan.md](engineering_execution_plan.md) (**frozen plan**; E0–E7 code landed)
+**Capability Delivery:** [engineering_execution_plan.md](engineering_execution_plan.md) (**frozen plan**; E0–E8 code landed)
 
 ---
 
@@ -13,12 +13,12 @@
 |------|--------|
 | Architecture | **Complete / frozen** |
 | Planning / Spec v1.0 documentation | **Complete** (materialized in repo) |
-| Capability Delivery implementation | **In progress** |
-| Current execution phase | **E7 frozen** — E8 next (behavior-gated cert; requires approval) |
+| Capability Delivery implementation | **Complete (E0–E8)** |
+| Current execution phase | **E8 frozen** — Capability Delivery spine complete |
 | Structural / artifact validation | **Active (production)** |
 | Behavioral validation | **Repair wired** — deferred without corpus id/path; active when configured |
-| Certification | **Structural only**; `require_behavior_pass` **off** |
-| Repository | Spec v1.0 authoritative; E0–E7 corpus pinning **frozen** |
+| Certification | **Structural + repair behavior gate** (`BehaviorGatedCertificationPolicy`) |
+| Repository | Spec v1.0 authoritative; E0–E8 **frozen** |
 
 ---
 
@@ -33,8 +33,8 @@
 | Behavioral oracles in production plans | **Repair only** — deferred without corpus; gated by `evaluation_corpus_id` / `evaluation_corpus_path` |
 | Scoring | Structural 100/0; **repair behavioral multi-dimension** from oracle evidence (E6) |
 | Corpus governance | **Pinned identities** via `CorpusPinRegistry` / `ProductionCorpusLookup` (E7) |
-| Benchmark / certification | Structural signals |
-| Reports | Structural + `behavior_status=deferred` when applicable |
+| Benchmark / certification | Structural + **repair behavior-gated cert** from ScoreResult (E8) |
+| Reports | Structural + behavior certification reasons (`criteria_reasons`) |
 | Comparators | Exact, normalized, AST, XML, JSON, token similarity |
 
 ---
@@ -53,7 +53,7 @@
 | E5 behavior wiring | **Done / frozen** — CapabilityRegistry, ConfigurableCorpusProvider, repair-only production oracle |
 | E6 scoring extras | **Done / frozen** — evidence interpretation, policy loader, `BehavioralEvidenceScorePolicy` |
 | E7 eval corpus pin | **Done / frozen** — pin registry, identity→path resolution, fixture pin for repair |
-| E8 behavior-gated cert | Not started (requires approval) |
+| E8 behavior-gated cert | **Done / frozen** — `BehaviorGatedCertificationPolicy`, criteria reasons, ScoreResult signals |
 
 ---
 
@@ -78,10 +78,9 @@
 
 ## Explicitly not done yet
 
-- E8 Capability Delivery (behavior-gated certification; requires approval)  
 - Held-out evaluation corpora published from `aiodoo-datasets` in validation corpus package layout  
 - Semantic / AI similarity comparators  
-- Behavior-gated certification  
+- Behavior gates for non-repair adapter profiles (policy-ready; not registered)  
 - `merged` / `foundation` profiles  
 - Pack-local scoring policy files (E6 ships scoring defaults for known refs)  
 - Edit-distance / syntax evidence in oracle metadata (dimensions stay deferred until evidence exists)  
@@ -100,4 +99,4 @@ Follow [delivery_governance.md](delivery_governance.md).
 
 - **Protocol V1 / structural certification path:** frozen and active.  
 - **Specification Version 1.0 (docs):** frozen in this repository.  
-- **Capability Delivery code:** E0–E7 frozen; continue at E8 (behavior-gated cert; requires approval).
+- **Capability Delivery code:** E0–E8 frozen (spine complete).

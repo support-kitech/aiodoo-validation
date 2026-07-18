@@ -14,6 +14,7 @@ from aiodoo_validation.domain.enums import (
     StageStatus,
     ValidationStage,
 )
+from aiodoo_validation.domain.scoring import ScoreExecutionResult
 from aiodoo_validation.domain.stage import PlaceholderStageResult
 
 
@@ -101,6 +102,7 @@ class CertificationContext:
     execution_tier: ExecutionTier
     benchmark_result: BenchmarkResult
     benchmark_execution: BenchmarkExecutionResult
+    score_execution: ScoreExecutionResult | None = None
     configuration: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
     metadata: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
 

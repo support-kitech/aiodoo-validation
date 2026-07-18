@@ -28,9 +28,9 @@ guarantee.
 | Public API + CLI | Frozen |
 | Spec v1.0 documentation | Frozen (authoritative in `docs/`) |
 | Production structural validation | Active |
-| Capability Delivery (EEP E0–E8) | E0–E7 frozen — E8 next |
+| Capability Delivery (EEP E0–E8) | E0–E8 frozen (complete) |
 | Behavioral validation | Repair wired (corpus-gated); others deferred |
-| **Repository** | Spec synced; structural cert ready for v1.x |
+| **Repository** | Spec synced; structural + repair behavior cert ready for v1.x |
 
 **Repository version:** v1.0.0
 
@@ -42,10 +42,10 @@ guarantee.
 - **Profiles** — coding, planner, repair, conversation, execution, approval, evaluation
 - **Execution tiers** — `standard` (never certifies), `smoke`, `full`, `prod`≡`full`
 - **Structural / artifact validation** — production oracles on resolved artifacts
-- **Scoring / benchmark / certification** — structural policies; repair behavioral multi-dimension scoring (E6)
+- **Scoring / benchmark / certification** — structural policies; repair behavioral scoring (E6) + behavior-gated cert (E8)
 - **Corpus governance** — pin by `evaluation_corpus_id` (path is location detail); fingerprint-verified (E7)
 - **Profile-aware labels** — e.g. `coding-certified` / `coding-not-certified`
-- **Reports** — machine-readable structural/behavior summaries (no PDF/HTML export)
+- **Reports** — machine-readable structural/behavior summaries with certification reasons
 - **Behavior + comparator architecture** — exact, normalized, AST, XML, JSON, token similarity
 - Stub pipeline retained for unit tests (`create_with_stubs`)
 
@@ -54,9 +54,9 @@ guarantee.
 | Limitation | Status |
 |------------|--------|
 | Behavioral evaluation corpora | Prefer `evaluation_corpus_id`; path still accepted; deferred if unset |
-| Capability Delivery implementation | E0–E7 done; E8 not started (see EEP) |
+| Capability Delivery implementation | E0–E8 complete (see EEP) |
 | Semantic / rule-based AI comparators | Deferred (no fake similarity) |
-| Behavior-gated certification | Criteria exist; gate off until E8 + approval |
+| Behavior-gated certification | **Enabled for repair**; other profiles remain structural-only |
 | Content fingerprint hashing | Placeholder digests (artifact resolution era) |
 | PDF / HTML / Markdown report rendering | Future consumer integrations |
 | `merged` / `foundation` profiles | Intentionally unsupported |

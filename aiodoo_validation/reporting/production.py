@@ -189,7 +189,7 @@ def default_production_report_templates(
     profile: str = "coding",
 ) -> tuple[CertificationSummaryReportTemplate, ...]:
     names = ("metadata", "manifest", "python", "xml", "security", "module_structure")
-    return tuple(
+    templates: list[CertificationSummaryReportTemplate] = [
         CertificationSummaryReportTemplate(
             metadata=_metadata(
                 template_id=f"{profile}.report.{name}",
@@ -199,7 +199,19 @@ def default_production_report_templates(
             )
         )
         for name in names
-    )
+    ]
+    if profile == "repair":
+        templates.append(
+            CertificationSummaryReportTemplate(
+                metadata=_metadata(
+                    template_id="repair.report.behavior",
+                    name="Repair Behavior Report",
+                    source_certification_policy_id="repair.certification.behavior",
+                    supported_profile="repair",
+                )
+            )
+        )
+    return tuple(templates)
 
 
 def default_production_coding_report_templates(

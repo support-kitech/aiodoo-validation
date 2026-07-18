@@ -71,4 +71,4 @@ def test_behavior_required_criteria_denies_when_deferred() -> None:
         benchmark_score=100.0,
     )
     assert evaluation.certified is False
-    assert "behavior_not_available" in evaluation.reasons
+    assert "behavior_deferred" in evaluation.reasons

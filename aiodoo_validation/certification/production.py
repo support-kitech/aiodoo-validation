@@ -1,4 +1,4 @@
-"""Production certification policies — certify from criteria + benchmark."""
+"""Production certification policies — structural + behavior-gated (E8)."""
 
 from __future__ import annotations
 
@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from time import perf_counter
 from types import MappingProxyType
 
+from aiodoo_validation.certification.behavioral import BehaviorGatedCertificationPolicy
 from aiodoo_validation.certification.criteria import (
     CertificationCriteria,
     default_structural_certification_criteria,
@@ -47,10 +48,10 @@ def _metadata(
 @dataclass(frozen=True, slots=True)
 class BenchmarkPassCertificationPolicy:
     """
-    Certify using reusable CertificationCriteria.
+    Certify using reusable CertificationCriteria from structural benchmarks.
 
-    Current production signal set is structural/benchmark-oriented. Behavior
-    gates remain off until behavioral corpora are attached.
+    Behavior gates are owned by ``BehaviorGatedCertificationPolicy`` when a
+    profile registers one — this policy stays structural/benchmark-oriented.
     """
 
     metadata: CertificationMetadata
@@ -63,8 +64,7 @@ class BenchmarkPassCertificationPolicy:
         duration_ms = max(0, int((perf_counter() - started) * 1000))
         bench = context.benchmark_result
         score_meta = bench.metadata
-        dimensions = {}
-        # Benchmark metadata may carry through score dimensions via score policies.
+        dimensions: dict = {}
         raw_dimensions = score_meta.get("dimensions")
         if isinstance(raw_dimensions, dict):
             dimensions = raw_dimensions
@@ -74,7 +74,7 @@ class BenchmarkPassCertificationPolicy:
             execution_tier=context.execution_tier,
             structural_pass=bool(bench.benchmark_pass),
             behavior_pass=None,
-            behavior_deferred=True,
+            behavior_deferred=False,
             benchmark_pass=bool(bench.benchmark_pass),
             oracle_score=float(bench.benchmark_score),
             behavior_score=None,
@@ -130,10 +130,16 @@ class BenchmarkPassCertificationPolicy:
 def default_production_certification_policies(
     *,
     profile: str = "coding",
-) -> tuple[BenchmarkPassCertificationPolicy, ...]:
+) -> tuple[BenchmarkPassCertificationPolicy | BehaviorGatedCertificationPolicy, ...]:
+    """
+    Structural certification for every adapter profile.
+
+    Repair additionally registers the E8 behavior-gated policy. Registration
+    stays here so ``production.py`` need not change.
+    """
     names = ("metadata", "manifest", "python", "xml", "security", "module_structure")
     criteria = default_structural_certification_criteria()
-    return tuple(
+    policies: list[BenchmarkPassCertificationPolicy | BehaviorGatedCertificationPolicy] = [
         BenchmarkPassCertificationPolicy(
             metadata=_metadata(
                 policy_id=f"{profile}.certification.{name}",
@@ -144,17 +150,21 @@ def default_production_certification_policies(
             criteria=criteria,
         )
         for name in names
-    )
+    ]
+    if profile == "repair":
+        policies.append(BehaviorGatedCertificationPolicy.create_for_repair())
+    return tuple(policies)
 
 
 def default_production_coding_certification_policies(
     *,
     supported_profile: str = "coding",
-) -> tuple[BenchmarkPassCertificationPolicy, ...]:
+) -> tuple[BenchmarkPassCertificationPolicy | BehaviorGatedCertificationPolicy, ...]:
     return default_production_certification_policies(profile=supported_profile)
 
 
 __all__ = [
+    "BehaviorGatedCertificationPolicy",
     "BenchmarkPassCertificationPolicy",
     "default_production_certification_policies",
     "default_production_coding_certification_policies",

@@ -305,6 +305,7 @@ class CertificationEngine:
             execution_tier=context.execution_tier,
             benchmark_result=benchmark_result,
             benchmark_execution=benchmark_execution,
+            score_execution=context.score_execution,
             configuration=MappingProxyType(dict(plan.configuration)),
             metadata=MappingProxyType({"run_metadata_keys": tuple(sorted(context.metadata))}),
         )

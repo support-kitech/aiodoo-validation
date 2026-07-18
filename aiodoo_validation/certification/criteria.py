@@ -1,9 +1,4 @@
-"""Reusable certification criteria architecture.
-
-Production policies still certify from benchmark pass today. Criteria objects
-document the dimensions that future profile thresholds will evaluate without
-hardcoding profile-specific strings in the engine.
-"""
+"""Certification criteria — structural and behavior-gated evaluation (E8)."""
 
 from __future__ import annotations
 
@@ -21,8 +16,8 @@ class CertificationCriteria:
     """
     Declared certification inputs for a policy.
 
-    All fields are optional so policies can start with benchmark-only checks
-    and grow to structural + behavioral + score thresholds without redesign.
+    Thresholds and gates are policy data — never hardcode profile-specific
+    behavior rules in the certification engine.
     """
 
     require_structural_pass: bool = True
@@ -30,6 +25,7 @@ class CertificationCriteria:
     require_benchmark_pass: bool = True
     min_oracle_score: float | None = 100.0
     min_behavior_score: float | None = None
+    min_transform_score: float | None = None
     min_weighted_score: float | None = None
     min_benchmark_score: float | None = 100.0
     profile_thresholds: Mapping[str, float] = field(
@@ -58,6 +54,7 @@ def evaluate_certification_criteria(
     benchmark_pass: bool | None = None,
     oracle_score: float | None = None,
     behavior_score: float | None = None,
+    transform_score: float | None = None,
     weighted_score: float | None = None,
     benchmark_score: float | None = None,
     validation_kind: ValidationKind | None = None,
@@ -76,6 +73,7 @@ def evaluate_certification_criteria(
         "benchmark_pass": benchmark_pass,
         "oracle_score": oracle_score,
         "behavior_score": behavior_score,
+        "transform_score": transform_score,
         "weighted_score": weighted_score,
         "benchmark_score": benchmark_score,
         "validation_kind": validation_kind.value if validation_kind else None,
@@ -100,7 +98,9 @@ def evaluate_certification_criteria(
         reasons.append("structural_failed")
 
     if criteria.require_behavior_pass:
-        if behavior_deferred or behavior_pass is None:
+        if behavior_deferred:
+            reasons.append("behavior_deferred")
+        elif behavior_pass is None:
             reasons.append("behavior_not_available")
         elif not behavior_pass:
             reasons.append("behavior_failed")
@@ -111,13 +111,22 @@ def evaluate_certification_criteria(
 
     if criteria.min_behavior_score is not None:
         if behavior_score is None:
-            reasons.append("behavior_score_missing")
+            if not behavior_deferred:
+                reasons.append("behavior_score_missing")
         elif behavior_score < criteria.min_behavior_score:
             reasons.append("behavior_score_below_threshold")
 
+    if criteria.min_transform_score is not None:
+        if transform_score is None:
+            if not behavior_deferred:
+                reasons.append("transform_score_missing")
+        elif transform_score < criteria.min_transform_score:
+            reasons.append("transform_failed")
+
     if criteria.min_weighted_score is not None:
         if weighted_score is None:
-            reasons.append("weighted_score_missing")
+            if not behavior_deferred:
+                reasons.append("weighted_score_missing")
         elif weighted_score < criteria.min_weighted_score:
             reasons.append("weighted_score_below_threshold")
 
@@ -142,7 +151,7 @@ def evaluate_certification_criteria(
 
 
 def default_structural_certification_criteria() -> CertificationCriteria:
-    """Current production criteria: structural/benchmark path (no behavior yet)."""
+    """Structural/benchmark path without behavior gates."""
     return CertificationCriteria(
         require_structural_pass=True,
         require_behavior_pass=False,
@@ -153,9 +162,29 @@ def default_structural_certification_criteria() -> CertificationCriteria:
     )
 
 
+def default_behavior_gated_certification_criteria() -> CertificationCriteria:
+    """
+    Behavior-gated criteria for profiles with behavioral ScoreResults.
+
+    Deferred behavioral evidence never certifies silently.
+    """
+    return CertificationCriteria(
+        require_structural_pass=False,
+        require_behavior_pass=True,
+        require_benchmark_pass=True,
+        min_oracle_score=None,
+        min_behavior_score=100.0,
+        min_transform_score=100.0,
+        min_weighted_score=None,
+        min_benchmark_score=100.0,
+        metadata=MappingProxyType({"mode": "behavior_gated_v1"}),
+    )
+
+
 __all__ = [
     "CertificationCriteria",
     "CriteriaEvaluation",
+    "default_behavior_gated_certification_criteria",
     "default_structural_certification_criteria",
     "evaluate_certification_criteria",
 ]
