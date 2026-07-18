@@ -161,14 +161,14 @@ class OracleEngine:
             results.append(result)
             warnings.extend(result.warnings)
             if not result.success:
-                errors.extend(result.errors)
-                if not result.errors:
-                    errors.append(
-                        OracleError(
-                            code=OracleErrorCode.EXECUTION_FAILURE,
-                            message=result.message,
-                            oracle_id=result.oracle_id,
-                        )
+                # Soft evaluation failure: oracle ran and recorded a failing
+                # verdict. Keep the pipeline alive so scoring/certification can
+                # deny certification instead of aborting as a hard failure.
+                if result.errors:
+                    errors.extend(result.errors)
+                else:
+                    warnings.append(
+                        f"Oracle {result.oracle_id} did not pass: {result.message}"
                     )
 
         duration_ms = int((perf_counter() - started) * 1000)
@@ -186,7 +186,9 @@ class OracleEngine:
             errors=tuple(errors),
             metadata=MappingProxyType({"placeholder_pipeline": True}),
         )
-        success = failure_count == 0 and not errors
+        # Hard errors (missing oracle, profile mismatch, raised exceptions)
+        # fail the stage. Soft evaluation failures do not.
+        success = not errors
         return OracleExecutionOutcome(
             success=success,
             message=(

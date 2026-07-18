@@ -50,25 +50,31 @@ def test_repository_metadata_exposes_version_and_protocol() -> None:
     assert ValidationStage.REPORT in metadata.pipeline_stages
 
 
-def test_profile_discovery_lists_coding_profile() -> None:
+def test_profile_discovery_lists_supported_profiles() -> None:
     profiles = list_profiles()
-    assert profiles == ("coding",)
+    assert "coding" in profiles
+    assert "planner" in profiles
+    assert "repair" in profiles
     profile = get_profile_info("coding")
     assert profile.profile_name == "coding"
     assert profile.supported_runtimes
     assert profile.capabilities.supports_reports is True
     assert ValidationStage.REPORT in profile.pipeline_stages
     assert "supports_reports" in capability_labels(profile.capabilities)
+    planner = get_profile_info("planner")
+    assert planner.profile_name == "planner"
 
 
 def test_compatibility_helpers() -> None:
     assert is_protocol_supported(1, 0) is True
     assert is_protocol_supported(2, 0) is False
     assert is_profile_supported("coding") is True
-    assert is_profile_supported("planner") is False
+    assert is_profile_supported("planner") is True
+    assert is_profile_supported("merged") is False
     assert is_odoo_version_supported(17) is True
     assert is_odoo_version_supported(99) is False
     assert is_execution_tier_supported("standard") is True
+    assert is_execution_tier_supported("prod") is True
     assert is_execution_tier_supported("invalid") is False
 
 
@@ -210,4 +216,4 @@ def test_api_does_not_import_upstream_execution_modules() -> None:
 
 def test_unknown_profile_raises() -> None:
     with pytest.raises(ValueError):
-        get_profile_info("planner")
+        get_profile_info("merged")

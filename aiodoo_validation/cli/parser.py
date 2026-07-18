@@ -53,8 +53,11 @@ def build_parser(config: CliConfig) -> argparse.ArgumentParser:
         "--execution-tier",
         dest="execution_tier",
         default="standard",
-        choices=("smoke", "standard", "full"),
-        help="Validation execution tier (default: standard).",
+        choices=("smoke", "standard", "full", "prod"),
+        help=(
+            "Validation execution tier (default: standard). "
+            "'prod' is an alias of 'full'."
+        ),
     )
     validate.add_argument(
         "--run-id",

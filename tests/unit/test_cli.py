@@ -111,7 +111,7 @@ def test_validate_invalid_profile_returns_exit_code_3(capsys: pytest.CaptureFixt
         [
             "validate",
             "--profile",
-            "planner",
+            "merged",
             "--base-model",
             "base",
             "--adapter",
@@ -158,10 +158,48 @@ def test_validate_runs_engine_and_formats_output(capsys: pytest.CaptureFixture[s
     )
     output = capsys.readouterr().out
     assert code == EXIT_NOT_CERTIFIED
-    assert "Exit status: not_certified" in output
+    assert "Exit status: coding-not-certified" in output
     assert "Pipeline stages:" in output
     assert "Report summary:" in output
     assert "coding.report.metadata" in output
+    assert "Placeholder report" not in output
+
+
+def test_validate_smoke_tier_can_certify(capsys: pytest.CaptureFixture[str]) -> None:
+    code = main(
+        [
+            "validate",
+            "--profile",
+            "coding",
+            "--base-model",
+            str(FIXTURES / "base_model"),
+            "--adapter",
+            str(FIXTURES / "coding_adapter"),
+            "--execution-tier",
+            "smoke",
+            "--odoo-versions",
+            "18",
+        ]
+    )
+    output = capsys.readouterr().out
+    assert code == EXIT_CERTIFIED
+    assert "Exit status: coding-certified" in output
+
+
+def test_parser_accepts_prod_tier_alias() -> None:
+    parser = build_parser(CliConfig())
+    args = parser.parse_args(
+        [
+            "validate",
+            "--base-model",
+            "./base",
+            "--adapter",
+            "./adapter",
+            "--execution-tier",
+            "prod",
+        ]
+    )
+    assert args.execution_tier == "prod"
 
 
 def test_validate_pipeline_failure_returns_exit_code_2(capsys: pytest.CaptureFixture[str]) -> None:

@@ -44,7 +44,7 @@ def test_stub_engine_runs_complete_lifecycle() -> None:
     engine = ValidationEngine.with_stubs()
     result = engine.run(_sample_request())
 
-    assert result.exit_status is ExitStatus.NOT_CERTIFIED
+    assert result.exit_status is ExitStatus.COMPLETED
     assert result.run_context.run_id == "lifecycle-run-1"
     assert len(result.run_context.stage_records) == len(PIPELINE_STAGE_ORDER)
 
@@ -103,7 +103,7 @@ def test_stub_engine_runs_complete_lifecycle() -> None:
 def test_invalid_profile_rejected_at_request_construction() -> None:
     with pytest.raises(InvalidRequestError):
         ValidationRequest(
-            profile_name="planner",
+            profile_name="merged",
             base_model_ref="base",
             adapter_ref="adapter",
         )

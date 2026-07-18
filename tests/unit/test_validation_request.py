@@ -23,7 +23,7 @@ def test_valid_coding_request() -> None:
     [
         {"profile_name": "", "base_model_ref": "base", "adapter_ref": "adapter"},
         {
-            "profile_name": "planner",
+            "profile_name": "merged",
             "base_model_ref": "base",
             "adapter_ref": "adapter",
         },

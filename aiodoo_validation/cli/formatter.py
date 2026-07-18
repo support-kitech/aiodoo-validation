@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 from aiodoo_validation.api.metadata import PIPELINE_STAGE_ORDER_PUBLIC
-from aiodoo_validation.domain.enums import StageStatus, ValidationStage
+from aiodoo_validation.domain.enums import ExitStatus, StageStatus, ValidationStage
 from aiodoo_validation.domain.result import ValidationRunResult
+from aiodoo_validation.execution import certification_label
 
 
 class ConsoleFormatter:
@@ -18,7 +19,7 @@ class ConsoleFormatter:
 
         lines.append("AIODOO Validation")
         lines.append(f"Run ID: {context.run_id}")
-        lines.append(f"Exit status: {result.exit_status.value}")
+        lines.append(f"Exit status: {self._format_exit_label(result)}")
         lines.append(f"Duration: {duration_ms} ms")
         lines.append("")
 
@@ -62,6 +63,16 @@ class ConsoleFormatter:
 
         lines.append(result.message)
         return "\n".join(lines).rstrip() + "\n"
+
+    def _format_exit_label(self, result: ValidationRunResult) -> str:
+        """Profile-driven certification label for successful certification exits."""
+        status = result.exit_status
+        profile = result.run_context.request.profile_name
+        if status is ExitStatus.COMPLETED:
+            return certification_label(profile_name=profile, certified=True)
+        if status is ExitStatus.NOT_CERTIFIED:
+            return certification_label(profile_name=profile, certified=False)
+        return status.value
 
     def format_error(self, message: str) -> str:
         return f"Error: {message}\n"

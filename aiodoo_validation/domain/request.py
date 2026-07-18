@@ -16,7 +16,7 @@ from aiodoo_validation.domain.enums import (
 from aiodoo_validation.exceptions import InvalidRequestError
 
 SUPPORTED_PROTOCOL_MAJOR = 1
-SUPPORTED_PROFILES = frozenset({SupportedValidationProfile.CODING.value})
+SUPPORTED_PROFILES = frozenset(profile.value for profile in SupportedValidationProfile)
 SUPPORTED_ODOO_VERSIONS = frozenset({17, 18, 19})
 
 

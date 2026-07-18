@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from aiodoo_validation.domain.enums import ExecutionTier, OdooVersion
 from aiodoo_validation.domain.request import ValidationRequest
+from aiodoo_validation.execution import normalize_execution_tier
 
 
 def parse_odoo_versions(raw: str) -> tuple[int, ...]:
@@ -28,7 +29,7 @@ def build_coding_request(
     run_id: str | None = None,
 ) -> ValidationRequest:
     """Build a coding profile ``ValidationRequest``."""
-    tier = ExecutionTier(execution_tier) if isinstance(execution_tier, str) else execution_tier
+    tier = normalize_execution_tier(execution_tier)
     if isinstance(odoo_versions, str):
         versions = parse_odoo_versions(odoo_versions)
     else:

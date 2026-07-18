@@ -36,6 +36,8 @@ from aiodoo_validation.ports import (
     ReportGeneratorPort,
     ScoringEnginePort,
 )
+from aiodoo_validation.execution import is_framework_only_tier
+from aiodoo_validation.production import ProductionPipelineComponents
 from aiodoo_validation.resolution.filesystem import FilesystemArtifactResolver
 from aiodoo_validation.stubs import StubPipelineComponents
 
@@ -104,17 +106,17 @@ class ValidationEngine:
 
     @classmethod
     def with_filesystem(cls) -> ValidationEngine:
-        """Construct an engine with a real filesystem artifact resolver."""
-        stubs = StubPipelineComponents.create()
+        """Construct an engine with production filesystem validation ports."""
+        components = ProductionPipelineComponents.create()
         return cls(
-            artifact_resolver=FilesystemArtifactResolver.create_default(),
-            profile_engine=stubs.profile_engine,
-            inference_runner=stubs.inference_runner,
-            oracle_runner=stubs.oracle_runner,
-            scoring_engine=stubs.scoring_engine,
-            benchmark_engine=stubs.benchmark_engine,
-            certification_engine=stubs.certification_engine,
-            report_generator=stubs.report_generator,
+            artifact_resolver=components.artifact_resolver,
+            profile_engine=components.profile_engine,
+            inference_runner=components.inference_runner,
+            oracle_runner=components.oracle_runner,
+            scoring_engine=components.scoring_engine,
+            benchmark_engine=components.benchmark_engine,
+            certification_engine=components.certification_engine,
+            report_generator=components.report_generator,
         )
 
     @classmethod
@@ -365,7 +367,12 @@ class ValidationEngine:
         for warning in outcome.warnings:
             updated = updated.with_warning(warning)
         if outcome.success and outcome.execution is not None:
-            return updated.with_certification_execution(outcome.execution)
+            updated = updated.with_certification_execution(outcome.execution)
+            if is_framework_only_tier(updated.execution_tier):
+                return updated.with_exit_status(ExitStatus.NOT_CERTIFIED)
+            if outcome.execution.overall_certified:
+                return updated.with_exit_status(ExitStatus.COMPLETED)
+            return updated.with_exit_status(ExitStatus.NOT_CERTIFIED)
         for error in outcome.errors:
             updated = updated.with_error(f"{error.code.value}: {error.message}")
         return updated.with_exit_status(ExitStatus.FAILED)

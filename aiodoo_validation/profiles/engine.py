@@ -8,6 +8,7 @@ from aiodoo_validation.domain.artifacts import ArtifactBundle
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.enums import ProfileErrorCode
 from aiodoo_validation.domain.profile import ProfileError, ProfileResolutionOutcome, ResolvedProfile
+from aiodoo_validation.profiles.adapter_profile import AdapterProfile
 from aiodoo_validation.profiles.coding.profile import CodingProfile
 from aiodoo_validation.profiles.resolver import ProfileResolver
 from aiodoo_validation.validation_plan.plan import ValidationPlan
@@ -18,11 +19,7 @@ class ProfileEngine:
     """
     Resolve validation profiles and construct ValidationPlan metadata.
 
-    Phase 4 refinement: coding-specific compatibility and plan construction
-    live on ``CodingProfile`` methods. ``ProfileEngine`` retains a single
-    ``isinstance(CodingProfile)`` dispatch because only the coding profile
-    exists today. A profile-operation Protocol would add indirection without
-    benefit until a second profile is introduced.
+    Dispatches to ``CodingProfile`` or ``AdapterProfile`` implementations.
     """
 
     resolver: ProfileResolver
@@ -103,7 +100,7 @@ class ProfileEngine:
         profile: ResolvedProfile,
         bundle: ArtifactBundle,
     ) -> tuple[ProfileError, ...]:
-        if isinstance(profile, CodingProfile):
+        if isinstance(profile, (CodingProfile, AdapterProfile)):
             return profile.validate_compatibility(bundle)
         return (
             ProfileError(
@@ -119,7 +116,7 @@ class ProfileEngine:
         bundle: ArtifactBundle,
         context: RunContext,
     ) -> ValidationPlan:
-        if isinstance(profile, CodingProfile):
+        if isinstance(profile, (CodingProfile, AdapterProfile)):
             return profile.build_validation_plan(bundle=bundle, context=context)
         raise ProfileError(
             code=ProfileErrorCode.PROFILE_CONSTRUCTION_FAILURE,

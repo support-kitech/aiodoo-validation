@@ -21,9 +21,9 @@ from aiodoo_validation.cli.exit_codes import (
     exit_code_for_status,
 )
 from aiodoo_validation.cli.formatter import ConsoleFormatter
-from aiodoo_validation.domain.enums import ExecutionTier
 from aiodoo_validation.domain.request import ValidationRequest
 from aiodoo_validation.exceptions import InvalidRequestError
+from aiodoo_validation.execution import normalize_execution_tier
 
 if TYPE_CHECKING:
     from aiodoo_validation.cli.config import CliConfig
@@ -114,12 +114,13 @@ def run_help(args: argparse.Namespace, *, config: CliConfig) -> int:
 
 def _build_request(args: argparse.Namespace) -> ValidationRequest:
     odoo_versions = parse_odoo_versions(args.odoo_versions)
+    tier = normalize_execution_tier(args.execution_tier)
     if args.profile == "coding":
         return build_coding_request(
             base_model_ref=args.base_model,
             adapter_ref=args.adapter,
             merged_model_ref=args.merged_model,
-            execution_tier=args.execution_tier,
+            execution_tier=tier,
             odoo_versions=odoo_versions,
             run_id=args.run_id,
         )
@@ -128,7 +129,7 @@ def _build_request(args: argparse.Namespace) -> ValidationRequest:
         base_model_ref=args.base_model,
         adapter_ref=args.adapter,
         merged_model_ref=args.merged_model,
-        execution_tier=ExecutionTier(args.execution_tier),
+        execution_tier=tier,
         odoo_versions=odoo_versions,
         run_id=args.run_id,
     )

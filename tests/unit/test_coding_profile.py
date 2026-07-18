@@ -87,9 +87,18 @@ def test_profile_resolver_creates_coding_profile() -> None:
     assert "qwen" in profile.supported_model_families
 
 
+def test_profile_resolver_creates_adapter_profiles() -> None:
+    request = _request(base="a", adapter="b")
+    for name in ("planner", "repair", "conversation", "execution", "approval", "evaluation"):
+        profile, error = ProfileResolver().resolve(name, context=_context(request))
+        assert error is None
+        assert profile is not None
+        assert profile.profile_name == name
+
+
 def test_profile_resolver_rejects_unsupported_profiles() -> None:
     request = _request(base="a", adapter="b")
-    for name in ("planner", "repair", "conversation", "execution", "evaluation"):
+    for name in ("merged", "foundation", "unknown"):
         profile, error = ProfileResolver().resolve(name, context=_context(request))
         assert profile is None
         assert error is not None
@@ -200,7 +209,7 @@ def test_engine_profile_failure_does_not_crash() -> None:
     }
 
 
-def test_planner_adapter_passes_resolution_but_fails_profile() -> None:
+def test_planner_adapter_passes_resolution_but_fails_coding_profile() -> None:
     request = _request(
         base=str(FIXTURES / "base_model"),
         adapter=str(FIXTURES / "planner_adapter"),
@@ -213,3 +222,19 @@ def test_planner_adapter_passes_resolution_but_fails_profile() -> None:
     )
     assert profile.success is False
     assert profile.errors[0].code is ProfileErrorCode.UNSUPPORTED_ADAPTER
+
+
+def test_planner_profile_accepts_planner_adapter() -> None:
+    request = _request(
+        base=str(FIXTURES / "base_model"),
+        adapter=str(FIXTURES / "planner_adapter"),
+        profile="planner",
+    )
+    artifact = FilesystemArtifactResolver.create_default().resolve(_context(request))
+    assert artifact.success is True
+    profile = ProfileEngine.create_default().resolve_profile(
+        _context(request).with_artifact_bundle(artifact.bundle)  # type: ignore[arg-type]
+    )
+    assert profile.success is True
+    assert profile.profile is not None
+    assert profile.profile.profile_name == "planner"

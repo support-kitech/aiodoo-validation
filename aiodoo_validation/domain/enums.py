@@ -9,6 +9,8 @@ class ExecutionTier(StrEnum):
     SMOKE = "smoke"
     STANDARD = "standard"
     FULL = "full"
+    # Alias accepted by normalize_execution_tier / CLI; stored as FULL internally.
+    PROD = "prod"
 
 
 class ExitStatus(StrEnum):
@@ -48,9 +50,15 @@ class StageStatus(StrEnum):
 
 
 class SupportedValidationProfile(StrEnum):
-    """Profiles supported in Validation Protocol V1 (coding only for v1 scope)."""
+    """Profiles supported by Validation Protocol V1."""
 
     CODING = "coding"
+    PLANNER = "planner"
+    REPAIR = "repair"
+    CONVERSATION = "conversation"
+    EXECUTION = "execution"
+    APPROVAL = "approval"
+    EVALUATION = "evaluation"
 
 
 class OdooVersion(IntEnum):
