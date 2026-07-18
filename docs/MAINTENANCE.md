@@ -20,8 +20,8 @@ This repository is **frozen infrastructure**, not a feature delivery track.
 - Architecture redesigns (engine, runners, pipelines, corpus loader core)
 - New top-level Protocol stages or CLI redesign
 - New adapter profiles (e.g. `merged`, `foundation`)
-- New behavioral validation for coding / planner / conversation / execution /
-  approval / evaluation (those belong in capability packs or a later major)
+- New behavioral validation for planner / conversation / execution /
+  approval / evaluation (Coding and Repair behavior reuse the frozen spine)
 - Refactors that alter public identifiers, stage IDs, or result shapes
 - PyPI `[build-system]` packaging (source-tag distribution remains policy)
 

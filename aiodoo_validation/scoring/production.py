@@ -138,6 +138,8 @@ def default_production_score_policies(
     ]
     if profile == "repair":
         policies.append(BehavioralEvidenceScorePolicy.create_for_repair())
+    if profile == "coding":
+        policies.append(BehavioralEvidenceScorePolicy.create_for_coding())
     return tuple(policies)
 
 

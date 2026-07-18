@@ -10,6 +10,7 @@ Each policy scores exactly one OracleResult identified by the matching
 from __future__ import annotations
 
 from aiodoo_validation.oracles.ids import (
+    CODING_ORACLE_BEHAVIOR,
     CODING_ORACLE_MANIFEST,
     CODING_ORACLE_METADATA,
     CODING_ORACLE_MODULE_STRUCTURE,
@@ -26,6 +27,7 @@ CODING_SCORE_XML = "coding.score.xml"
 CODING_SCORE_SECURITY = "coding.score.security"
 CODING_SCORE_MODULE_STRUCTURE = "coding.score.module_structure"
 CODING_SCORE_QUALITY = "coding.score.quality"
+CODING_SCORE_BEHAVIOR = "coding.score.behavior"
 
 CODING_SCORE_IDS_ENABLED: tuple[str, ...] = (
     CODING_SCORE_METADATA,
@@ -34,6 +36,7 @@ CODING_SCORE_IDS_ENABLED: tuple[str, ...] = (
     CODING_SCORE_XML,
     CODING_SCORE_SECURITY,
     CODING_SCORE_MODULE_STRUCTURE,
+    CODING_SCORE_BEHAVIOR,
 )
 
 CODING_SCORE_IDS_ALL: tuple[str, ...] = (
@@ -50,6 +53,7 @@ CODING_SCORE_TO_ORACLE: dict[str, str] = {
     CODING_SCORE_SECURITY: CODING_ORACLE_SECURITY,
     CODING_SCORE_MODULE_STRUCTURE: CODING_ORACLE_MODULE_STRUCTURE,
     CODING_SCORE_QUALITY: CODING_ORACLE_QUALITY,
+    CODING_SCORE_BEHAVIOR: CODING_ORACLE_BEHAVIOR,
 }
 
 PLACEHOLDER_SCORE_VALUE = 100.0

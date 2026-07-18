@@ -1,0 +1,12 @@
+{
+  "record_id": "coding.missing",
+  "problem": "Broken fixture",
+  "artifacts": [
+    {
+      "id": "mod_py",
+      "path": "models/mod.py",
+      "type": "python"
+    }
+  ],
+  "operations": []
+}

@@ -74,27 +74,27 @@ def test_stub_engine_runs_complete_lifecycle() -> None:
     oracle_result = result.run_context.placeholder_results[ValidationStage.RUN_VALIDATION]
     assert oracle_result.status is StageStatus.SUCCEEDED
     assert result.run_context.oracle_execution is not None
-    assert result.run_context.oracle_execution.oracle_count == 6
+    assert result.run_context.oracle_execution.oracle_count == 7
 
     scoring_result = result.run_context.placeholder_results[ValidationStage.SCORING]
     assert scoring_result.status is StageStatus.SUCCEEDED
     assert result.run_context.score_execution is not None
-    assert result.run_context.score_execution.policy_count == 6
+    assert result.run_context.score_execution.policy_count == 7
 
     benchmark_result = result.run_context.placeholder_results[ValidationStage.BENCHMARK]
     assert benchmark_result.status is StageStatus.SUCCEEDED
     assert result.run_context.benchmark_execution is not None
-    assert result.run_context.benchmark_execution.policy_count == 6
+    assert result.run_context.benchmark_execution.policy_count == 7
 
     certification_result = result.run_context.placeholder_results[ValidationStage.CERTIFICATION]
     assert certification_result.status is StageStatus.SUCCEEDED
     assert result.run_context.certification_execution is not None
-    assert result.run_context.certification_execution.policy_count == 6
+    assert result.run_context.certification_execution.policy_count == 7
 
     report_result = result.run_context.placeholder_results[ValidationStage.REPORT]
     assert report_result.status is StageStatus.SUCCEEDED
     assert result.run_context.report_execution is not None
-    assert result.run_context.report_execution.template_count == 6
+    assert result.run_context.report_execution.template_count == 7
 
     for stage in PIPELINE_STAGE_ORDER:
         assert stage in result.run_context.placeholder_results

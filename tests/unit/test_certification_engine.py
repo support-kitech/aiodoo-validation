@@ -156,9 +156,9 @@ def test_certification_pipeline_executes_enabled_policies() -> None:
     outcome = CertificationEngine.create_default().certify(context)
     assert outcome.success is True
     assert outcome.execution is not None
-    assert outcome.execution.policy_count == 6
-    assert outcome.execution.success_count == 6
-    assert outcome.execution.certified_count == 6
+    assert outcome.execution.policy_count == 7
+    assert outcome.execution.success_count == 7
+    assert outcome.execution.certified_count == 7
     assert outcome.execution.overall_certified is True
     assert outcome.execution.aggregate_certification_score == PLACEHOLDER_CERTIFICATION_SCORE
     ids = tuple(result.policy_id for result in outcome.execution.results)
@@ -276,11 +276,11 @@ def test_engine_attaches_certification_execution() -> None:
     assert result.exit_status is ExitStatus.NOT_CERTIFIED
     assert result.run_context.benchmark_execution is not None
     assert result.run_context.certification_execution is not None
-    assert result.run_context.certification_execution.policy_count == 6
+    assert result.run_context.certification_execution.policy_count == 7
     assert result.run_context.certification_execution.overall_certified is True
     stage = result.run_context.placeholder_results[ValidationStage.CERTIFICATION]
     assert stage.status is StageStatus.SUCCEEDED
-    assert stage.data.get("policy_count") == 6
+    assert stage.data.get("policy_count") == 7
 
 
 def test_certification_capabilities_forbid_filesystem_and_thresholds() -> None:

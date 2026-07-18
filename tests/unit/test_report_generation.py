@@ -159,8 +159,8 @@ def test_report_pipeline_executes_enabled_templates() -> None:
     outcome = ReportGenerator.create_default().generate_report(context)
     assert outcome.success is True
     assert outcome.execution is not None
-    assert outcome.execution.template_count == 6
-    assert outcome.execution.success_count == 6
+    assert outcome.execution.template_count == 7
+    assert outcome.execution.success_count == 7
     assert outcome.execution.overall_status == PLACEHOLDER_REPORT_STATUS
     ids = tuple(result.template_id for result in outcome.execution.results)
     assert ids == CODING_REPORT_IDS_ENABLED
@@ -278,11 +278,11 @@ def test_engine_attaches_report_execution() -> None:
     assert result.exit_status is ExitStatus.NOT_CERTIFIED
     assert result.run_context.certification_execution is not None
     assert result.run_context.report_execution is not None
-    assert result.run_context.report_execution.template_count == 6
+    assert result.run_context.report_execution.template_count == 7
     assert result.run_context.report_execution.overall_status == PLACEHOLDER_REPORT_STATUS
     stage = result.run_context.placeholder_results[ValidationStage.REPORT]
     assert stage.status is StageStatus.SUCCEEDED
-    assert stage.data.get("template_count") == 6
+    assert stage.data.get("template_count") == 7
 
 
 def test_report_capabilities_forbid_filesystem_and_rendering() -> None:

@@ -133,20 +133,26 @@ def test_validation_plan_is_immutable_and_metadata_only() -> None:
     assert ValidationStage.INITIALIZE_INFERENCE in plan.execution_order
     assert plan.oracle_pipeline[0].enabled is True
     assert plan.oracle_pipeline[0].stage_id == "coding.oracle.metadata"
-    assert plan.oracle_pipeline[-1].stage_id == "coding.oracle.quality"
-    assert plan.oracle_pipeline[-1].enabled is False
+    assert plan.oracle_pipeline[-1].stage_id == "coding.oracle.behavior.coding"
+    assert plan.oracle_pipeline[-1].enabled is True
+    quality = next(s for s in plan.oracle_pipeline if s.stage_id.endswith("quality"))
+    assert quality.enabled is False
     assert plan.scoring_pipeline[0].stage_id == "coding.score.metadata"
     assert plan.scoring_pipeline[0].enabled is True
-    assert plan.scoring_pipeline[-1].enabled is False
+    assert plan.scoring_pipeline[-1].stage_id == "coding.score.behavior"
+    assert plan.scoring_pipeline[-1].enabled is True
     assert plan.benchmark_pipeline[0].stage_id == "coding.benchmark.metadata"
     assert plan.benchmark_pipeline[0].enabled is True
-    assert plan.benchmark_pipeline[-1].enabled is False
+    assert plan.benchmark_pipeline[-1].stage_id == "coding.benchmark.behavior"
+    assert plan.benchmark_pipeline[-1].enabled is True
     assert plan.certification_pipeline[0].stage_id == "coding.certification.metadata"
     assert plan.certification_pipeline[0].enabled is True
-    assert plan.certification_pipeline[-1].enabled is False
+    assert plan.certification_pipeline[-1].stage_id == "coding.certification.behavior"
+    assert plan.certification_pipeline[-1].enabled is True
     assert plan.report_pipeline[0].stage_id == "coding.report.metadata"
     assert plan.report_pipeline[0].enabled is True
-    assert plan.report_pipeline[-1].enabled is False
+    assert plan.report_pipeline[-1].stage_id == "coding.report.behavior"
+    assert plan.report_pipeline[-1].enabled is True
 
     with pytest.raises(FrozenInstanceError):
         plan.plan_digest = "changed"  # type: ignore[misc]

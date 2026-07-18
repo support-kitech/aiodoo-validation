@@ -24,6 +24,11 @@ REPAIR_EVAL_FIXTURE_CORPUS_ID = "fixture.repair.eval.behavior"
 REPAIR_EVAL_FIXTURE_FINGERPRINT = "dc418ad42216d8296dce5bb862372c8c38b301a97d508586cbf22d388ecd400f"
 REPAIR_EVAL_FIXTURE_VERSION = "fixture-e5"
 
+# Coding evaluation fixture pin (validation-owned held-out smoke corpus).
+CODING_EVAL_FIXTURE_CORPUS_ID = "fixture.coding.eval.behavior"
+CODING_EVAL_FIXTURE_FINGERPRINT = "1e7a1464641382dea9045e1207d2d777560d0e1c0a6c9bb71707bb123fe01dc5"
+CODING_EVAL_FIXTURE_VERSION = "fixture-coding-e5"
+
 
 def _repair_eval_fixture_pin() -> CorpusPin:
     return CorpusPin(
@@ -33,6 +38,18 @@ def _repair_eval_fixture_pin() -> CorpusPin:
         dataset_version=REPAIR_EVAL_FIXTURE_VERSION,
         source_package="aiodoo-validation-fixtures",
         location_hint="repair/eval_corpus",
+        metadata=MappingProxyType({"kind": "validation_fixture_pin"}),
+    )
+
+
+def _coding_eval_fixture_pin() -> CorpusPin:
+    return CorpusPin(
+        corpus_id=CODING_EVAL_FIXTURE_CORPUS_ID,
+        capability_id="coding",
+        fingerprint=CODING_EVAL_FIXTURE_FINGERPRINT,
+        dataset_version=CODING_EVAL_FIXTURE_VERSION,
+        source_package="aiodoo-validation-fixtures",
+        location_hint="coding/eval_corpus",
         metadata=MappingProxyType({"kind": "validation_fixture_pin"}),
     )
 
@@ -193,25 +210,32 @@ def builtin_corpus_pin_registry(
     """
     Builtin production pin catalog.
 
-    Ships the Repair evaluation fixture pin. Does **not** auto-select it for
-    production runs (G11: missing config still defers). Callers must pass
-    ``evaluation_corpus_id`` (or a path) explicitly.
+    Ships Repair and Coding evaluation fixture pins. Does **not** auto-select
+    them for production runs (G11: missing config still defers). Callers must
+    pass ``evaluation_corpus_id`` (or a path) explicitly.
     """
     repair_pin = _repair_eval_fixture_pin()
+    coding_pin = _coding_eval_fixture_pin()
     fixture_root = _fixture_package_root()
     locations: dict[str, Path] = {}
     if include_fixture_locations and fixture_root.is_dir():
         locations[repair_pin.corpus_id] = fixture_root / "repair" / "eval_corpus"
+        locations[coding_pin.corpus_id] = fixture_root / "coding" / "eval_corpus"
 
     return CorpusPinRegistry.build(
-        (repair_pin,),
+        (repair_pin, coding_pin),
         aliases={
             "repair.eval": repair_pin.corpus_id,
             "repair.eval.fixture": repair_pin.corpus_id,
+            "coding.eval": coding_pin.corpus_id,
+            "coding.eval.fixture": coding_pin.corpus_id,
         },
         locations=locations,
-        # Documented default identity — not auto-loaded without configuration.
-        capability_defaults={"repair": repair_pin.corpus_id},
+        # Documented default identities — not auto-loaded without configuration.
+        capability_defaults={
+            "repair": repair_pin.corpus_id,
+            "coding": coding_pin.corpus_id,
+        },
         search_roots=search_roots_from_environment(extra_roots=(fixture_root, *extra_search_roots)),
     )
 
@@ -255,6 +279,9 @@ def verify_loaded_against_registry(
 __all__ = [
     "EVALUATION_CORPUS_ID_KEY",
     "EVAL_CORPUS_ROOT_ENV",
+    "CODING_EVAL_FIXTURE_CORPUS_ID",
+    "CODING_EVAL_FIXTURE_FINGERPRINT",
+    "CODING_EVAL_FIXTURE_VERSION",
     "REPAIR_EVAL_FIXTURE_CORPUS_ID",
     "REPAIR_EVAL_FIXTURE_FINGERPRINT",
     "REPAIR_EVAL_FIXTURE_VERSION",

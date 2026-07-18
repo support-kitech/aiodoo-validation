@@ -26,6 +26,7 @@ from aiodoo_validation.inference.stub_runner import StubInferenceRunner
 from aiodoo_validation.oracles import OracleEngine
 from aiodoo_validation.oracles.capability_behavior import (
     build_capability_behavioral_oracle,
+    coding_behavior_oracle_id,
     repair_behavior_oracle_id,
 )
 from aiodoo_validation.oracles.registry import OracleRegistry
@@ -125,23 +126,37 @@ def _register_profile_stack(
         report_registry.register(template)
 
 
-def _register_repair_behavioral_oracle(
+def _register_capability_behavioral_oracles(
     *,
     oracle_registry: OracleRegistry,
     inference_runner: InferenceRunnerPort,
 ) -> None:
-    """Register repair-only capability behavioral oracle (E5)."""
+    """Register repair and coding capability behavioral oracles."""
     capability_registry = create_default_capability_registry()
-    oracle_registry.register(
-        build_capability_behavioral_oracle(
-            capability_id=SupportedValidationProfile.REPAIR.value,
-            oracle_id=repair_behavior_oracle_id(),
-            name="Repair Behavior Oracle",
-            description="Repair capability behavioral evaluation (corpus-gated).",
-            capability_registry=capability_registry,
-            inference_runner=inference_runner,
+    for capability_id, oracle_id, name, description in (
+        (
+            SupportedValidationProfile.REPAIR.value,
+            repair_behavior_oracle_id(),
+            "Repair Behavior Oracle",
+            "Repair capability behavioral evaluation (corpus-gated).",
+        ),
+        (
+            SupportedValidationProfile.CODING.value,
+            coding_behavior_oracle_id(),
+            "Coding Behavior Oracle",
+            "Coding capability behavioral evaluation (corpus-gated).",
+        ),
+    ):
+        oracle_registry.register(
+            build_capability_behavioral_oracle(
+                capability_id=capability_id,
+                oracle_id=oracle_id,
+                name=name,
+                description=description,
+                capability_registry=capability_registry,
+                inference_runner=inference_runner,
+            )
         )
-    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -176,7 +191,7 @@ class ProductionPipelineComponents:
                 report_registry=report_registry,
             )
 
-        _register_repair_behavioral_oracle(
+        _register_capability_behavioral_oracles(
             oracle_registry=oracle_registry,
             inference_runner=inference_runner,
         )

@@ -26,8 +26,9 @@ CODING_ORACLE_XML = "coding.oracle.xml"
 CODING_ORACLE_SECURITY = "coding.oracle.security"
 CODING_ORACLE_MODULE_STRUCTURE = "coding.oracle.module_structure"
 CODING_ORACLE_QUALITY = "coding.oracle.quality"
+CODING_ORACLE_BEHAVIOR = "coding.oracle.behavior.coding"
 
-# Registered and executed by default in Phase 5 placeholders.
+# Registered and executed by default in Phase 5 placeholders (+ behavior).
 CODING_ORACLE_IDS_ENABLED: tuple[str, ...] = (
     CODING_ORACLE_METADATA,
     CODING_ORACLE_MANIFEST,
@@ -35,6 +36,7 @@ CODING_ORACLE_IDS_ENABLED: tuple[str, ...] = (
     CODING_ORACLE_XML,
     CODING_ORACLE_SECURITY,
     CODING_ORACLE_MODULE_STRUCTURE,
+    CODING_ORACLE_BEHAVIOR,
 )
 
 # Declared in the Coding Profile pipeline (quality remains disabled / future).

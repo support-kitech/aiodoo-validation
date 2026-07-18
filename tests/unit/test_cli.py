@@ -165,7 +165,10 @@ def test_validate_runs_engine_and_formats_output(capsys: pytest.CaptureFixture[s
     assert "Placeholder report" not in output
 
 
-def test_validate_smoke_tier_can_certify(capsys: pytest.CaptureFixture[str]) -> None:
+def test_validate_smoke_tier_behavior_gate_without_corpus(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Smoke can reach certification, but Coding behavior gate denies without corpus."""
     code = main(
         [
             "validate",
@@ -182,8 +185,9 @@ def test_validate_smoke_tier_can_certify(capsys: pytest.CaptureFixture[str]) -> 
         ]
     )
     output = capsys.readouterr().out
-    assert code == EXIT_CERTIFIED
-    assert "Exit status: coding-certified" in output
+    assert code == EXIT_NOT_CERTIFIED
+    assert "Exit status: coding-not-certified" in output
+    assert "coding.certification.behavior" in output or "behavior" in output.lower()
 
 
 def test_parser_accepts_prod_tier_alias() -> None:

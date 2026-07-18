@@ -1,6 +1,9 @@
 """Generic evaluation corpus infrastructure (Capability Delivery E1 / E7)."""
 
 from aiodoo_validation.corpus.catalog import (
+    CODING_EVAL_FIXTURE_CORPUS_ID,
+    CODING_EVAL_FIXTURE_FINGERPRINT,
+    CODING_EVAL_FIXTURE_VERSION,
     EVAL_CORPUS_ROOT_ENV,
     EVALUATION_CORPUS_ID_KEY,
     REPAIR_EVAL_FIXTURE_CORPUS_ID,
@@ -47,6 +50,9 @@ from aiodoo_validation.corpus.provider import (
 )
 
 __all__ = [
+    "CODING_EVAL_FIXTURE_CORPUS_ID",
+    "CODING_EVAL_FIXTURE_FINGERPRINT",
+    "CODING_EVAL_FIXTURE_VERSION",
     "DEFAULT_MANIFEST_NAME",
     "DEFAULT_RECORDS_NAME",
     "EVALUATION_CORPUS_ID_KEY",

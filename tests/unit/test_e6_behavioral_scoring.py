@@ -23,7 +23,7 @@ from aiodoo_validation.scoring.evidence import (
     DIM_TRANSFORM_CORRECTNESS,
     interpret_behavioral_oracle_evidence,
 )
-from aiodoo_validation.scoring.ids import REPAIR_SCORE_BEHAVIOR
+from aiodoo_validation.scoring.ids import CODING_SCORE_BEHAVIOR, REPAIR_SCORE_BEHAVIOR
 from aiodoo_validation.scoring.policy_defaults import (
     DEFAULT_BEHAVIORAL_POLICY_REF,
     BehavioralScoringPolicyData,
@@ -347,19 +347,27 @@ def test_behavioral_policy_missing_policy_ref() -> None:
     assert result.metadata["policy_load_error"] is True
 
 
-def test_default_production_policies_include_repair_behavior() -> None:
+def test_default_production_policies_include_repair_and_coding_behavior() -> None:
     coding = default_production_score_policies(profile="coding")
     repair = default_production_score_policies(profile="repair")
-    assert all(p.metadata.policy_id != REPAIR_SCORE_BEHAVIOR for p in coding)
+    assert any(p.metadata.policy_id == CODING_SCORE_BEHAVIOR for p in coding)
     assert any(p.metadata.policy_id == REPAIR_SCORE_BEHAVIOR for p in repair)
+    assert all(p.metadata.policy_id != REPAIR_SCORE_BEHAVIOR for p in coding)
+    assert all(p.metadata.policy_id != CODING_SCORE_BEHAVIOR for p in repair)
 
 
 def test_repair_profile_scoring_pipeline_includes_behavior_stage() -> None:
     profile = AdapterProfile.create("repair", odoo_versions=(18,))
     stage_ids = {stage.stage_id for stage in profile.scoring_pipeline}
     assert REPAIR_SCORE_BEHAVIOR in stage_ids
-    coding = AdapterProfile.create("coding", odoo_versions=(18,))
-    coding_ids = {stage.stage_id for stage in coding.scoring_pipeline}
+
+
+def test_coding_profile_scoring_pipeline_includes_behavior_stage() -> None:
+    from aiodoo_validation.profiles.coding.profile import CodingProfile
+
+    profile = CodingProfile.create(odoo_versions=(18,))
+    coding_ids = {stage.stage_id for stage in profile.scoring_pipeline}
+    assert CODING_SCORE_BEHAVIOR in coding_ids
     assert REPAIR_SCORE_BEHAVIOR not in coding_ids
 
 

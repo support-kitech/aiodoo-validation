@@ -92,7 +92,7 @@ def default_production_benchmark_policies(
     """
     Structural benchmarks for every adapter profile.
 
-    Repair additionally benchmarks the behavioral score policy (E8 chain).
+    Repair and Coding additionally benchmark their behavioral score policies.
     """
     names = ("metadata", "manifest", "python", "xml", "security", "module_structure")
     policies: list[ScoreThresholdBenchmarkPolicy] = [
@@ -114,6 +114,17 @@ def default_production_benchmark_policies(
                     name="Repair Behavior Benchmark",
                     source_score_policy_id="repair.score.behavior",
                     supported_profile="repair",
+                )
+            )
+        )
+    if profile == "coding":
+        policies.append(
+            ScoreThresholdBenchmarkPolicy(
+                metadata=_metadata(
+                    policy_id="coding.benchmark.behavior",
+                    name="Coding Behavior Benchmark",
+                    source_score_policy_id="coding.score.behavior",
+                    supported_profile="coding",
                 )
             )
         )

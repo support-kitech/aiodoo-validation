@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+from typing import Any
+
 from aiodoo_validation.domain.enums import ExecutionTier, OdooVersion
 from aiodoo_validation.domain.request import ValidationRequest
 from aiodoo_validation.execution import normalize_execution_tier
@@ -27,6 +30,7 @@ def build_coding_request(
         OdooVersion.V19,
     ),
     run_id: str | None = None,
+    metadata: Mapping[str, Any] | None = None,
 ) -> ValidationRequest:
     """Build a coding profile ``ValidationRequest``."""
     tier = normalize_execution_tier(execution_tier)
@@ -42,4 +46,5 @@ def build_coding_request(
         execution_tier=tier,
         odoo_versions=versions,
         run_id=run_id,
+        metadata={} if metadata is None else metadata,
     )

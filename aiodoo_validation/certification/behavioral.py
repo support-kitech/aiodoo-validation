@@ -11,6 +11,10 @@ from aiodoo_validation.certification.criteria import (
     default_behavior_gated_certification_criteria,
     evaluate_certification_criteria,
 )
+from aiodoo_validation.certification.ids import (
+    CODING_CERTIFICATION_BEHAVIOR,
+    REPAIR_CERTIFICATION_BEHAVIOR,
+)
 from aiodoo_validation.certification.score_signals import (
     extract_behavioral_score_signals,
     find_score_result,
@@ -23,7 +27,7 @@ from aiodoo_validation.domain.certification import (
 )
 from aiodoo_validation.domain.enums import ValidationKind
 from aiodoo_validation.execution import certification_label, is_framework_only_tier
-from aiodoo_validation.scoring.ids import REPAIR_SCORE_BEHAVIOR
+from aiodoo_validation.scoring.ids import CODING_SCORE_BEHAVIOR, REPAIR_SCORE_BEHAVIOR
 
 
 def _metadata(
@@ -74,12 +78,29 @@ class BehaviorGatedCertificationPolicy:
     ) -> BehaviorGatedCertificationPolicy:
         return cls(
             metadata=_metadata(
-                policy_id="repair.certification.behavior",
+                policy_id=REPAIR_CERTIFICATION_BEHAVIOR,
                 name="Repair Behavior Certification",
                 source_benchmark_policy_id="repair.benchmark.behavior",
                 supported_profile="repair",
             ),
             source_score_policy_id=REPAIR_SCORE_BEHAVIOR,
+            criteria=criteria or default_behavior_gated_certification_criteria(),
+        )
+
+    @classmethod
+    def create_for_coding(
+        cls,
+        *,
+        criteria: CertificationCriteria | None = None,
+    ) -> BehaviorGatedCertificationPolicy:
+        return cls(
+            metadata=_metadata(
+                policy_id=CODING_CERTIFICATION_BEHAVIOR,
+                name="Coding Behavior Certification",
+                source_benchmark_policy_id="coding.benchmark.behavior",
+                supported_profile="coding",
+            ),
+            source_score_policy_id=CODING_SCORE_BEHAVIOR,
             criteria=criteria or default_behavior_gated_certification_criteria(),
         )
 

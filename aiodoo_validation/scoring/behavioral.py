@@ -21,7 +21,12 @@ from aiodoo_validation.domain.scoring import (
 )
 from aiodoo_validation.scoring.dimensions import behavior_dimensions_from_evidence
 from aiodoo_validation.scoring.evidence import interpret_behavioral_oracle_evidence
-from aiodoo_validation.scoring.ids import REPAIR_SCORE_BEHAVIOR, REPAIR_SCORE_TO_ORACLE
+from aiodoo_validation.scoring.ids import (
+    CODING_SCORE_BEHAVIOR,
+    CODING_SCORE_TO_ORACLE,
+    REPAIR_SCORE_BEHAVIOR,
+    REPAIR_SCORE_TO_ORACLE,
+)
 from aiodoo_validation.scoring.policy_defaults import (
     DEFAULT_BEHAVIORAL_POLICY_REF,
     BehavioralScoringPolicyData,
@@ -85,6 +90,23 @@ class BehavioralEvidenceScorePolicy:
                 name="Repair Behavior Score",
                 source_oracle_id=REPAIR_SCORE_TO_ORACLE[REPAIR_SCORE_BEHAVIOR],
                 supported_profile="repair",
+            ),
+            default_policy_ref=policy_ref,
+        )
+
+    @classmethod
+    def create_for_coding(
+        cls,
+        *,
+        policy_ref: str = DEFAULT_BEHAVIORAL_POLICY_REF,
+    ) -> BehavioralEvidenceScorePolicy:
+        load_behavioral_scoring_policy(policy_ref)
+        return cls(
+            metadata=_metadata(
+                policy_id=CODING_SCORE_BEHAVIOR,
+                name="Coding Behavior Score",
+                source_oracle_id=CODING_SCORE_TO_ORACLE[CODING_SCORE_BEHAVIOR],
+                supported_profile="coding",
             ),
             default_policy_ref=policy_ref,
         )

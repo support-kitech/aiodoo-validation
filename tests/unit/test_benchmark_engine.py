@@ -152,8 +152,8 @@ def test_benchmark_pipeline_executes_enabled_policies() -> None:
     outcome = BenchmarkEngine.create_default().benchmark(context)
     assert outcome.success is True
     assert outcome.execution is not None
-    assert outcome.execution.policy_count == 6
-    assert outcome.execution.success_count == 6
+    assert outcome.execution.policy_count == 7
+    assert outcome.execution.success_count == 7
     assert outcome.execution.aggregate_benchmark_score == PLACEHOLDER_BENCHMARK_SCORE
     ids = tuple(result.policy_id for result in outcome.execution.results)
     assert ids == CODING_BENCHMARK_IDS_ENABLED
@@ -267,14 +267,14 @@ def test_engine_attaches_benchmark_execution() -> None:
     assert result.exit_status is ExitStatus.NOT_CERTIFIED
     assert result.run_context.score_execution is not None
     assert result.run_context.benchmark_execution is not None
-    assert result.run_context.benchmark_execution.policy_count == 6
+    assert result.run_context.benchmark_execution.policy_count == 7
     assert (
         result.run_context.benchmark_execution.aggregate_benchmark_score
         == PLACEHOLDER_BENCHMARK_SCORE
     )
     stage = result.run_context.placeholder_results[ValidationStage.BENCHMARK]
     assert stage.status is StageStatus.SUCCEEDED
-    assert stage.data.get("policy_count") == 6
+    assert stage.data.get("policy_count") == 7
 
 
 def test_benchmark_capabilities_forbid_filesystem() -> None:

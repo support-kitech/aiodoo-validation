@@ -13,6 +13,7 @@ from aiodoo_validation.domain.scoring import (
     ScoreResult,
 )
 from aiodoo_validation.oracles.ids import (
+    CODING_ORACLE_BEHAVIOR,
     CODING_ORACLE_MANIFEST,
     CODING_ORACLE_METADATA,
     CODING_ORACLE_MODULE_STRUCTURE,
@@ -22,6 +23,7 @@ from aiodoo_validation.oracles.ids import (
     CODING_ORACLE_XML,
 )
 from aiodoo_validation.scoring.ids import (
+    CODING_SCORE_BEHAVIOR,
     CODING_SCORE_MANIFEST,
     CODING_SCORE_METADATA,
     CODING_SCORE_MODULE_STRUCTURE,
@@ -186,6 +188,22 @@ class QualityScorePolicy(PlaceholderScorePolicy):
         )
 
 
+@dataclass(frozen=True, slots=True)
+class BehaviorScorePolicy(PlaceholderScorePolicy):
+    """Placeholder coding behavior scoring policy (stub path)."""
+
+    @staticmethod
+    def create() -> BehaviorScorePolicy:
+        return BehaviorScorePolicy(
+            metadata=placeholder_score_metadata(
+                policy_id=CODING_SCORE_BEHAVIOR,
+                name="Coding Behavior Score Policy",
+                description="Placeholder coding behavior scoring policy.",
+                source_oracle_id=CODING_ORACLE_BEHAVIOR,
+            )
+        )
+
+
 def default_coding_placeholder_policies() -> tuple[PlaceholderScorePolicy, ...]:
     return (
         MetadataScorePolicy.create(),
@@ -194,4 +212,5 @@ def default_coding_placeholder_policies() -> tuple[PlaceholderScorePolicy, ...]:
         XmlScorePolicy.create(),
         SecurityScorePolicy.create(),
         ModuleStructureScorePolicy.create(),
+        BehaviorScorePolicy.create(),
     )

@@ -13,6 +13,7 @@ from aiodoo_validation.domain.oracle import (
     OracleResult,
 )
 from aiodoo_validation.oracles.ids import (
+    CODING_ORACLE_BEHAVIOR,
     CODING_ORACLE_MANIFEST,
     CODING_ORACLE_METADATA,
     CODING_ORACLE_MODULE_STRUCTURE,
@@ -158,6 +159,21 @@ class ModuleStructureOracle(PlaceholderOracle):
         )
 
 
+@dataclass(frozen=True, slots=True)
+class BehaviorOracle(PlaceholderOracle):
+    """Placeholder coding behavior oracle (stub path; production uses capability oracle)."""
+
+    @staticmethod
+    def create() -> BehaviorOracle:
+        return BehaviorOracle(
+            metadata=placeholder_metadata(
+                oracle_id=CODING_ORACLE_BEHAVIOR,
+                name="Coding Behavior Oracle",
+                description="Placeholder coding behavior validation oracle.",
+            )
+        )
+
+
 def default_coding_placeholder_oracles() -> tuple[PlaceholderOracle, ...]:
     return (
         MetadataOracle.create(),
@@ -166,4 +182,5 @@ def default_coding_placeholder_oracles() -> tuple[PlaceholderOracle, ...]:
         XmlOracle.create(),
         SecurityOracle.create(),
         ModuleStructureOracle.create(),
+        BehaviorOracle.create(),
     )

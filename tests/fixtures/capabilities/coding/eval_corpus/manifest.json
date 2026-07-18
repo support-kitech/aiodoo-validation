@@ -1,0 +1,12 @@
+{
+  "corpus_id": "fixture.coding.eval.behavior",
+  "capability_id": "coding",
+  "role": "evaluation",
+  "dataset_version": "fixture-coding-e5",
+  "fingerprint": "1e7a1464641382dea9045e1207d2d777560d0e1c0a6c9bb71707bb123fe01dc5",
+  "source_package": "aiodoo-validation-fixtures",
+  "denied_training_fingerprints": [],
+  "metadata": {
+    "kind": "coding_behavior_integration"
+  }
+}

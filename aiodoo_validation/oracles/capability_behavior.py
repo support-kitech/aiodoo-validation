@@ -219,6 +219,10 @@ def repair_behavior_oracle_id() -> str:
     return "repair.oracle.behavior.repair"
 
 
+def coding_behavior_oracle_id() -> str:
+    return "coding.oracle.behavior.coding"
+
+
 def build_capability_behavioral_oracle(
     *,
     capability_id: str,
@@ -262,5 +266,6 @@ def build_capability_behavioral_oracle(
 __all__ = [
     "CapabilityBehavioralOracle",
     "build_capability_behavioral_oracle",
+    "coding_behavior_oracle_id",
     "repair_behavior_oracle_id",
 ]

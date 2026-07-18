@@ -14,11 +14,12 @@
 | Architecture | **Complete / frozen** |
 | Planning / Spec v1.0 documentation | **Complete** (materialized in repo) |
 | Capability Delivery implementation | **Complete (E0–E8)** |
-| Current execution phase | **RC2 complete** — GO for git tag `v1.0.0`; v1.0.x maintenance mode |
+| Current execution phase | **Coding Profile Phase 2** — behavioral pipeline wired (parity with Repair) |
 | Structural / artifact validation | **Active (production)** |
-| Behavioral validation | **Repair wired** — deferred without corpus id/path; active when configured |
-| Certification | **Structural + repair behavior gate** (`BehaviorGatedCertificationPolicy`) |
-| Repository | Spec v1.0 authoritative; E0–E8 frozen; R1+RC1+RC2 complete; **infrastructure freeze** |
+| Behavioral validation | **Repair + Coding wired** — deferred without corpus id/path; active when configured |
+| Coding Capability Pack | **Complete** (spec/parser/registration + behavior chain) |
+| Certification | **Structural + repair/coding behavior gates** (`BehaviorGatedCertificationPolicy`) |
+| Repository | Spec v1.0 authoritative; E0–E8 frozen; R1+RC1+RC2 complete; coding behavior extension |
 
 ---
 
@@ -30,10 +31,10 @@
 | Adapter profiles | coding, planner, repair, conversation, execution, approval, evaluation |
 | Execution tiers | standard (no cert), smoke, full, prod alias |
 | Structural oracles | Active |
-| Behavioral oracles in production plans | **Repair only** — deferred without corpus; gated by `evaluation_corpus_id` / `evaluation_corpus_path` |
-| Scoring | Structural 100/0; **repair behavioral multi-dimension** from oracle evidence (E6) |
-| Corpus governance | **Pinned identities** via `CorpusPinRegistry` / `ProductionCorpusLookup` (E7) |
-| Benchmark / certification | Structural + **repair behavior-gated cert** from ScoreResult (E8) |
+| Behavioral oracles in production plans | **Repair + Coding** — deferred without corpus; gated by `evaluation_corpus_id` / `evaluation_corpus_path` |
+| Scoring | Structural 100/0; **repair/coding behavioral multi-dimension** from oracle evidence (E6) |
+| Corpus governance | **Pinned identities** via `CorpusPinRegistry` / `ProductionCorpusLookup` (E7); repair + coding fixture pins |
+| Benchmark / certification | Structural + **repair/coding behavior-gated cert** from ScoreResult (E8) |
 | Reports | Structural + behavior certification reasons (`criteria_reasons`) |
 | Comparators | Exact, normalized, AST, XML, JSON, token similarity |
 
@@ -50,9 +51,9 @@
 | E2 transforms package | **Done / frozen** — replace-only TransformationEngine + SnapshotComparator |
 | E3 BehaviorCaseBuilder | **Done / frozen** — ParsedCapabilityRecord → BehaviorCase (+ snapshots) |
 | E4 Repair Capability Pack | **Done / frozen** — RepairRecordParser, capability.yaml, pack registration |
-| E5 behavior wiring | **Done / frozen** — CapabilityRegistry, ConfigurableCorpusProvider, repair-only production oracle |
+| E5 behavior wiring | **Done / frozen** — CapabilityRegistry, ConfigurableCorpusProvider, repair + coding production oracles |
 | E6 scoring extras | **Done / frozen** — evidence interpretation, policy loader, `BehavioralEvidenceScorePolicy` |
-| E7 eval corpus pin | **Done / frozen** — pin registry, identity→path resolution, fixture pin for repair |
+| E7 eval corpus pin | **Done / frozen** — pin registry, identity→path resolution, fixture pins for repair + coding |
 | E8 behavior-gated cert | **Done / frozen** — `BehaviorGatedCertificationPolicy`, criteria reasons, ScoreResult signals |
 | R1 production hardening | **Done** — typing, layering cleanup, wiring consistency tests, docs |
 | RC1 release validation | **Done** — quality gates green; source-tag packaging policy confirmed |
@@ -103,10 +104,11 @@
 
 - Held-out evaluation corpora published from `aiodoo-datasets` in validation corpus package layout  
 - Semantic / AI similarity comparators  
-- Behavior gates for non-repair adapter profiles (policy-ready; not registered)  
+- Behavior gates for planner / conversation / execution / approval / evaluation profiles (policy-ready; not registered)  
 - `merged` / `foundation` profiles  
 - Pack-local scoring policy files (E6 ships scoring defaults for known refs)  
 - Edit-distance / syntax evidence in oracle metadata (dimensions stay deferred until evidence exists)  
+- Coding Quality Oracle pipeline (still disabled placeholder stage)  
 
 ---
 
@@ -118,11 +120,12 @@ Follow [delivery_governance.md](delivery_governance.md) and
 [MAINTENANCE.md](MAINTENANCE.md).
 
 **v1.0.x allowed:** bug fixes, security fixes, documentation, capability pack
-registration via the existing pack contract.
+registration via the existing pack contract, and Coding/Repair behavior wiring
+that reuses the frozen Capability Delivery spine.
 
 **v1.0.x forbidden:** architecture changes, new profiles, new behavioral
-capability implementations for non-repair profiles, feature work framed as
-Capability Delivery.
+capability implementations for non-repair/non-coding profiles, feature work
+framed as Capability Delivery redesign.
 
 ---
 

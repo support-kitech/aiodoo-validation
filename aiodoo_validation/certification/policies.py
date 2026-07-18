@@ -7,6 +7,7 @@ from time import perf_counter
 from types import MappingProxyType
 
 from aiodoo_validation.benchmark.ids import (
+    CODING_BENCHMARK_BEHAVIOR,
     CODING_BENCHMARK_MANIFEST,
     CODING_BENCHMARK_METADATA,
     CODING_BENCHMARK_MODULE_STRUCTURE,
@@ -16,6 +17,7 @@ from aiodoo_validation.benchmark.ids import (
     CODING_BENCHMARK_XML,
 )
 from aiodoo_validation.certification.ids import (
+    CODING_CERTIFICATION_BEHAVIOR,
     CODING_CERTIFICATION_MANIFEST,
     CODING_CERTIFICATION_METADATA,
     CODING_CERTIFICATION_MODULE_STRUCTURE,
@@ -192,6 +194,22 @@ class QualityCertificationPolicy(PlaceholderCertificationPolicy):
         )
 
 
+@dataclass(frozen=True, slots=True)
+class BehaviorCertificationPolicy(PlaceholderCertificationPolicy):
+    """Placeholder coding behavior certification policy (stub path)."""
+
+    @staticmethod
+    def create() -> BehaviorCertificationPolicy:
+        return BehaviorCertificationPolicy(
+            metadata=placeholder_certification_metadata(
+                policy_id=CODING_CERTIFICATION_BEHAVIOR,
+                name="Coding Behavior Certification Policy",
+                description="Placeholder coding behavior certification policy.",
+                source_benchmark_policy_id=CODING_BENCHMARK_BEHAVIOR,
+            )
+        )
+
+
 def default_coding_placeholder_policies() -> tuple[PlaceholderCertificationPolicy, ...]:
     return (
         MetadataCertificationPolicy.create(),
@@ -200,4 +218,5 @@ def default_coding_placeholder_policies() -> tuple[PlaceholderCertificationPolic
         XmlCertificationPolicy.create(),
         SecurityCertificationPolicy.create(),
         ModuleStructureCertificationPolicy.create(),
+        BehaviorCertificationPolicy.create(),
     )

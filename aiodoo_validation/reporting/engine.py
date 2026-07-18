@@ -339,9 +339,19 @@ def _build_run_summary(context: RunContext) -> dict[str, object]:
             else:
                 structural_ids.append(result.oracle_id)
 
-    if behavior_ids:
-        behavior_status = BehaviorStatus.ACTIVE
-        validation_kind = ValidationKind.BEHAVIORAL.value
+    if behavior_ids and oracle is not None:
+        behavioral_results = [
+            result
+            for result in oracle.results
+            if str(result.metadata.get("validation_kind", "structural")) == "behavioral"
+        ]
+        deferred_only = all(bool(result.metadata.get("deferred")) for result in behavioral_results)
+        if deferred_only:
+            behavior_status = BehaviorStatus.DEFERRED
+            validation_kind = ValidationKind.STRUCTURAL.value
+        else:
+            behavior_status = BehaviorStatus.ACTIVE
+            validation_kind = ValidationKind.BEHAVIORAL.value
     else:
         behavior_status = BehaviorStatus.DEFERRED
         validation_kind = ValidationKind.STRUCTURAL.value

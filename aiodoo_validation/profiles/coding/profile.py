@@ -8,6 +8,7 @@ from types import MappingProxyType
 from typing import Any
 
 from aiodoo_validation.benchmark.ids import (
+    CODING_BENCHMARK_BEHAVIOR,
     CODING_BENCHMARK_MANIFEST,
     CODING_BENCHMARK_METADATA,
     CODING_BENCHMARK_MODULE_STRUCTURE,
@@ -17,6 +18,7 @@ from aiodoo_validation.benchmark.ids import (
     CODING_BENCHMARK_XML,
 )
 from aiodoo_validation.certification.ids import (
+    CODING_CERTIFICATION_BEHAVIOR,
     CODING_CERTIFICATION_MANIFEST,
     CODING_CERTIFICATION_METADATA,
     CODING_CERTIFICATION_MODULE_STRUCTURE,
@@ -29,6 +31,7 @@ from aiodoo_validation.domain.artifacts import ArtifactBundle
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.profile import ProfileError, ResolvedProfile
 from aiodoo_validation.oracles.ids import (
+    CODING_ORACLE_BEHAVIOR,
     CODING_ORACLE_MANIFEST,
     CODING_ORACLE_METADATA,
     CODING_ORACLE_MODULE_STRUCTURE,
@@ -47,6 +50,7 @@ from aiodoo_validation.profiles.coding.policy import (
     SUPPORTED_RUNTIMES,
 )
 from aiodoo_validation.reporting.ids import (
+    CODING_REPORT_BEHAVIOR,
     CODING_REPORT_MANIFEST,
     CODING_REPORT_METADATA,
     CODING_REPORT_MODULE_STRUCTURE,
@@ -56,6 +60,7 @@ from aiodoo_validation.reporting.ids import (
     CODING_REPORT_XML,
 )
 from aiodoo_validation.scoring.ids import (
+    CODING_SCORE_BEHAVIOR,
     CODING_SCORE_MANIFEST,
     CODING_SCORE_METADATA,
     CODING_SCORE_MODULE_STRUCTURE,
@@ -113,6 +118,12 @@ CODING_ORACLE_PIPELINE: tuple[PipelineStagePlaceholder, ...] = (
         enabled=False,
         phase="oracle",
     ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_ORACLE_BEHAVIOR,
+        name="Coding Behavior",
+        enabled=True,
+        phase="oracle",
+    ),
 )
 
 CODING_SCORING_PIPELINE: tuple[PipelineStagePlaceholder, ...] = (
@@ -156,6 +167,12 @@ CODING_SCORING_PIPELINE: tuple[PipelineStagePlaceholder, ...] = (
         stage_id=CODING_SCORE_QUALITY,
         name="Future Quality Score Policy",
         enabled=False,
+        phase="scoring",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_SCORE_BEHAVIOR,
+        name="Coding Behavior Score",
+        enabled=True,
         phase="scoring",
     ),
 )
@@ -203,6 +220,12 @@ CODING_BENCHMARK_PIPELINE: tuple[PipelineStagePlaceholder, ...] = (
         enabled=False,
         phase="benchmark",
     ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_BENCHMARK_BEHAVIOR,
+        name="Coding Behavior Benchmark",
+        enabled=True,
+        phase="benchmark",
+    ),
 )
 
 CODING_CERTIFICATION_PIPELINE: tuple[PipelineStagePlaceholder, ...] = (
@@ -246,6 +269,12 @@ CODING_CERTIFICATION_PIPELINE: tuple[PipelineStagePlaceholder, ...] = (
         stage_id=CODING_CERTIFICATION_QUALITY,
         name="Future Quality Certification Policy",
         enabled=False,
+        phase="certification",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_CERTIFICATION_BEHAVIOR,
+        name="Coding Behavior Certification",
+        enabled=True,
         phase="certification",
     ),
 )
@@ -292,6 +321,12 @@ CODING_REPORT_PIPELINE: tuple[PipelineStagePlaceholder, ...] = (
         stage_id=CODING_REPORT_QUALITY,
         name="Future Quality Report Template",
         enabled=False,
+        phase="report",
+    ),
+    PipelineStagePlaceholder(
+        stage_id=CODING_REPORT_BEHAVIOR,
+        name="Coding Behavior Report",
+        enabled=True,
         phase="report",
     ),
 )

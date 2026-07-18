@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 
+from aiodoo_validation.corpus.governance import resolve_evaluation_corpus_configuration
 from aiodoo_validation.domain.artifacts import ArtifactBundle
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.enums import ValidationStage
@@ -54,5 +55,11 @@ def build_coding_validation_plan(
             "protocol_minor": context.protocol_minor,
             "odoo_versions": context.request.odoo_versions,
             "bundle_digest": bundle.bundle_digest,
+            **dict(
+                resolve_evaluation_corpus_configuration(
+                    capability_id=profile.profile_name,
+                    metadata=context.request.metadata,
+                )
+            ),
         },
     )

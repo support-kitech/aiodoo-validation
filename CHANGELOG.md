@@ -9,9 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
-No unreleased feature work after the v1.0.0 cut. Post-tag changes on the
-v1.0.x line are limited to maintenance (bugs, security, docs, pack registration).
-See [docs/MAINTENANCE.md](docs/MAINTENANCE.md).
+Coding Profile Completion **Phase 2 — Behavioral Validation Pipeline** landed:
+Coding reuses the Repair Capability Delivery spine (behavior oracle, scoring,
+benchmark, certification, reports, corpus pins) with Coding-specific IDs,
+pack/parser, fixture corpus, and production registration.
+
+Phase 1 foundation (Capability Pack / parser / registration) remains in place.
+
+Post-tag v1.0.x changes otherwise remain limited to maintenance (bugs, security,
+docs, pack registration). See [docs/MAINTENANCE.md](docs/MAINTENANCE.md).
+
+### Added
+
+- Coding behavioral pipeline stages on `CodingProfile` (oracle→score→bench→cert→report)
+- Coding evaluation corpus fixture + pin (`fixture.coding.eval.behavior`, aliases `coding.eval`)
+- `BehavioralEvidenceScorePolicy.create_for_coding()` / `BehaviorGatedCertificationPolicy.create_for_coding()`
+- Production registration of Coding capability behavioral oracle alongside Repair
+- Integration tests: `tests/integration/test_coding_behavior_pipeline.py`
+
+### Changed
+
+- `capabilities/bootstrap` / production DI register Coding behavior with Repair
+- Corpus catalog includes Coding fixture pin and capability default
+- Coding plan builder resolves evaluation corpus configuration like Repair
+- Docs: `coding_profile.md`, `implementation_status.md`, `MAINTENANCE.md`
 
 ## [1.0.0] — 2026-07-18
 

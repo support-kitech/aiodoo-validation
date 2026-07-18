@@ -364,19 +364,23 @@ class TestProfileRegistration:
         reports = default_production_report_templates(profile="repair")
         assert any(t.metadata.template_id == "repair.report.behavior" for t in reports)
 
-    def test_coding_has_no_behavior_gate(self) -> None:
-        assert all(
-            p.metadata.policy_id != REPAIR_CERTIFICATION_BEHAVIOR
+    def test_coding_registers_behavior_gate(self) -> None:
+        from aiodoo_validation.certification.ids import CODING_CERTIFICATION_BEHAVIOR
+        from aiodoo_validation.profiles.coding.profile import CodingProfile
+        from aiodoo_validation.reporting.ids import CODING_REPORT_BEHAVIOR
+
+        assert any(
+            p.metadata.policy_id == CODING_CERTIFICATION_BEHAVIOR
             for p in default_production_certification_policies(profile="coding")
         )
-        coding = AdapterProfile.create("coding", odoo_versions=(18,))
+        coding = CodingProfile.create(odoo_versions=(18,))
         repair = AdapterProfile.create("repair", odoo_versions=(18,))
         coding_cert = {s.stage_id for s in coding.certification_pipeline}
         repair_cert = {s.stage_id for s in repair.certification_pipeline}
-        assert REPAIR_CERTIFICATION_BEHAVIOR not in coding_cert
+        assert CODING_CERTIFICATION_BEHAVIOR in coding_cert
         assert REPAIR_CERTIFICATION_BEHAVIOR in repair_cert
-        assert "repair.benchmark.behavior" in {s.stage_id for s in repair.benchmark_pipeline}
-        assert "repair.report.behavior" in {s.stage_id for s in repair.report_pipeline}
+        assert "coding.benchmark.behavior" in {s.stage_id for s in coding.benchmark_pipeline}
+        assert CODING_REPORT_BEHAVIOR in {s.stage_id for s in coding.report_pipeline}
 
     def test_multiple_profiles_structural_only_by_default(self) -> None:
         for profile in ("planner", "conversation", "approval"):

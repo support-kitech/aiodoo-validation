@@ -121,8 +121,8 @@ def test_oracle_pipeline_executes_enabled_placeholders() -> None:
     outcome = OracleEngine.create_default().execute_oracles(context)
     assert outcome.success is True
     assert outcome.execution is not None
-    assert outcome.execution.oracle_count == 6
-    assert outcome.execution.success_count == 6
+    assert outcome.execution.oracle_count == 7
+    assert outcome.execution.success_count == 7
     assert outcome.execution.failure_count == 0
     ids = tuple(result.oracle_id for result in outcome.execution.results)
     assert ids == (
@@ -132,6 +132,7 @@ def test_oracle_pipeline_executes_enabled_placeholders() -> None:
         "coding.oracle.xml",
         "coding.oracle.security",
         "coding.oracle.module_structure",
+        "coding.oracle.behavior.coding",
     )
 
 
@@ -269,10 +270,10 @@ def test_engine_attaches_oracle_execution() -> None:
     result = ValidationEngine.with_stubs().run(_request())
     assert result.exit_status is ExitStatus.NOT_CERTIFIED
     assert result.run_context.oracle_execution is not None
-    assert result.run_context.oracle_execution.oracle_count == 6
+    assert result.run_context.oracle_execution.oracle_count == 7
     stage = result.run_context.placeholder_results[ValidationStage.RUN_VALIDATION]
     assert stage.status is StageStatus.SUCCEEDED
-    assert stage.data.get("oracle_count") == 6
+    assert stage.data.get("oracle_count") == 7
 
 
 def test_engine_oracle_failure_does_not_crash() -> None:

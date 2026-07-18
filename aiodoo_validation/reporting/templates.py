@@ -7,6 +7,7 @@ from time import perf_counter
 from types import MappingProxyType
 
 from aiodoo_validation.certification.ids import (
+    CODING_CERTIFICATION_BEHAVIOR,
     CODING_CERTIFICATION_MANIFEST,
     CODING_CERTIFICATION_METADATA,
     CODING_CERTIFICATION_MODULE_STRUCTURE,
@@ -23,6 +24,7 @@ from aiodoo_validation.domain.report import (
     ReportSection,
 )
 from aiodoo_validation.reporting.ids import (
+    CODING_REPORT_BEHAVIOR,
     CODING_REPORT_MANIFEST,
     CODING_REPORT_METADATA,
     CODING_REPORT_MODULE_STRUCTURE,
@@ -194,6 +196,22 @@ class QualityReportTemplate(PlaceholderReportTemplate):
         )
 
 
+@dataclass(frozen=True, slots=True)
+class BehaviorReportTemplate(PlaceholderReportTemplate):
+    """Placeholder coding behavior report template (stub path)."""
+
+    @staticmethod
+    def create() -> BehaviorReportTemplate:
+        return BehaviorReportTemplate(
+            metadata=placeholder_report_metadata(
+                template_id=CODING_REPORT_BEHAVIOR,
+                name="Coding Behavior Report Template",
+                description="Placeholder coding behavior report template.",
+                source_certification_policy_id=CODING_CERTIFICATION_BEHAVIOR,
+            )
+        )
+
+
 def default_coding_placeholder_templates() -> tuple[PlaceholderReportTemplate, ...]:
     return (
         MetadataReportTemplate.create(),
@@ -202,4 +220,5 @@ def default_coding_placeholder_templates() -> tuple[PlaceholderReportTemplate, .
         XmlReportTemplate.create(),
         SecurityReportTemplate.create(),
         ModuleStructureReportTemplate.create(),
+        BehaviorReportTemplate.create(),
     )

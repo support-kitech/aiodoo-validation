@@ -130,8 +130,7 @@ def default_production_certification_policies(
     """
     Structural certification for every adapter profile.
 
-    Repair additionally registers the E8 behavior-gated policy. Registration
-    stays here so ``production.py`` need not change.
+    Repair and Coding additionally register behavior-gated policies.
     """
     names = ("metadata", "manifest", "python", "xml", "security", "module_structure")
     criteria = default_structural_certification_criteria()
@@ -149,6 +148,8 @@ def default_production_certification_policies(
     ]
     if profile == "repair":
         policies.append(BehaviorGatedCertificationPolicy.create_for_repair())
+    if profile == "coding":
+        policies.append(BehaviorGatedCertificationPolicy.create_for_coding())
     return tuple(policies)
 
 

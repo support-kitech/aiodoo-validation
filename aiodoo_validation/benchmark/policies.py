@@ -7,6 +7,7 @@ from time import perf_counter
 from types import MappingProxyType
 
 from aiodoo_validation.benchmark.ids import (
+    CODING_BENCHMARK_BEHAVIOR,
     CODING_BENCHMARK_MANIFEST,
     CODING_BENCHMARK_METADATA,
     CODING_BENCHMARK_MODULE_STRUCTURE,
@@ -25,6 +26,7 @@ from aiodoo_validation.domain.benchmark import (
     BenchmarkResult,
 )
 from aiodoo_validation.scoring.ids import (
+    CODING_SCORE_BEHAVIOR,
     CODING_SCORE_MANIFEST,
     CODING_SCORE_METADATA,
     CODING_SCORE_MODULE_STRUCTURE,
@@ -191,6 +193,22 @@ class QualityBenchmarkPolicy(PlaceholderBenchmarkPolicy):
         )
 
 
+@dataclass(frozen=True, slots=True)
+class BehaviorBenchmarkPolicy(PlaceholderBenchmarkPolicy):
+    """Placeholder coding behavior benchmark policy (stub path)."""
+
+    @staticmethod
+    def create() -> BehaviorBenchmarkPolicy:
+        return BehaviorBenchmarkPolicy(
+            metadata=placeholder_benchmark_metadata(
+                policy_id=CODING_BENCHMARK_BEHAVIOR,
+                name="Coding Behavior Benchmark Policy",
+                description="Placeholder coding behavior benchmark policy.",
+                source_score_policy_id=CODING_SCORE_BEHAVIOR,
+            )
+        )
+
+
 def default_coding_placeholder_policies() -> tuple[PlaceholderBenchmarkPolicy, ...]:
     return (
         MetadataBenchmarkPolicy.create(),
@@ -199,4 +217,5 @@ def default_coding_placeholder_policies() -> tuple[PlaceholderBenchmarkPolicy, .
         XmlBenchmarkPolicy.create(),
         SecurityBenchmarkPolicy.create(),
         ModuleStructureBenchmarkPolicy.create(),
+        BehaviorBenchmarkPolicy.create(),
     )

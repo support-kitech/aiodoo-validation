@@ -84,10 +84,12 @@ def test_build_coding_request_and_parse_odoo_versions() -> None:
         adapter_ref="adapter",
         execution_tier="smoke",
         odoo_versions="17,18",
+        metadata={"evaluation_corpus_id": "future.coding.eval"},
     )
     assert request.profile_name == "coding"
     assert request.execution_tier is ExecutionTier.SMOKE
     assert request.odoo_versions == (17, 18)
+    assert request.metadata["evaluation_corpus_id"] == "future.coding.eval"
     assert parse_odoo_versions("17,18,19") == (17, 18, 19)
 
 
@@ -139,7 +141,7 @@ def test_summarize_for_promotion() -> None:
     assert summary["exit_status"] == ExitStatus.NOT_CERTIFIED.value
     assert summary["successful"] is True
     assert summary["certified"] is False
-    assert summary["report_template_count"] == 6
+    assert summary["report_template_count"] == 7
 
 
 def test_integration_hints_are_generic_strings() -> None:

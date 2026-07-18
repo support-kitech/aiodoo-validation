@@ -10,20 +10,24 @@ def register_builtin_capability_packs(registry: CapabilityRegistry) -> Capabilit
     """
     Register shipped capability packs into ``registry``.
 
-    Production imports this bootstrap helper — not Repair parser classes.
+    Production imports this bootstrap helper — not pack parser classes.
     """
+    from aiodoo_validation.capabilities.coding.registration import (
+        get_coding_capability_pack,
+    )
     from aiodoo_validation.capabilities.repair.registration import (
         get_repair_capability_pack,
     )
 
-    repair = get_repair_capability_pack()
-    registry.register(
-        RegisteredCapabilityPack(
-            specification=repair.specification,
-            parser=repair.parser,
-            parser_id=repair.parser_id,
+    for get_pack in (get_coding_capability_pack, get_repair_capability_pack):
+        pack = get_pack()
+        registry.register(
+            RegisteredCapabilityPack(
+                specification=pack.specification,
+                parser=pack.parser,
+                parser_id=pack.parser_id,
+            )
         )
-    )
     return registry
 
 

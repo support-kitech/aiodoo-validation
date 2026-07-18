@@ -75,7 +75,11 @@ def test_score_ids_map_to_oracle_ids() -> None:
     for policy_id in CODING_SCORE_IDS_ENABLED:
         oracle_id = CODING_SCORE_TO_ORACLE[policy_id]
         assert oracle_id in CODING_ORACLE_IDS_ENABLED
-        assert policy_id.replace(".score.", ".oracle.") == oracle_id
+        if policy_id.endswith(".behavior"):
+            assert oracle_id == CODING_SCORE_TO_ORACLE[policy_id]
+            assert ".oracle.behavior." in oracle_id
+        else:
+            assert policy_id.replace(".score.", ".oracle.") == oracle_id
 
 
 def test_scoring_registry_registers_and_resolves() -> None:
@@ -141,8 +145,8 @@ def test_scoring_pipeline_executes_enabled_policies() -> None:
     outcome = ScoringEngine.create_default().score(context)
     assert outcome.success is True
     assert outcome.execution is not None
-    assert outcome.execution.policy_count == 6
-    assert outcome.execution.success_count == 6
+    assert outcome.execution.policy_count == 7
+    assert outcome.execution.success_count == 7
     assert outcome.execution.aggregate_score == PLACEHOLDER_SCORE_VALUE
     ids = tuple(result.policy_id for result in outcome.execution.results)
     assert ids == CODING_SCORE_IDS_ENABLED
@@ -253,11 +257,11 @@ def test_engine_attaches_score_execution() -> None:
     assert result.exit_status is ExitStatus.NOT_CERTIFIED
     assert result.run_context.oracle_execution is not None
     assert result.run_context.score_execution is not None
-    assert result.run_context.score_execution.policy_count == 6
+    assert result.run_context.score_execution.policy_count == 7
     assert result.run_context.score_execution.aggregate_score == PLACEHOLDER_SCORE_VALUE
     stage = result.run_context.placeholder_results[ValidationStage.SCORING]
     assert stage.status is StageStatus.SUCCEEDED
-    assert stage.data.get("policy_count") == 6
+    assert stage.data.get("policy_count") == 7
 
 
 def test_scoring_does_not_import_filesystem_inspection_flags() -> None:

@@ -210,6 +210,17 @@ def default_production_report_templates(
                 )
             )
         )
+    if profile == "coding":
+        templates.append(
+            CertificationSummaryReportTemplate(
+                metadata=_metadata(
+                    template_id="coding.report.behavior",
+                    name="Coding Behavior Report",
+                    source_certification_policy_id="coding.certification.behavior",
+                    supported_profile="coding",
+                )
+            )
+        )
     return tuple(templates)
 
 
