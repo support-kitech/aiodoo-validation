@@ -184,7 +184,7 @@ class OracleEngine:
             failure_count=failure_count,
             warnings=tuple(warnings),
             errors=tuple(errors),
-            metadata=MappingProxyType({"placeholder_pipeline": True}),
+            metadata=MappingProxyType({"registry_pipeline": True}),
         )
         # Hard errors (missing oracle, profile mismatch, raised exceptions)
         # fail the stage. Soft evaluation failures do not.

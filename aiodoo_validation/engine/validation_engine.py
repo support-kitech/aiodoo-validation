@@ -25,6 +25,7 @@ from aiodoo_validation.exceptions import (
     PipelineError,
     ProtocolError,
 )
+from aiodoo_validation.execution import is_framework_only_tier
 from aiodoo_validation.inference import MockModelRuntime, RealInferenceRunner
 from aiodoo_validation.ports import (
     ArtifactResolverPort,
@@ -36,7 +37,6 @@ from aiodoo_validation.ports import (
     ReportGeneratorPort,
     ScoringEnginePort,
 )
-from aiodoo_validation.execution import is_framework_only_tier
 from aiodoo_validation.production import ProductionPipelineComponents
 from aiodoo_validation.resolution.filesystem import FilesystemArtifactResolver
 from aiodoo_validation.stubs import StubPipelineComponents

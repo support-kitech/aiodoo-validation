@@ -326,7 +326,7 @@ class CodingProfile(ResolvedProfile):
             supports_reports=True,
         )
     )
-    validation_strategy: str = "coding-v1-report-placeholders"
+    validation_strategy: str = "coding-v1-structural"
     oracle_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_ORACLE_PIPELINE
     scoring_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_SCORING_PIPELINE
     benchmark_pipeline: tuple[PipelineStagePlaceholder, ...] = CODING_BENCHMARK_PIPELINE

@@ -112,6 +112,7 @@ class ReportContext:
     certification_execution: CertificationExecutionResult
     configuration: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
     metadata: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
+    run_summary: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
 
 
 @dataclass(frozen=True, slots=True)

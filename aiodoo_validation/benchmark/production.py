@@ -39,9 +39,24 @@ def _metadata(
     )
 
 
+def _optional_float(value: object) -> float | None:
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value)
+        except ValueError:
+            return None
+    return None
+
+
 @dataclass(frozen=True, slots=True)
 class ScoreThresholdBenchmarkPolicy:
-    """Pass when score meets the production threshold; capture latency metadata."""
+    """Pass when score meets the production threshold; capture real metrics only."""
 
     metadata: BenchmarkMetadata
     threshold: float = _PASS_THRESHOLD
@@ -51,7 +66,13 @@ class ScoreThresholdBenchmarkPolicy:
         score = float(context.score_result.score)
         passed = score >= self.threshold
         duration_ms = max(0, int((perf_counter() - started) * 1000))
-        oracle_latency = int(context.score_result.metadata.get("oracle_duration_ms", 0) or 0)
+        score_meta = context.score_result.metadata
+        oracle_latency = int(score_meta.get("oracle_duration_ms", 0) or 0)
+        tokens_per_sec = _optional_float(score_meta.get("tokens_per_sec"))
+        memory_mb = _optional_float(score_meta.get("memory_mb"))
+        latency_ms = _optional_float(score_meta.get("latency_ms"))
+        if latency_ms is None and oracle_latency:
+            latency_ms = float(oracle_latency)
         return BenchmarkResult(
             policy_id=self.metadata.policy_id,
             source_score_policy_id=self.metadata.source_score_policy_id,
@@ -69,8 +90,10 @@ class ScoreThresholdBenchmarkPolicy:
                     "placeholder": False,
                     "threshold": self.threshold,
                     "oracle_latency_ms": oracle_latency,
-                    "tokens_per_sec": None,
-                    "memory_mb": None,
+                    "latency_ms": latency_ms,
+                    "tokens_per_sec": tokens_per_sec,
+                    "memory_mb": memory_mb,
+                    "dimensions": score_meta.get("dimensions"),
                 }
             ),
         )

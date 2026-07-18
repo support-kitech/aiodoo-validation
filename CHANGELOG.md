@@ -5,6 +5,36 @@ All notable changes to **aiodoo-validation** are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Deterministic comparators: AST, XML, JSON, token similarity (no AI)
+- Behavioral validation architecture (`domain.behavior`, `behavior.BehaviorRunner`,
+  `oracles.behavioral`) — prompt → inference → comparator → score hooks
+- Comparator framework registry with semantic/rule deferred stubs
+- Score dimensions architecture (`scoring.dimensions`)
+- Reusable certification criteria (`certification.criteria`)
+- Richer production reports with structural/behavior/score/benchmark/certification
+  summaries and machine-readable `run_summary`
+- Docs: [behavioral_validation.md](docs/behavioral_validation.md)
+- Hardening tests for comparators, reports, planner profile, tiers
+
+### Changed
+
+- README and engine docs updated to reflect production structural path (no longer
+  claiming placeholder-only oracles/scoring/certification/reports for CLI default)
+- Coding profile strategy label: `coding-v1-structural`
+- Execution-tier helpers document standard / smoke / full / prod semantics
+- Pipeline execution metadata key: `registry_pipeline` (was `placeholder_pipeline`)
+
+### Compatibility
+
+- Public CLI and Validation Protocol V1 stage order unchanged
+- `prod` remains an alias of `full`
+- Production certification remains structural until behavioral corpora are attached
+- Stub/placeholder modules retained for `create_with_stubs()` only
+
 ## [1.0.0] — 2026-07-17
 
 ### Overview

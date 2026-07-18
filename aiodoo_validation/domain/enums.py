@@ -61,6 +61,37 @@ class SupportedValidationProfile(StrEnum):
     EVALUATION = "evaluation"
 
 
+class ValidationKind(StrEnum):
+    """Kind of validation performed by an oracle or scoring policy."""
+
+    STRUCTURAL = "structural"
+    BEHAVIORAL = "behavioral"
+
+
+class ComparatorKind(StrEnum):
+    """Registered comparator strategies for behavioral evaluation."""
+
+    EXACT = "exact"
+    NORMALIZED_TEXT = "normalized_text"
+    AST = "ast"
+    XML = "xml"
+    JSON = "json"
+    SEMANTIC = "semantic"
+    TOKEN_SIMILARITY = "token_similarity"
+    RULE_BASED = "rule_based"
+
+
+class ScoreDimensionName(StrEnum):
+    """Named score dimensions supported by production scoring architecture."""
+
+    ORACLE = "oracle"
+    BEHAVIOR = "behavior"
+    SYNTAX = "syntax"
+    STRUCTURAL = "structural"
+    POLICY = "policy"
+    WEIGHTED = "weighted"
+
+
 class OdooVersion(IntEnum):
     """Supported Odoo major versions for validation matrix."""
 

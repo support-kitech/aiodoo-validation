@@ -14,6 +14,7 @@ from time import perf_counter
 from types import MappingProxyType
 
 from aiodoo_validation.domain.artifact_paths import ARTIFACT_PATHS_KEY
+from aiodoo_validation.domain.enums import ValidationKind
 from aiodoo_validation.domain.oracle import (
     OracleCapability,
     OracleContext,
@@ -53,6 +54,7 @@ def _production_metadata(
             placeholder=False,
             reads_artifacts=True,
             uses_inference=False,
+            validation_kind=ValidationKind.STRUCTURAL,
         ),
     )
 
@@ -76,6 +78,7 @@ class StructuralOracle:
             metadata=MappingProxyType(
                 {
                     "placeholder": False,
+                    "validation_kind": ValidationKind.STRUCTURAL.value,
                     "profile_name": context.profile_name,
                     "plan_digest": context.plan_digest,
                     "execution_tier": context.execution_tier.value,

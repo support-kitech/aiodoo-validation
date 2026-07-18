@@ -57,7 +57,7 @@ aiodoo-validation validate \
 | `--base-model` | Yes | — | Base model artifact path or reference |
 | `--adapter` | Yes | — | Adapter artifact path or reference |
 | `--merged-model` | No | — | Optional merged model reference |
-| `--execution-tier` | No | `standard` | `smoke`, `standard`, or `full` |
+| `--execution-tier` | No | `standard` | `smoke`, `standard`, `full`, or `prod` (`prod` ≡ `full`) |
 | `--run-id` | No | generated | Optional run identifier |
 | `--odoo-versions` | No | `17,18,19` | Comma-separated Odoo major versions |
 | `--debug` | No | off | Show tracebacks for unexpected errors |

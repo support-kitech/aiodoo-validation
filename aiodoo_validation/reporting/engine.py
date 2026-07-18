@@ -275,7 +275,7 @@ class ReportGenerator:
             overall_status=overall_status,
             warnings=tuple(warnings),
             errors=tuple(errors),
-            metadata=MappingProxyType({"placeholder_pipeline": True}),
+            metadata=MappingProxyType({"registry_pipeline": True}),
         )
         success = failure_count == 0 and not errors
         return ReportExecutionOutcome(
@@ -309,4 +309,89 @@ class ReportGenerator:
             certification_execution=certification_execution,
             configuration=MappingProxyType(dict(plan.configuration)),
             metadata=MappingProxyType({"run_metadata_keys": tuple(sorted(context.metadata))}),
+            run_summary=MappingProxyType(_build_run_summary(context)),
         )
+
+
+def _build_run_summary(context: RunContext) -> dict[str, object]:
+    """Machine-readable summary for richer production reports."""
+    oracle = context.oracle_execution
+    scores = context.score_execution
+    bench = context.benchmark_execution
+    cert = context.certification_execution
+    session = context.inference_session
+    structural_ids: list[str] = []
+    behavior_ids: list[str] = []
+    if oracle is not None:
+        for result in oracle.results:
+            kind = str(result.metadata.get("validation_kind", "structural"))
+            if kind == "behavioral":
+                behavior_ids.append(result.oracle_id)
+            else:
+                structural_ids.append(result.oracle_id)
+    return {
+        "execution_tier": context.execution_tier.value,
+        "profile": context.request.profile_name,
+        "warnings": tuple(context.warnings),
+        "errors": tuple(context.errors),
+        "timing_ms": {
+            "oracle": None if oracle is None else oracle.duration_ms,
+            "scoring": None if scores is None else scores.duration_ms,
+            "benchmark": None if bench is None else bench.duration_ms,
+            "certification": None if cert is None else cert.duration_ms,
+        },
+        "structural_validation": {
+            "oracle_ids": tuple(structural_ids),
+            "success_count": None if oracle is None else oracle.success_count,
+            "failure_count": None if oracle is None else oracle.failure_count,
+        },
+        "behavior_validation": {
+            "oracle_ids": tuple(behavior_ids),
+            "enabled": bool(behavior_ids),
+            "status": "active" if behavior_ids else "deferred_no_corpus",
+        },
+        "oracle_summary": None
+        if oracle is None
+        else {
+            "oracle_count": oracle.oracle_count,
+            "success_count": oracle.success_count,
+            "failure_count": oracle.failure_count,
+        },
+        "score_summary": None
+        if scores is None
+        else {
+            "policy_count": scores.policy_count,
+            "aggregate_score": scores.aggregate_score,
+            "success_count": scores.success_count,
+        },
+        "benchmark_summary": None
+        if bench is None
+        else {
+            "policy_count": bench.policy_count,
+            "aggregate_benchmark_score": bench.aggregate_benchmark_score,
+            "success_count": bench.success_count,
+        },
+        "certification_decision": None
+        if cert is None
+        else {
+            "overall_certified": cert.overall_certified,
+            "certified_count": cert.certified_count,
+            "aggregate_certification_score": cert.aggregate_certification_score,
+        },
+        "inference": None
+        if session is None
+        else {
+            "runtime": session.runtime,
+            "model_identifier": session.model_identifier,
+            "adapter_type": session.adapter_type,
+            "ready": session.ready,
+        },
+        "artifacts": {
+            "base_model_ref": context.request.base_model_ref,
+            "adapter_ref": context.request.adapter_ref,
+            "merged_model_ref": context.request.merged_model_ref,
+            "bundle_digest": None
+            if context.artifact_bundle is None
+            else context.artifact_bundle.bundle_digest,
+        },
+    }

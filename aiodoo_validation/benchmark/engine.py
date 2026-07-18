@@ -266,7 +266,7 @@ class BenchmarkEngine:
             aggregate_benchmark_score=aggregate,
             warnings=tuple(warnings),
             errors=tuple(errors),
-            metadata=MappingProxyType({"placeholder_pipeline": True}),
+            metadata=MappingProxyType({"registry_pipeline": True}),
         )
         success = failure_count == 0 and not errors
         return BenchmarkExecutionOutcome(

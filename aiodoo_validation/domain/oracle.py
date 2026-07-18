@@ -12,6 +12,7 @@ from aiodoo_validation.domain.enums import (
     ExecutionTier,
     OracleErrorCode,
     StageStatus,
+    ValidationKind,
     ValidationStage,
 )
 from aiodoo_validation.domain.inference import InferenceSession
@@ -25,6 +26,7 @@ class OracleCapability:
     placeholder: bool = True
     reads_artifacts: bool = False
     uses_inference: bool = False
+    validation_kind: ValidationKind = ValidationKind.STRUCTURAL
 
 
 @dataclass(frozen=True, slots=True)

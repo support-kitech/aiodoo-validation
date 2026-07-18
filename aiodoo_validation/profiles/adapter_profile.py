@@ -10,7 +10,12 @@ from typing import Any
 
 from aiodoo_validation.domain.artifacts import ArtifactBundle
 from aiodoo_validation.domain.context import RunContext
-from aiodoo_validation.domain.enums import ArtifactType, ProfileErrorCode, SupportedValidationProfile, ValidationStage
+from aiodoo_validation.domain.enums import (
+    ArtifactType,
+    ProfileErrorCode,
+    SupportedValidationProfile,
+    ValidationStage,
+)
 from aiodoo_validation.domain.profile import ProfileError, ResolvedProfile
 from aiodoo_validation.validation_plan import (
     PipelineStagePlaceholder,
@@ -168,8 +173,8 @@ class AdapterProfile(ResolvedProfile):
             profile_name=self.profile_name,
             plan_digest=plan_digest,
             capabilities=self.capabilities,
-            supported_artifact_types=self.supported_artifact_types,
-            supported_runtimes=self.supported_runtimes,
+            supported_artifact_types=tuple(sorted(self.supported_artifact_types)),
+            supported_runtimes=tuple(sorted(self.supported_runtimes)),
             oracle_pipeline=self.oracle_pipeline,
             scoring_pipeline=self.scoring_pipeline,
             benchmark_pipeline=self.benchmark_pipeline,

@@ -1,9 +1,10 @@
-# Coding Validation Profile (Phase 4+)
+# Coding Validation Profile
 
-**Status:** Phase 4 complete; Phase 5 wires the declared oracle pipeline to placeholder oracles
+**Status:** Production coding profile active (structural validation path)
 
-The **Coding Profile** is the first real validation profile. All coding-specific
-policy lives under `profiles/coding/`. The Validation Engine remains generic.
+The **Coding Profile** is the first real validation profile. Coding-specific
+policy lives under `profiles/coding/`. Additional adapter profiles reuse
+`AdapterProfile`. The Validation Engine remains generic.
 
 ## Architecture
 
@@ -12,13 +13,13 @@ Validation Engine
     ↓ ProfileEnginePort
 ProfileEngine
     ↓ ProfileResolver
-CodingProfile
+CodingProfile / AdapterProfile
     ↓ plan builder
 ValidationPlan
     ↓ attached to RunContext
 Inference Runner
     ↓
-Oracle Framework (executes plan.oracle_pipeline)
+Oracle Framework (structural production oracles)
 ```
 
 The engine never branches on `"coding"`. It only calls `ProfileEnginePort.resolve_profile()`.

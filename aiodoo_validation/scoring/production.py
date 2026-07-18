@@ -6,11 +6,16 @@ from dataclasses import dataclass
 from time import perf_counter
 from types import MappingProxyType
 
+from aiodoo_validation.domain.enums import ValidationKind
 from aiodoo_validation.domain.scoring import (
     ScoreCapability,
     ScoreContext,
     ScoreMetadata,
     ScoreResult,
+)
+from aiodoo_validation.scoring.dimensions import (
+    behavior_dimensions_from_suite,
+    structural_dimensions_from_oracle,
 )
 
 
@@ -38,14 +43,41 @@ def _metadata(
 
 @dataclass(frozen=True, slots=True)
 class OracleOutcomeScorePolicy:
-    """Score 100 when the source oracle succeeded, else 0."""
+    """
+    Score from oracle outcome.
+
+    Structural oracles: 100 on success, 0 on failure.
+    Behavioral oracles (when enabled): use suite pass_rate; deferred → 0.
+    Emits multi-dimensional metadata for future weighted certification.
+    """
 
     metadata: ScoreMetadata
 
     def score(self, context: ScoreContext) -> ScoreResult:
         started = perf_counter()
+        oracle_meta = context.oracle_result.metadata
         success = bool(context.oracle_result.success)
-        score = 100.0 if success else 0.0
+        deferred = bool(oracle_meta.get("deferred", False))
+        kind = str(oracle_meta.get("validation_kind", ValidationKind.STRUCTURAL.value))
+
+        if kind == ValidationKind.BEHAVIORAL.value:
+            if deferred:
+                score = 0.0
+                dimensions = behavior_dimensions_from_suite(pass_rate=None, oracle_score=0.0)
+            else:
+                pass_rate = oracle_meta.get("pass_rate")
+                score = float(pass_rate) if pass_rate is not None else (100.0 if success else 0.0)
+                dimensions = behavior_dimensions_from_suite(
+                    pass_rate=score,
+                    oracle_score=score,
+                )
+        else:
+            score = 100.0 if success else 0.0
+            dimensions = structural_dimensions_from_oracle(
+                oracle_success=success,
+                score=score,
+            )
+
         duration_ms = max(0, int((perf_counter() - started) * 1000))
         return ScoreResult(
             policy_id=self.metadata.policy_id,
@@ -55,7 +87,7 @@ class OracleOutcomeScorePolicy:
             message=(
                 f"Score {score:.1f} from oracle "
                 f"{context.oracle_result.oracle_id!r} "
-                f"(success={success})."
+                f"(success={success}, kind={kind})."
             ),
             duration_ms=duration_ms,
             metadata=MappingProxyType(
@@ -63,6 +95,11 @@ class OracleOutcomeScorePolicy:
                     "placeholder": False,
                     "oracle_success": success,
                     "oracle_duration_ms": context.oracle_result.duration_ms,
+                    "deferred": deferred,
+                    "dimensions": dict(dimensions.as_mapping()),
+                    "tokens_per_sec": oracle_meta.get("tokens_per_sec"),
+                    "memory_mb": oracle_meta.get("memory_mb"),
+                    "latency_ms": oracle_meta.get("latency_ms"),
                 }
             ),
         )

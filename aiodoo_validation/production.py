@@ -76,7 +76,7 @@ class TierAwareInferenceRunner:
             return InferenceInitializationOutcome(
                 success=True,
                 message=(
-                    "Qwen runtime unavailable; using mock inference for structural validation. "
+                    "Qwen runtime unavailable; using mock inference for smoke/full validation. "
                     + (" ".join(warnings) if warnings else "")
                 ).strip(),
                 session=fallback.session,
@@ -110,12 +110,12 @@ def _register_profile_stack(
 ) -> None:
     for oracle in default_production_oracles(profile=profile):
         oracle_registry.register(oracle)
-    for policy in default_production_score_policies(profile=profile):
-        score_registry.register(policy)
-    for policy in default_production_benchmark_policies(profile=profile):
-        bench_registry.register(policy)
-    for policy in default_production_certification_policies(profile=profile):
-        cert_registry.register(policy)
+    for score_policy in default_production_score_policies(profile=profile):
+        score_registry.register(score_policy)
+    for bench_policy in default_production_benchmark_policies(profile=profile):
+        bench_registry.register(bench_policy)
+    for cert_policy in default_production_certification_policies(profile=profile):
+        cert_registry.register(cert_policy)
     for template in default_production_report_templates(profile=profile):
         report_registry.register(template)
 

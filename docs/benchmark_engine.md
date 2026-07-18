@@ -1,6 +1,6 @@
-# Benchmark Engine (Phase 7)
+# Benchmark Engine
 
-**Status:** Phase 7 — placeholder benchmarking only (no real comparisons)
+**Status:** Production threshold benchmarking active; optional runtime metrics when present
 
 The **Benchmark Engine** consumes `ScoreExecutionResult` and produces immutable
 benchmark results. It never inspects XML, Python, manifests, security files, or
@@ -16,17 +16,14 @@ Incorrect:
   BenchmarkEngine → Oracle / XML / Python / filesystem / scoring formulas
 ```
 
-```text
-Validation Engine
-    ↓ OracleRunnerPort
-Oracle Framework
-    ↓ ScoringEnginePort
-Scoring Engine
-    ↓ score_execution on RunContext
-BenchmarkEnginePort
-    ↓ BenchmarkEngine → BenchmarkRegistry → BenchmarkPolicy
-BenchmarkExecutionResult → RunContext.benchmark_execution
-```
+## Production behavior
+
+Production policies pass when the source score meets the threshold (100 for
+structural oracles). Metadata records real metrics when scoring/oracle results
+provide them (`latency_ms`, `tokens_per_sec`, `memory_mb`); otherwise values
+remain `None` — never fabricated.
+
+Stub/placeholder policies remain available for `create_with_stubs()` tests only.
 
 ## Components
 
@@ -34,102 +31,13 @@ BenchmarkExecutionResult → RunContext.benchmark_execution
 |-----------|----------------|
 | `BenchmarkEnginePort` | Port: `benchmark(context) → BenchmarkExecutionOutcome` |
 | `BenchmarkEngine` | Read plan/profile/score results; run policies |
-| `BenchmarkRegistry` | Register / resolve policies by ID (plugin-ready) |
+| `BenchmarkRegistry` | Register / resolve policies by ID |
 | `BenchmarkPolicy` protocol | Metadata + `benchmark(BenchmarkContext) → BenchmarkResult` |
-| Placeholder policies | Deterministic score `100.0`, pass `True`, rank `1` |
+| Production policies | Threshold pass + optional runtime metrics |
+| Placeholder policies | Stub path / unit tests only |
 
 ## Benchmark ID convention (frozen)
 
 Format: `{profile}.benchmark.{name}` — maps 1:1 to `{profile}.score.{name}`
 
-Centralized in `aiodoo_validation.benchmark.ids`.
-
-**These IDs are frozen and must never be renamed.** Future phases and plugins
-must reuse them unchanged.
-
-| Policy ID | Source Score Policy ID |
-|-----------|------------------------|
-| `coding.benchmark.metadata` | `coding.score.metadata` |
-| `coding.benchmark.manifest` | `coding.score.manifest` |
-| `coding.benchmark.python` | `coding.score.python` |
-| `coding.benchmark.xml` | `coding.score.xml` |
-| `coding.benchmark.security` | `coding.score.security` |
-| `coding.benchmark.module_structure` | `coding.score.module_structure` |
-| `coding.benchmark.quality` | `coding.score.quality` (disabled in plan) |
-
-## What Benchmark does NOT do
-
-Benchmark **never**:
-
-- validates artifacts or runs oracles
-- scores findings (scoring already happened upstream)
-- parses XML / Python / manifests
-- inspects the filesystem
-- executes inference
-
-Benchmark **only** consumes `ScoreExecutionResult` / `ScoreResult`.
-
-## Lifecycle
-
-1. Require `validation_plan`, `validation_profile`, `score_execution`
-2. Require `capabilities.supports_benchmark`
-3. For each **enabled** `benchmark_pipeline` stage:
-   - Resolve policy from registry
-   - Match profile
-   - Locate matching `ScoreResult` by `source_score_policy_id`
-   - Invoke policy with `BenchmarkContext` (score result only)
-4. Aggregate into `BenchmarkExecutionResult` (placeholder mean of 100s)
-5. Attach `benchmark_execution` to `RunContext`
-
-## Placeholder behavior
-
-Every enabled policy returns:
-
-- `benchmark_score = 100.0`
-- `benchmark_pass = True`
-- `benchmark_rank = 1`
-
-No dataset comparison, historical analysis, leaderboards, or statistics.
-
-## Placeholder Aggregate
-
-The `aggregate_benchmark_score` is the arithmetic mean of successful placeholder
-benchmark scores.
-
-This is **NOT** production benchmarking.
-
-It exists only to validate pipeline wiring and must not be interpreted as a
-production quality metric. Future certification (and later report phases) will
-consume structured `BenchmarkExecutionResult` values — not this aggregate as a
-quality verdict.
-
-## RunContext integration
-
-After successful BENCHMARK:
-
-- `benchmark_execution: BenchmarkExecutionResult`
-
-Full context after Phase 7:
-
-`artifact_bundle` · `validation_profile` · `validation_plan` · `inference_session`
-· `oracle_execution` · `score_execution` · `benchmark_execution`
-
-## Error handling
-
-Structured `BenchmarkError` / `BenchmarkErrorCode`:
-
-- `missing_score_results` / `missing_plan` / `missing_profile`
-- `policy_not_found` / `registration_failure`
-- `capability_mismatch` / `profile_mismatch`
-- `score_result_missing` / `execution_failure` / `configuration_failure`
-
-## Future extensibility
-
-- Register real comparison logic inside policy `benchmark` methods
-- Enable quality benchmark when quality scoring is enabled
-- New profiles: `{profile}.benchmark.{name}` consuming matching score IDs
-
-## Explicitly not implemented
-
-No real algorithms, datasets, historical comparison, certification, reports,
-CLI, XML/AST/filesystem inspection, validation, scoring, or ecosystem integrations.
+Centralized in `aiodoo_validation.benchmark.ids`. **Do not rename.**

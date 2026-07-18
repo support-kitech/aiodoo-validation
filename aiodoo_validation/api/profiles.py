@@ -10,6 +10,7 @@ from aiodoo_validation.domain.enums import (
     SupportedValidationProfile,
     ValidationStage,
 )
+from aiodoo_validation.domain.profile import ResolvedProfile
 from aiodoo_validation.domain.request import SUPPORTED_PROFILES
 from aiodoo_validation.engine import PIPELINE_STAGE_ORDER
 from aiodoo_validation.profiles.adapter_profile import AdapterProfile
@@ -40,6 +41,7 @@ def get_profile_info(profile_name: str) -> ProfileInfo:
     if profile_name not in SUPPORTED_PROFILES:
         raise ValueError(f"Unsupported profile {profile_name!r}.")
     odoo_versions = (OdooVersion.V17, OdooVersion.V18, OdooVersion.V19)
+    profile: ResolvedProfile
     if profile_name == SupportedValidationProfile.CODING.value:
         profile = CodingProfile.create(odoo_versions=odoo_versions)
     else:

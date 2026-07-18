@@ -13,71 +13,49 @@ for the **v1.x** release series.
 
 Internal implementation packages — `engine`, `oracles`, `scoring`, `benchmark`,
 `certification`, `reporting`, `profiles`, `validation_plan`, `ports`, `domain`,
-`stubs`, `resolution`, `inference` — are intentionally excluded from the
-compatibility guarantee.
+`stubs`, `resolution`, `inference`, `behavior`, `comparators` — are intentionally
+excluded from the compatibility guarantee.
 
 ## Status
 
-| Phase | Status |
-|-------|--------|
-| Vision | Frozen |
-| Architecture | Frozen |
-| Technical Design | Frozen |
-| Implementation Plan | Frozen |
-| **Phase 0 — Repository Foundation** | **Complete** |
-| **Phase 1 — Validation Engine Core** | **Complete** |
-| **Phase 2 — Artifact Resolution** | **Complete** |
-| **Phase 3 — Inference Runner** | **Complete** |
-| **Phase 4 — Coding Validation Profile** | **Complete** |
-| **Phase 5 — Oracle Framework** | **Complete** |
-| **Phase 6 — Scoring Engine** | **Complete / Frozen** |
-| **Phase 7 — Benchmark Engine** | **Complete** |
-| **Phase 8 — Certification Engine** | **Complete** |
-| **Phase 9 — Report Generation** | **Complete** |
-| **Phase 10 — Production CLI** | **Complete** |
-| **Phase 11 — Ecosystem Integration** | **Complete** |
-| **Phase 12 — Production Readiness** | **Complete** |
-| **Phase 13 — v1.0.0 Release** | **Complete / Frozen** |
+| Area | Status |
+|------|--------|
+| Vision / Architecture / TDD | Frozen |
+| Validation Protocol V1 pipeline | Frozen |
+| Public API + CLI | Frozen |
+| Production structural validation | Active |
+| Behavioral validation | Architecture ready (no corpora) |
+| **Repository** | **Ready to freeze for v1.x structural certification** |
 
-**Repository version:** v1.0.0 — maintenance mode
+**Repository version:** v1.0.0
 
-## Current capabilities (v1.0.0)
+## Current capabilities
 
-- Production repository foundation (CI, lint, typing, tests, docs)
-- **Validation Engine** with full TDD lifecycle ordering (generic orchestration)
+- **Validation Engine** — frozen Protocol V1 lifecycle
 - **Public Integration API** — `ValidationService`, metadata, builders, helpers
-- **Artifact Resolution** — filesystem and stub resolvers
-- **Coding Validation Profile** — profile selection, compatibility, ValidationPlan
-- **Inference Runner** — mock (CI default) and optional Qwen runtime
-- **Oracle Framework** — registry + placeholder oracle pipeline execution
-- **Scoring Engine** — consumes oracle results only; placeholder deterministic scores
-- **Benchmark Engine** — consumes score results only; placeholder comparisons
-- **Certification Engine** — consumes benchmark results only; placeholder certification
-- **Report Generator** — consumes certification results only; placeholder report objects
-- **Production CLI** — validate, version, capabilities, help; plain terminal output
-- Immutable **RunContext** through report execution
-- Deterministic CPU-only tests — no GPU, no model downloads in CI
+- **CLI** — `validate`, `version`, `capabilities`, `help`
+- **Profiles** — coding, planner, repair, conversation, execution, approval, evaluation
+- **Execution tiers** — `standard` (never certifies), `smoke`, `full`, `prod`≡`full`
+- **Structural / artifact validation** — production oracles on resolved artifacts
+- **Scoring / benchmark / certification** — production policies from structural signals
+- **Profile-aware labels** — e.g. `coding-certified` / `coding-not-certified`
+- **Reports** — machine-readable structural/behavior summaries (no PDF/HTML export)
+- **Behavior + comparator architecture** — exact, normalized, AST, XML, JSON, token similarity
+- Stub pipeline retained for unit tests (`create_with_stubs`)
 
-## Known limitations (v1.0.0)
+## Known limitations (intentional)
 
-The following are **intentional** placeholder implementations in v1.0.0:
+| Limitation | Status |
+|------------|--------|
+| Behavioral evaluation corpora | Not loaded — deferred by design |
+| Semantic / rule-based AI comparators | Deferred (no fake similarity) |
+| Behavior-gated certification | Criteria exist; gate off until corpora |
+| Content fingerprint hashing | Placeholder digests (Phase 2) |
+| PDF / HTML / Markdown report rendering | Future consumer integrations |
+| `merged` / `foundation` profiles | Intentionally unsupported |
+| GPU inference in CI | Not required (CPU-only tests) |
 
-- Oracle logic — placeholder deterministic execution
-- Scoring — placeholder deterministic scores
-- Benchmark — placeholder comparisons
-- Certification — placeholder certification decisions
-- Reports — placeholder report objects (no PDF, HTML, JSON, or Markdown rendering)
-- No Web UI, async execution, plugin system, or distributed execution
-- No GPU inference in CI (CPU-only tests)
-
-See [CHANGELOG](CHANGELOG.md) for the full release notes and future roadmap.
-
-## Not yet implemented (deferred by design)
-
-| Component | Status |
-|-----------|--------|
-| Real oracle / scoring / benchmark / certification logic | Post-v1.0 maintenance |
-| PDF / HTML / Markdown / JSON report rendering | Future consumer integrations |
+See [behavioral_validation.md](docs/behavioral_validation.md) for structural vs behavioral honesty.
 
 ## Public API
 
@@ -85,7 +63,11 @@ See [CHANGELOG](CHANGELOG.md) for the full release notes and future roadmap.
 from aiodoo_validation.api import ValidationService, build_coding_request
 
 service = ValidationService.create_default()
-request = build_coding_request(base_model_ref="./base", adapter_ref="./adapter")
+request = build_coding_request(
+    base_model_ref="./base",
+    adapter_ref="./adapter",
+    execution_tier="smoke",
+)
 result = service.validate(request)
 ```
 
@@ -97,32 +79,34 @@ See [Integration guide](docs/integration.md).
 python3 -m pip install -r requirements/dev.txt
 python3 -m pytest
 python3 -m aiodoo_validation help
-aiodoo-validation validate --profile coding --base-model ./base --adapter ./adapter
+aiodoo-validation validate \
+    --profile coding \
+    --base-model ./base \
+    --adapter ./adapter \
+    --execution-tier smoke \
+    --odoo-versions 18
 ```
 
 ## Scope
 
-**In scope:** validate trained artifacts, emit certification evidence (future), coding profile first.
+**In scope:** validate trained artifacts, structural certification, profile-aware evidence.
 
-**Out of scope:** training, dataset generation, model registry, agent runtime, deployment.
+**Out of scope:** training, dataset generation, model registry, agent runtime, deployment,
+invented evaluation corpora, fake semantic scoring.
 
 ## Documentation
 
 - [Architecture summary](docs/architecture.md)
-- [Architecture audit (Phase 0–3)](docs/architecture_audit.md)
+- [Structural vs Behavioral Validation](docs/behavioral_validation.md)
 - [Implementation status](docs/implementation_status.md)
-- [Artifact Bundle (Phase 2)](docs/artifact_bundle.md)
-- [Inference Runner (Phase 3)](docs/inference_runner.md)
-- [Coding Validation Profile (Phase 4)](docs/coding_profile.md)
-- [Oracle Framework (Phase 5)](docs/oracle_framework.md)
-- [Scoring Engine (Phase 6)](docs/scoring_engine.md)
-- [Benchmark Engine (Phase 7)](docs/benchmark_engine.md)
-- [Certification Engine (Phase 8)](docs/certification_engine.md)
-- [Report Generation (Phase 9)](docs/report_generation.md)
-- [Production CLI (Phase 10)](docs/cli.md)
-- [Ecosystem Integration (Phase 11)](docs/integration.md)
+- [Oracle Framework](docs/oracle_framework.md)
+- [Scoring Engine](docs/scoring_engine.md)
+- [Benchmark Engine](docs/benchmark_engine.md)
+- [Certification Engine](docs/certification_engine.md)
+- [Report Generation](docs/report_generation.md)
+- [Production CLI](docs/cli.md)
+- [Ecosystem Integration](docs/integration.md)
 - [Changelog](CHANGELOG.md)
-- [ADR template](docs/adr/0000-adr-template.md)
 
 ## License
 
