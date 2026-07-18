@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- E7 evaluation corpus governance: `CorpusPin` / `CorpusPinRegistry`,
+  `ProductionCorpusLookup`, `evaluation_corpus_id` plan resolution,
+  builtin repair fixture pin, pin verification after load, unit tests in
+  `tests/unit/test_e7_corpus_governance.py`, integration test in
+  `tests/integration/test_e7_corpus_pinning.py`
 - E6 behavioral scoring integration: `scoring.evidence` metadata interpretation,
   `scoring.policy_loader` / `scoring.policy_defaults` for
   `default_scoring_policy_ref`, `BehavioralEvidenceScorePolicy`

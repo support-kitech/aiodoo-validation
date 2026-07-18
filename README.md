@@ -28,7 +28,7 @@ guarantee.
 | Public API + CLI | Frozen |
 | Spec v1.0 documentation | Frozen (authoritative in `docs/`) |
 | Production structural validation | Active |
-| Capability Delivery (EEP E0–E8) | E0–E6 frozen — E7 next |
+| Capability Delivery (EEP E0–E8) | E0–E7 frozen — E8 next |
 | Behavioral validation | Repair wired (corpus-gated); others deferred |
 | **Repository** | Spec synced; structural cert ready for v1.x |
 
@@ -43,6 +43,7 @@ guarantee.
 - **Execution tiers** — `standard` (never certifies), `smoke`, `full`, `prod`≡`full`
 - **Structural / artifact validation** — production oracles on resolved artifacts
 - **Scoring / benchmark / certification** — structural policies; repair behavioral multi-dimension scoring (E6)
+- **Corpus governance** — pin by `evaluation_corpus_id` (path is location detail); fingerprint-verified (E7)
 - **Profile-aware labels** — e.g. `coding-certified` / `coding-not-certified`
 - **Reports** — machine-readable structural/behavior summaries (no PDF/HTML export)
 - **Behavior + comparator architecture** — exact, normalized, AST, XML, JSON, token similarity
@@ -52,8 +53,8 @@ guarantee.
 
 | Limitation | Status |
 |------------|--------|
-| Behavioral evaluation corpora | Optional via request metadata `evaluation_corpus_path` (repair); deferred if unset |
-| Capability Delivery implementation | E0–E6 done; E7+ not started (see EEP) |
+| Behavioral evaluation corpora | Prefer `evaluation_corpus_id`; path still accepted; deferred if unset |
+| Capability Delivery implementation | E0–E7 done; E8 not started (see EEP) |
 | Semantic / rule-based AI comparators | Deferred (no fake similarity) |
 | Behavior-gated certification | Criteria exist; gate off until E8 + approval |
 | Content fingerprint hashing | Placeholder digests (artifact resolution era) |

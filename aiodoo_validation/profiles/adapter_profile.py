@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Any
 
-from aiodoo_validation.corpus.provider import EVALUATION_CORPUS_PATH_KEY
+from aiodoo_validation.corpus.governance import resolve_evaluation_corpus_configuration
 from aiodoo_validation.domain.artifacts import ArtifactBundle
 from aiodoo_validation.domain.context import RunContext
 from aiodoo_validation.domain.enums import (
@@ -226,11 +226,12 @@ class AdapterProfile(ResolvedProfile):
                 "protocol_minor": context.protocol_minor,
                 "odoo_versions": context.request.odoo_versions,
                 "bundle_digest": bundle.bundle_digest,
-                **{
-                    key: value
-                    for key, value in dict(context.request.metadata).items()
-                    if key == EVALUATION_CORPUS_PATH_KEY
-                },
+                **dict(
+                    resolve_evaluation_corpus_configuration(
+                        capability_id=self.profile_name,
+                        metadata=context.request.metadata,
+                    )
+                ),
             },
         )
 
