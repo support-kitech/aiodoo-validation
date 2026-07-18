@@ -1,6 +1,12 @@
 # Coding Validation Profile
 
-**Status:** Production coding profile active (structural validation path)
+**Status:** Production coding profile active (structural validation path)  
+**Specification:** [SPECIFICATION_V1.md](SPECIFICATION_V1.md)
+
+> **Note:** Passages below that describe “Phase 5/6 placeholder oracles/scoring”
+> are **historical**. Production structural oracles and scoring are active on the
+> filesystem CLI path. Capability Delivery for Repair and others follows the EEP,
+> not a coding-only redesign.
 
 The **Coding Profile** is the first real validation profile. Coding-specific
 policy lives under `profiles/coding/`. Additional adapter profiles reuse

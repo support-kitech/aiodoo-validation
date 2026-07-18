@@ -4,6 +4,8 @@
 
 Production-grade validation for trained AIODOO adapters and exports. This repository determines whether a trained model is suitable for production — it does **not** train models, generate datasets, manage a model registry, or run AIODOO agents.
 
+**Specification Version 1.0:** start at [docs/SPECIFICATION_V1.md](docs/SPECIFICATION_V1.md).
+
 ## Repository Stability
 
 Validation Protocol V1 is **architecturally frozen**.
@@ -23,9 +25,11 @@ excluded from the compatibility guarantee.
 | Vision / Architecture / TDD | Frozen |
 | Validation Protocol V1 pipeline | Frozen |
 | Public API + CLI | Frozen |
+| Spec v1.0 documentation | Frozen (authoritative in `docs/`) |
 | Production structural validation | Active |
+| Capability Delivery (EEP E0–E8) | Planned — code not started (E0 domain types next) |
 | Behavioral validation | Architecture ready (no corpora) |
-| **Repository** | **Ready to freeze for v1.x structural certification** |
+| **Repository** | Spec synced; structural cert ready for v1.x |
 
 **Repository version:** v1.0.0
 
@@ -48,9 +52,10 @@ excluded from the compatibility guarantee.
 | Limitation | Status |
 |------------|--------|
 | Behavioral evaluation corpora | Not loaded — deferred by design |
+| Capability Delivery implementation | Not started (see EEP) |
 | Semantic / rule-based AI comparators | Deferred (no fake similarity) |
-| Behavior-gated certification | Criteria exist; gate off until corpora |
-| Content fingerprint hashing | Placeholder digests (Phase 2) |
+| Behavior-gated certification | Criteria exist; gate off until E8 + approval |
+| Content fingerprint hashing | Placeholder digests (artifact resolution era) |
 | PDF / HTML / Markdown report rendering | Future consumer integrations |
 | `merged` / `foundation` profiles | Intentionally unsupported |
 | GPU inference in CI | Not required (CPU-only tests) |
@@ -67,6 +72,7 @@ request = build_coding_request(
     base_model_ref="./base",
     adapter_ref="./adapter",
     execution_tier="smoke",
+    odoo_versions=18,
 )
 result = service.validate(request)
 ```
@@ -96,6 +102,11 @@ invented evaluation corpora, fake semantic scoring.
 
 ## Documentation
 
+- **[Specification Version 1.0](docs/SPECIFICATION_V1.md)** — start here
+- [Capability Validation Contract](docs/capability_validation_contract.md)
+- [Capability Specification](docs/capability_specification.md)
+- [Engineering Execution Plan](docs/engineering_execution_plan.md)
+- [Delivery Governance](docs/delivery_governance.md)
 - [Architecture summary](docs/architecture.md)
 - [Structural vs Behavioral Validation](docs/behavioral_validation.md)
 - [Implementation status](docs/implementation_status.md)

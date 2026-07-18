@@ -1,6 +1,8 @@
 # Architecture (summary)
 
-**Status:** Validation Protocol V1 pipeline frozen; production implementations evolve inside existing stages.
+**Status:** Validation Protocol V1 pipeline frozen; production implementations evolve inside existing stages.  
+**Specification:** [SPECIFICATION_V1.md](SPECIFICATION_V1.md) (Capability Delivery plan + glossary).  
+**Governance:** [delivery_governance.md](delivery_governance.md).
 
 `aiodoo-validation` is the **Canonical Evaluation & Certification Framework for AIODOO Models**.
 
@@ -46,7 +48,7 @@ See [behavioral_validation.md](behavioral_validation.md).
 | aiodoo-datasets | Consumes pinned eval fixtures (read-only, future) |
 | aiodoo-colab | Orchestrates validation runs |
 | aiodoo-core | Protocol alignment only — no runtime coupling |
-| aiodoo-models | Promotion target for certification records (future) |
+| aiodoo-model | Promotion / packaging target for certified products (future) |
 
 ## Profiles
 
@@ -55,6 +57,12 @@ Supported adapter profiles share one architecture (`CodingProfile` + `AdapterPro
 `coding`, `planner`, `repair`, `conversation`, `execution`, `approval`, `evaluation`
 
 Future `merged` / `foundation` profiles remain intentionally unsupported until designed.
+
+## Capability Delivery
+
+Independent capability adapters (Repair first) follow the
+[Capability Validation Contract](capability_validation_contract.md).
+Implementation sequence: [engineering_execution_plan.md](engineering_execution_plan.md).
 
 ## Compatibility
 

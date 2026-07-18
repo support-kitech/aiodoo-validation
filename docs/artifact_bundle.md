@@ -1,6 +1,11 @@
-# Artifact Bundle (Phase 2)
+# Artifact Bundle
 
-**Status:** Phase 2 — resolution only (no model loading)
+> **Historical phase name:** This document describes the **Artifact Resolution**
+> workstream, which was called “Phase 2” during early Protocol V1 build-out.
+> That name is **not** the Capability Delivery track (EEP E0–E8).
+> See [SPECIFICATION_V1.md](SPECIFICATION_V1.md).
+
+**Status:** Artifact resolution contract (metadata and paths; no model weight loading in this stage)
 
 The **Artifact Bundle** is the immutable output of artifact resolution. Downstream
 pipeline stages must consume this object and must **not** read raw filesystem paths

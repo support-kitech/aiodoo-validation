@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Spec Version 1.0 documentation freeze: [SPECIFICATION_V1.md](docs/SPECIFICATION_V1.md),
+  [capability_validation_contract.md](docs/capability_validation_contract.md),
+  [capability_specification.md](docs/capability_specification.md),
+  [engineering_execution_plan.md](docs/engineering_execution_plan.md),
+  [delivery_governance.md](docs/delivery_governance.md)
+- Historical banners / cross-links for Artifact Resolution vs Capability Delivery naming
 - Deterministic comparators: AST, XML, JSON, token similarity (no AI)
 - Behavioral validation architecture (`domain.behavior`, `behavior.BehaviorRunner`,
   `oracles.behavioral`) — prompt → inference → comparator → score hooks
@@ -28,6 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- [implementation_status.md](docs/implementation_status.md) and README reflect Spec v1.0
+  and Capability Delivery E0–E8 (code not started)
 - README and engine docs updated to reflect production structural path (no longer
   claiming placeholder-only oracles/scoring/certification/reports for CLI default)
 - Coding profile strategy label: `coding-v1-structural`

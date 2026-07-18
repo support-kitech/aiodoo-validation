@@ -1,9 +1,11 @@
 # Architecture Audit (Post Phase 0–3)
 
 > **Historical document.** Snapshot from 2026-07-17 after Phases 0–3.
-> For current production status see [implementation_status.md](implementation_status.md)
-> and [behavioral_validation.md](behavioral_validation.md). Do not treat Phase 0–3
-> “placeholder package” notes as the live CLI/filesystem path.
+> For current production status see [implementation_status.md](implementation_status.md),
+> [behavioral_validation.md](behavioral_validation.md), and
+> [SPECIFICATION_V1.md](SPECIFICATION_V1.md).
+> Do not treat Phase 0–3 “placeholder package” notes as the live CLI/filesystem path.
+> Do not treat this document as the Capability Delivery plan (see EEP).
 
 **Date:** 2026-07-17  
 **Scope:** Phases 0–3 complete — pre–Phase 4 freeze review  

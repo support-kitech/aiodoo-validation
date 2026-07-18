@@ -1,6 +1,7 @@
 # Structural vs Behavioral Validation
 
-**Status:** Architecture complete for both; production certification is structural today.
+**Status:** Architecture complete for both; production certification is structural today.  
+**Specification:** [SPECIFICATION_V1.md](SPECIFICATION_V1.md) · **Contract:** [capability_validation_contract.md](capability_validation_contract.md) (train/eval fail-closed rules).
 
 This document distinguishes what the framework **does now** from what it is
 **ready to do** once evaluation corpora exist.
