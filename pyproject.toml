@@ -1,10 +1,11 @@
 # Tooling configuration only.
-# Run from the repository root with: python3 -m aiodoo_validation
-# Or use the console script: scripts/aiodoo-validation
+# Prefer: PYTHONPATH=. python3 -m aiodoo_validation
+# Or: ./scripts/aiodoo-validation
+# Not published to PyPI (no build-system table). project.scripts is metadata only.
 
 [project]
 name = "aiodoo-validation"
-version = "1.0.0"
+version = "2.0.0"
 description = "Canonical Evaluation & Certification Framework for AIODOO Models"
 readme = "README.md"
 license = { text = "Apache-2.0" }

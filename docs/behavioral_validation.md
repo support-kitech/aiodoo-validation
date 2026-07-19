@@ -1,47 +1,50 @@
 # Structural vs Behavioral Validation
 
-**Status:** Architecture complete for both; production certification is structural today.  
-**Specification:** [SPECIFICATION_V1.md](SPECIFICATION_V1.md) · **Contract:** [capability_validation_contract.md](capability_validation_contract.md) (train/eval fail-closed rules).
+**Status:** Architecture complete for both. All **seven** adapter profiles register
+behavioral oracles; certification is **corpus-gated** (deferred without corpus).  
+**Specification:** [SPECIFICATION_V1.md](SPECIFICATION_V1.md) · **Contract:** [capability_validation_contract.md](capability_validation_contract.md).
 
-This document distinguishes what the framework **does now** from what it is
-**ready to do** once evaluation corpora exist.
+This document distinguishes structural checks (always attempted) from behavioral
+evaluation (attempted when an evaluation corpus is configured).
 
 ## Two validation kinds
 
 | Kind | Purpose | Current production status |
 |------|---------|---------------------------|
 | **Artifact / Structural validation** | Verify on-disk contracts (`artifact.json`, adapter config, weights, metadata alignment) | **Active** — drives scoring, benchmark, and certification |
-| **Behavior validation** | Prompt → inference → expected vs generated → comparator → score | **Architecture ready** — no corpora loaded; not enabled in production plans |
+| **Behavior validation** | Prompt → inference → expected vs generated → comparator → score | **Wired for all seven profiles**; **deferred** when no corpus id/path is configured |
 
 ```text
 Artifact Validation (structural oracles)
     ↓
-Score / Benchmark / Certification (structural signals)
+Score / Benchmark / Certification (structural signals; behavior gates when corpus present)
 
-Behavior Validation (behavioral oracles + BehaviorRunner)
+Behavior Validation (behavioral oracles + BehaviorRunner) — seven profiles
     ↓
 Comparator framework
     ↓
 Score dimensions (behavior / weighted)
     ↓
-Certification criteria (optional behavior gates — off by default)
+Certification criteria (require_behavior_pass when corpus configured)
 ```
 
-These are **not** separate CLI commands or pipeline stage renames. Both plug into
-the existing `RUN_VALIDATION` oracle pipeline via `Oracle` implementations tagged
-with `ValidationKind.STRUCTURAL` or `ValidationKind.BEHAVIORAL`.
+These are **not** separate CLI commands. Both plug into the existing
+`RUN_VALIDATION` oracle pipeline via `Oracle` implementations tagged with
+`ValidationKind.STRUCTURAL` or `ValidationKind.BEHAVIORAL`.
 
-## Structural certification (today)
+## Structural certification
 
 Smoke / full / prod may grant `<profile>-certified` when structural oracles pass
-and benchmarks meet thresholds.
+and benchmarks meet thresholds. Without a corpus, behavior status is
+`BehaviorStatus.DEFERRED` (`"deferred"`) and certification does not claim
+behavioral competence.
 
 Standard tier never production-certifies (framework wiring only).
 
 Structural certification does **not** mean the model behaves correctly on Odoo
 tasks. It means published artifacts satisfy the structural contract.
 
-## Behavior certification (roadmap)
+## Behavior certification (corpus-gated)
 
 When evaluation corpora are attached:
 
@@ -52,9 +55,11 @@ When evaluation corpora are attached:
 5. Scoring records behavior dimensions; certification criteria can require
    `require_behavior_pass=True` per profile policy.
 
-Until then, behavioral oracles remain **unregistered** in
-`ProductionPipelineComponents`, and reports mark behavior validation as
-`BehaviorStatus.DEFERRED` (`"deferred"`).
+Without corpus config, behavioral oracles remain registered but evaluation is
+**deferred** — not silently treated as a pass.
+
+There is **no** `context` validation profile in v2.0.0 (intentional; see
+`AUDIT_RESOLUTION.md`).
 
 ## Packages
 
@@ -79,7 +84,7 @@ Until then, behavioral oracles remain **unregistered** in
 
 ## What we deliberately do not do
 
-- Invent evaluation datasets or expected outputs
-- Fake semantic / AI similarity scoring
-- Claim behavioral certification while only structural checks run
-- Redesign the CLI or pipeline stage order
+- Invent evaluation gold inside this repository
+- Fake semantic similarity scores
+- Claim train-all-8 ecosystem readiness from structural cert alone
+- Add `merged` / `foundation` / `context` profiles in this freeze

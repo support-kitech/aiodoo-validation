@@ -99,20 +99,19 @@ Running the module without a subcommand also shows help.
 
 ## Entry points
 
-Both invoke the same CLI application:
+Supported (clone-and-run; no PyPI / no `[build-system]`):
 
 ```bash
+# From repository root
+export PYTHONPATH=.
 python3 -m aiodoo_validation validate --base-model ./base --adapter ./adapter
 ./scripts/aiodoo-validation validate --base-model ./base --adapter ./adapter
+python3 -m aiodoo_validation version
 ```
 
-After editable install, the ``console_scripts`` entry point is also available:
-
-```bash
-pip install -e .
-aiodoo-validation version
-```
-
+Editable `pip install -e .` is **not** supported under packaging policy (no
+`[build-system]`). Do not document or rely on console_scripts from an editable
+install.
 ## Exit codes
 
 | Exit status | Code |

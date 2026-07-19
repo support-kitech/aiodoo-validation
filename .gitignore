@@ -64,9 +64,10 @@ dmypy.json
 # Ruff
 .ruff_cache/
 
-# Validation artifacts (never commit)
+# Validation artifacts (never commit). Use rooted paths so package stubs
+# under aiodoo_validation/reports/ remain trackable.
 artifacts/
-reports/
+/reports/
 evidence/
 logs/
 *.pt

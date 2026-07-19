@@ -31,15 +31,15 @@ guarantee.
 | Capability Delivery (EEP E0–E8) | E0–E8 frozen (complete) |
 | Production hardening (R1) | Complete |
 | Release candidate (RC1) | Complete — quality gates + packaging policy |
-| Final release audit (RC2) | Complete — infrastructure freeze for v1.0.x |
+| Final release audit (RC2) | Complete — infrastructure freeze for v1.0.x (historical) |
 | Phase 10 consolidation | Complete |
-| Phase 11 final release audit | Complete — permanently frozen for v1.x |
+| Phase 11 final release audit | Complete — permanently frozen for Protocol V1 |
 | Behavioral validation | All seven profiles wired (corpus-gated; deferred without corpus) |
-| **Repository** | **Permanently frozen** for v1.x maintenance (bugs/security/docs only) |
+| **Repository** | **v2.0.0** ecosystem tooling freeze (Protocol V1 unchanged) |
 
-**Repository version:** v1.0.0 (**source / git-tag** release; not a PyPI wheel)
+**Repository version:** v2.0.0 (**source / git-tag** release; not a PyPI wheel)
 
-**Maintenance:** v1.0.x accepts bug fixes, security fixes, documentation, and
+**Maintenance:** v2.0.x accepts bug fixes, security fixes, documentation, and
 future capability pack registrations only. Capability Delivery and Protocol V1
 are permanently frozen. See [MAINTENANCE.md](docs/MAINTENANCE.md).
 
@@ -69,7 +69,7 @@ are permanently frozen. See [MAINTENANCE.md](docs/MAINTENANCE.md).
 | Behavior-gated certification | **Enabled for all seven profiles**; deferred without corpus config |
 | Content fingerprint hashing | Placeholder digests (artifact resolution era) |
 | PDF / HTML / Markdown report rendering | Future consumer integrations |
-| `merged` / `foundation` profiles | Intentionally unsupported |
+| `merged` / `foundation` / `context` profiles | Intentionally unsupported in this freeze |
 | GPU inference in CI | Not required (CPU-only tests) |
 | PyPI wheel packaging | Out of scope — no `[build-system]` by policy |
 

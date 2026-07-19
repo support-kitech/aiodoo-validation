@@ -1,36 +1,36 @@
-## [Unreleased]
+## [2.0.0] — 2026-07-19
+
+### Overview
+
+AIODOO ecosystem **tooling freeze v2.0.0** for `aiodoo-validation`.
+
+Validation Protocol V1 and Capability Delivery E0–E8 remain architecturally
+frozen. This release corrects release honesty and clean-clone CI:
+
+- Fix `.gitignore` so `aiodoo_validation/reports/` is tracked (`/reports/` for
+  output only)
+- Align behavioral / CLI documentation with corpus-gated seven-profile behavior
+- Bump `__version__` / `pyproject` to **2.0.0** (historical git tag `v1.0.0`
+  remains as-is; do not move it)
+
+**Distribution:** source / git-tag only (`PYTHONPATH=.` or `./scripts/aiodoo-validation`).
 
 ### Notes
 
-**Phase 11 — Final Release Audit** confirmed: public API inventory, all seven
-profile lifecycle chains, production registries, deterministic ordering, and
-quality gates verified green. The repository is permanently frozen for the
-**v1.x** maintenance lifecycle.
-
-**Phase 10 — Repository Consolidation** and Final Capability Delivery Completion
-remain in place.
-
-Repair ✓ · Coding ✓ · Planner ✓ · Conversation ✓ · Execution ✓ · Approval ✓ ·
-Evaluation ✓
-
-Post-tag v1.0.x changes are limited to bug fixes, security fixes, documentation,
-test coverage, and pack registration via the existing contract. See
-[docs/MAINTENANCE.md](docs/MAINTENANCE.md).
-
-### Changed
-
-- `implementation_status.md` records Phase 11 freeze confirmation
+No new adapter profiles. **`context` remains intentionally unsupported.**
 
 ## [1.0.0] — 2026-07-18
 
 ### Overview
 
-First official **v1.0.0** release of **AIODOO Validation**.
+First official **v1.0.0** release of **AIODOO Validation** (historical tag; tree
+at that tag predates some Capability Delivery commits present on later main —
+prefer **v2.0.0** for the complete E0–E8 tree).
 
 Validation Protocol V1 is complete and architecturally frozen. Capability
 Delivery phases E0–E8 are complete and frozen. Production hardening (R1),
 release-candidate validation (RC1), and the final release audit (RC2) are
-complete. The repository enters **permanent maintenance mode** for **v1.0.x**.
+complete.
 
 **Distribution model:** this repository is a **source / git-tag release**.
 `pyproject.toml` is intentionally tooling-oriented (no `[build-system]`);
