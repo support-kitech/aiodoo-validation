@@ -1,59 +1,46 @@
 # aiodoo-validation — Implementation Report (v2.0.0)
 
-## Repository Summary
+## Summary
 
-Canonical evaluation & certification for AIODOO capability packages. Protocol V1
-and seven adapter profiles remain frozen. Tooling freeze **v2.0.0** fixes
-clean-clone CI (reports package), release identity, and documentation honesty.
+Tooling freeze Batch A (prior) fixed clean-clone CI and docs honesty. Batch B
+(this pass) adds RELEASE_REPORT and aligns residual status docs to **2.0.0**.
 
-## Audit Resolution
+## Batch A (prior) — already shipped
 
-See `AUDIT_RESOLUTION.md`. Implemented only Production Blockers, Bugs, and
-Documentation inconsistencies. Did **not** add `context` profile.
+`.gitignore` `/reports/`, version 2.0.0, behavioral/cli docs, AUDIT_RESOLUTION,
+tracked `aiodoo_validation/reports/__init__.py`.
 
-## Modified Files
+## Batch B — modified files
 
-- `.gitignore` — `/reports/` instead of `reports/`
-- `aiodoo_validation/__version__.py` — `2.0.0`
-- `pyproject.toml` — version `2.0.0`; comment clarity
-- `README.md`, `docs/MAINTENANCE.md`, `docs/behavioral_validation.md`, `docs/cli.md`
-- `CHANGELOG.md` — `[2.0.0]` section
+| File | Why |
+| --- | --- |
+| `AUDIT_RESOLUTION.md` | Batch A DONE + Batch B residuals |
+| `docs/implementation_status.md` | Version / tag / maintenance → 2.0.0 |
+| `CHANGELOG.md` | Seven-profile note; historical repair-only caveat |
+| `README.md` | API stability wording for v1.x–v2.0.x / Protocol V1 |
 
-## New Files
+## Batch B — new files
 
-- `AUDIT_RESOLUTION.md`
-- `IMPLEMENTATION_REPORT.md`
-- `aiodoo_validation/reports/__init__.py` (now tracked)
+| File | Why |
+| --- | --- |
+| `RELEASE_REPORT.md` | Release hygiene + verdict |
 
-## Deleted Files
+## Deleted files
 
 None.
 
-## Architecture Impact
+## Architecture / validation / certification impact
 
-None. No profile/engine/API changes.
+None. No profile or Protocol changes.
 
-## Test Results
+## Test / CI
 
-Local: ruff pass, mypy pass, **662** tests pass, coverage **85%** (≥85).
+662 passed; coverage 85%; ruff + mypy green.
 
-## CI Results
+## Future work left untouched
 
-Workflow unchanged in substance (ruff, mypy, coverage fail-under 85). Clean-clone
-structure tests now see `aiodoo_validation/reports/`.
+`context` profile; corpora invent; semantic comparators; PDF/HTML reports.
 
-## Remaining Future Work
+## Production readiness
 
-- `context` validation profile
-- Held-out behavioral corpora; semantic comparators; rich report renderers
-- Content fingerprint hashing beyond placeholder digests
-
-## Production Readiness
-
-**YES within repository boundary** (seven profiles, Protocol V1, structural +
-corpus-gated behavior). **NO** as claim of full ecosystem E2E or context
-certification.
-
-## Release Recommendation
-
-Annotated tag **`v2.0.0`**. Do not move historical `v1.0.0`.
+**YES** in-boundary (seven profiles). **NO** for context / full E2E overclaim.

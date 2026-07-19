@@ -1,15 +1,32 @@
 # aiodoo-validation — Audit Resolution (v2.0.0)
 
-| Audit Finding | Category | Decision | Action | Reason | Implementation Required? |
-| :--- | :--- | :--- | :--- | :--- | :---: |
-| `.gitignore` `reports/` hides `aiodoo_validation/reports/` (clean-clone structure tests fail) | **Production Blocker** | Fix | Scope ignore to `/reports/`; track package stub | Required package layout must not be ignored | **YES** |
-| Git tag `v1.0.0` predates Capability Delivery; docs claim v1.0.0 with E0–E8 while HEAD differs | **Production Blocker** | Fix | Bump to **2.0.0**, tag HEAD, CHANGELOG | Release identity must match tree | **YES** |
-| `docs/behavioral_validation.md` says behavior unregistered / structural-only cert | **Bug** / **Documentation** | Fix | Align with seven-profile corpus-gated behavior | Docs contradict code | **YES** |
-| `docs/cli.md` documents `pip install -e .` | **Documentation** | Fix | Clone-and-run / `PYTHONPATH=.` / `scripts/` | Packaging policy forbids build-system | **YES** |
-| README / MAINTENANCE locked to v1.x only | **Documentation** | Fix | Record v2.0.0 tooling freeze; Protocol V1 still frozen | Honesty | **YES** |
-| No `context` validation profile | **Intentional** / **Future Work** | Leave | Do not add profile | Training owns context capability; validation seven-profile freeze | **NO** |
-| No `[build-system]` / not PyPI | **Intentional** | Leave | Keep | Policy | **NO** |
-| Placeholder digests, stub oracles, deferred corpora | **Intentional** | Leave | Keep documented | Not fake production path | **NO** |
-| Semantic comparators, PDF reports, held-out corpora | **Future Work** | Leave | No implement | Roadmap | **NO** |
-| Training/model/core E2E product composition | **Out of Scope** | Leave | Other repos | Boundary | **NO** |
-| Coverage exactly 85% thin modules | **Intentional** | Leave | Gate already green | Not a blocker | **NO** |
+## Batch A — tooling freeze (completed in `c9f0c42`)
+
+| Audit Finding | Category | Status |
+| :--- | :--- | :--- |
+| `.gitignore` `reports/` hid `aiodoo_validation/reports/` | **Production Blocker** | **DONE** |
+| Tag/docs identity mismatch (`v1.0.0` vs E0–E8 HEAD) | **Production Blocker** | **DONE** (`2.0.0`) |
+| `behavioral_validation.md` contradicted seven-profile wiring | **Bug** / **Documentation** | **DONE** |
+| `cli.md` documented `pip install -e .` | **Documentation** | **DONE** |
+| README / MAINTENANCE locked to v1.x only | **Documentation** | **DONE** |
+
+## Batch B — completion residuals (this pass)
+
+| Audit Finding | Category | Decision | Action | Implementation Required? |
+| :--- | :--- | :--- | :--- | :---: |
+| Missing `RELEASE_REPORT.md` | **Missing Implementation** | Fix | Write release report + verdict | **YES** |
+| `implementation_status.md` still `1.0.0+` / recommend `v1.0.0` | **Documentation** | Fix | Align to **2.0.0** | **YES** |
+| CHANGELOG `[1.0.0]` says behavior-gated cert **repair only** | **Documentation** | Fix | Mark as historical; `[2.0.0]` states seven profiles | **YES** |
+| README API guarantee “v1.x” without v2.0.0 tooling note | **Documentation** | Fix | Protocol V1 stable across v1.x–v2.0.x tooling | **YES** |
+| No `context` profile | **Intentional** / **Future Work** | Leave | Do not add | **NO** |
+| Placeholder digests / deferred corpora | **Intentional** | Leave | Keep | **NO** |
+| Semantic comparators / PDF reports | **Future Work** | Leave | Keep | **NO** |
+| Training/model/runtime ownership | **Out Of Scope** | Leave | Boundary | **NO** |
+
+## Implementation batch B (YES only)
+
+1. Refresh this file.
+2. Fix implementation_status, CHANGELOG caveat, README stability wording.
+3. Re-run quality gates.
+4. Write `RELEASE_REPORT.md`; refresh `IMPLEMENTATION_REPORT.md`.
+5. Logical commits; recreate local annotated `v2.0.0`.
