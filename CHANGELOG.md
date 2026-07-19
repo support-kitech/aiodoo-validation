@@ -19,6 +19,9 @@ frozen. This release corrects release honesty and clean-clone CI:
 
 No new adapter profiles. **`context` remains intentionally unsupported.**
 
+Behavior-gated certification is wired for **all seven** profiles and is
+**corpus-gated** (deferred without `evaluation_corpus_id` / path).
+
 ## [1.0.0] — 2026-07-18
 
 ### Overview
@@ -64,14 +67,15 @@ install path. PyPI wheel publishing is out of scope for this release policy.
 - Stub/placeholder modules retained for `create_with_stubs()` only
 - Python >= 3.12
 
-### Known limitations (intentional)
+### Known limitations (intentional) — historical note for this tag era
 
 - Behavioral corpora: prefer `evaluation_corpus_id`; path accepted; deferred if unset
-- Behavior-gated certification enabled for **repair** only
+- Early Capability Delivery initially emphasized repair-first behavior wiring;
+  **current HEAD / v2.0.0 wires all seven profiles** (corpus-gated)
 - Semantic / AI similarity comparators deferred
 - Artifact content fingerprints remain placeholder digests
 - PDF/HTML/Markdown report rendering deferred to consumers
-- `merged` / `foundation` profiles unsupported
+- `merged` / `foundation` / `context` profiles unsupported
 - No PyPI `[build-system]` packaging (source-tag distribution)
 
 ### Public API

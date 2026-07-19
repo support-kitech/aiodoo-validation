@@ -11,7 +11,8 @@ Production-grade validation for trained AIODOO adapters and exports. This reposi
 Validation Protocol V1 is **architecturally frozen**.
 
 The stable public API is exposed through `aiodoo_validation.api` and is guaranteed
-for the **v1.x** release series.
+for the **v1.x–v2.0.x** tooling series under **Validation Protocol V1** (protocol
+major remains 1). Repository tooling identity is **v2.0.0**.
 
 Internal implementation packages — `engine`, `oracles`, `scoring`, `benchmark`,
 `certification`, `reporting`, `profiles`, `validation_plan`, `ports`, `domain`,

@@ -1,9 +1,10 @@
 # Implementation Status
 
-**Repository version:** 1.0.0+  
+**Repository version:** 2.0.0  
 **Specification:** [SPECIFICATION_V1.md](SPECIFICATION_V1.md) (**frozen**)  
 **Architecture:** Validation Protocol V1 pipeline and public CLI **frozen**  
-**Capability Delivery:** [engineering_execution_plan.md](engineering_execution_plan.md) (**frozen plan**; E0–E8 code landed)
+**Capability Delivery:** [engineering_execution_plan.md](engineering_execution_plan.md) (**frozen plan**; E0–E8 code landed)  
+**Release posture:** Ecosystem tooling freeze **v2.0.0** (Protocol V1 unchanged; no `context` profile)
 
 ---
 
@@ -14,7 +15,7 @@
 | Architecture | **Complete / frozen** |
 | Planning / Spec v1.0 documentation | **Complete** (materialized in repo) |
 | Capability Delivery implementation | **Complete (E0–E8)** |
-| Current execution phase | **Phase 11 — Final Release Audit** — repository permanently frozen for **v1.x** maintenance |
+| Current execution phase | **v2.0.0 tooling freeze** — Protocol V1 + E0–E8 permanently frozen; maintenance per [MAINTENANCE.md](MAINTENANCE.md) |
 | Structural / artifact validation | **Active (production)** |
 | Behavioral validation | **All seven profiles wired** (approval/coding/conversation/evaluation/execution/planner/repair) — deferred without corpus id/path; active when configured |
 | Approval Capability Pack | **Complete** |
@@ -65,7 +66,7 @@
 | RC1 release validation | **Done** — quality gates green; source-tag packaging policy confirmed |
 | RC2 final release audit | **Done** — contracts inventoried; maintenance policy published; GO for tag |
 | Phase 10 consolidation | **Done** — profile parity audit, docs sync, deterministic ordering |
-| Phase 11 final release audit | **Done** — production audit green; permanently frozen for v1.x maintenance |
+| Phase 11 final release audit | **Done** — production audit green; superseded by tooling tag **v2.0.0** |
 
 ---
 
@@ -82,8 +83,8 @@
 | Delivery chain IDs (all profiles) | Aligned (oracle→score→bench→cert→report) |
 | Capability Delivery redesign | **Forbidden** — frozen |
 | PyPI `[build-system]` wheel | **Out of scope** (intentional tooling-only pyproject) |
-| Recommended publish | **git tag `v1.0.0`** source release |
-| RC2 recommendation | **GO** for `v1.0.0` git tag (NO-GO for PyPI wheel under policy) |
+| Recommended publish | **git tag `v2.0.0`** source release (historical `v1.0.0` preserved) |
+| RC2 recommendation | **GO** for source git tag (NO-GO for PyPI wheel under policy); prefer **v2.0.0** for complete E0–E8 tree |
 | Known deferred (non-blocking) | `aiodoo-datasets` validation-layout pins; `build_repair_request`; content fingerprints |
 
 ---
@@ -128,12 +129,12 @@ registries, and domain types inside the frozen Protocol V1 lifecycle.
 Follow [delivery_governance.md](delivery_governance.md) and
 [MAINTENANCE.md](MAINTENANCE.md).
 
-**v1.0.x allowed:** bug fixes, security fixes, documentation, test coverage, and
+**v2.0.x allowed:** bug fixes, security fixes, documentation, test coverage, and
 capability pack registration via the existing pack contract that reuses the
 frozen Capability Delivery spine (all seven adapter profiles are complete).
 
-**v1.0.x forbidden:** architecture changes, new profiles beyond the frozen set,
-feature work framed as Capability Delivery redesign.
+**v2.0.x forbidden:** architecture changes, new profiles beyond the frozen set
+(including `context`), feature work framed as Capability Delivery redesign.
 
 ---
 
@@ -142,8 +143,7 @@ feature work framed as Capability Delivery redesign.
 - **Protocol V1 / structural certification path:** frozen and active.  
 - **Specification Version 1.0 (docs):** frozen in this repository.  
 - **Capability Delivery code:** E0–E8 frozen (spine complete; all seven profiles).  
-- **R1 / RC1 / RC2:** hardening + release validation + final audit only — no Capability Delivery architecture changes.  
-- **Phase 10:** consolidation / documentation / ordering only — no new validation features.  
-- **Phase 11:** final release audit confirmed — permanently frozen for **v1.x** maintenance.  
-- **v1.0.0 distribution:** source / git-tag (not PyPI wheel).  
-- **Post-tag posture:** permanent maintenance mode for **v1.0.x**.
+- **R1 / RC1 / RC2 / Phase 10–11:** historical freeze path; tooling identity is **v2.0.0**.  
+- **v2.0.0 distribution:** source / git-tag (not PyPI wheel).  
+- **Post-tag posture:** maintenance mode for **v2.0.x** ([MAINTENANCE.md](MAINTENANCE.md)).  
+- **`context` profile:** intentionally unsupported in this freeze.
