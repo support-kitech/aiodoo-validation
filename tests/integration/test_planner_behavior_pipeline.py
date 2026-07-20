@@ -83,7 +83,18 @@ class _ScriptedInferenceRunner:
         _ = context
         if self._fail:
             return InferenceGenerationOutcome(success=False, message="forced failure")
-        text = self._texts.get(request.prompt, request.prompt)
+        # Substring match: behavioral inference now sends the full
+        # contract-rendered + chat-templated prompt (system preamble +
+        # ``"User: {problem}\n\nAssistant:"``), not the bare ``problem``
+        # string these fixtures are keyed by. The original problem text is
+        # still guaranteed to appear verbatim inside the rendered prompt
+        # (see aiodoo_contract.prompts.builder.PromptBuilder), so scripted
+        # responses are looked up by substring rather than exact match.
+        text = request.prompt
+        for needle, scripted in self._texts.items():
+            if needle in request.prompt:
+                text = scripted
+                break
         return InferenceGenerationOutcome(
             success=True,
             message="ok",
@@ -244,14 +255,32 @@ class TestPlannerBehaviorOracle:
         assert result.metadata["validation_kind"] == ValidationKind.BEHAVIORAL.value
 
     def test_successful_end_to_end(self) -> None:
+        # Scripted responses are now the canonical ``PlannerResponse`` JSON
+        # aiodoo_contract.parsers decodes model output into (see
+        # aiodoo_validation/contract/parser_bridge.py).
         texts = {
-            "Rename the plan step label.": "Update plan step label.",
-            "Add plan readiness helper.": (
-                "class PartnerPlan:\n"
-                "    def __init__(self, active):\n"
-                "        self.active = active\n\n"
-                "    def is_ready(self):\n"
-                "        return bool(self.active)\n"
+            "Rename the plan step label.": json.dumps(
+                {
+                    "request_id": "scripted-1",
+                    "steps": [{"index": 0, "description": "Update plan step label."}],
+                }
+            ),
+            "Add plan readiness helper.": json.dumps(
+                {
+                    "request_id": "scripted-2",
+                    "steps": [
+                        {
+                            "index": 0,
+                            "description": (
+                                "class PartnerPlan:\n"
+                                "    def __init__(self, active):\n"
+                                "        self.active = active\n\n"
+                                "    def is_ready(self):\n"
+                                "        return bool(self.active)\n"
+                            ),
+                        }
+                    ],
+                }
             ),
         }
         oracle = build_capability_behavioral_oracle(

@@ -10,6 +10,11 @@ from typing import Any
 from aiodoo_validation.behavior.build_result import BehaviorCaseBuildResult
 from aiodoo_validation.behavior.case_builder import BehaviorCaseBuilder
 from aiodoo_validation.capabilities.contract import RegisteredCapabilityPack
+from aiodoo_validation.contract.adapters import ContractAdapterError, project_record
+from aiodoo_validation.contract.prompt_bridge import (
+    DEFAULT_CHAT_TEMPLATE_NAME,
+    render_inference_prompt,
+)
 from aiodoo_validation.corpus.loader import LoadedCorpus
 from aiodoo_validation.domain.behavior import BehaviorCase, BehaviorCorpus
 from aiodoo_validation.domain.capability_record import ParsedCapabilityRecord
@@ -59,6 +64,7 @@ class CapabilityBehaviorPipeline:
     case_builder: BehaviorCaseBuilder = field(default_factory=BehaviorCaseBuilder)
     transformation_engine: TransformationEngine = field(default_factory=TransformationEngine)
     snapshot_comparator: SnapshotComparator = field(default_factory=SnapshotComparator)
+    chat_template_name: str = DEFAULT_CHAT_TEMPLATE_NAME
 
     def assemble(
         self,
@@ -82,7 +88,7 @@ class CapabilityBehaviorPipeline:
             for parsed in parsed_records:
                 built = self.case_builder.build(parsed, pack.specification)
                 verification = self.verify_transforms(built)
-                annotated = self._annotate_case(built.case, verification)
+                annotated = self._annotate_case(built.case, verification, parsed)
                 build_results.append(built)
                 transform_results.append(verification)
                 cases.append(annotated)
@@ -191,10 +197,11 @@ class CapabilityBehaviorPipeline:
                 f"{pack.capability_id!r}: {exc}"
             ) from exc
 
-    @staticmethod
     def _annotate_case(
+        self,
         case: BehaviorCase,
         verification: TransformVerificationResult,
+        parsed: ParsedCapabilityRecord,
     ) -> BehaviorCase:
         metadata = dict(case.metadata)
         metadata["transform_verification"] = {
@@ -203,6 +210,7 @@ class CapabilityBehaviorPipeline:
             "message": verification.message,
             "occurrence_count": verification.occurrence_count,
         }
+        metadata.update(self._contract_projection_metadata(parsed))
         return BehaviorCase(
             case_id=case.case_id,
             prompt=case.prompt,
@@ -211,6 +219,50 @@ class CapabilityBehaviorPipeline:
             tags=case.tags,
             metadata=MappingProxyType(metadata),
         )
+
+    def _contract_projection_metadata(
+        self,
+        parsed: ParsedCapabilityRecord,
+    ) -> dict[str, Any]:
+        """Project ``parsed`` onto ``aiodoo_contract`` and render its inference prompt.
+
+        Behavioral inference must send the model exactly the prompt text
+        ``aiodoo_contract.prompts.CapabilityPromptBuilder`` and
+        ``aiodoo_contract.templates`` produce for the same capability
+        request — this is the single point that renders it and hands it to
+        ``BehaviorRunner`` via case metadata (``contract_prompt_text``),
+        instead of ``BehaviorRunner`` re-deriving or hand-formatting a
+        prompt itself.
+
+        Not every ``ParsedCapabilityRecord`` can be projected onto the
+        contract (e.g. ``evaluation`` has no canonical projection; some
+        native fixtures lack the artifacts a contract response requires).
+        That is recorded as ``contract_mapped=False`` with a reason, and
+        the case falls back to its legacy raw-``problem`` prompt — a
+        documented, observable fallback, not a silent one.
+        """
+        try:
+            projection = project_record(parsed)
+        except ContractAdapterError as exc:
+            return {
+                "contract_mapped": False,
+                "contract_projection_error": str(exc),
+            }
+        try:
+            prompt_text = render_inference_prompt(
+                projection, chat_template_name=self.chat_template_name
+            )
+        except Exception as exc:  # noqa: BLE001 — prompt rendering must not crash assembly
+            return {
+                "contract_mapped": False,
+                "contract_projection_error": f"prompt rendering failed: {exc}",
+            }
+        return {
+            "contract_mapped": True,
+            "contract_capability": projection.capability,
+            "contract_version": projection.request.contract_version,
+            "contract_prompt_text": prompt_text,
+        }
 
 
 __all__ = [

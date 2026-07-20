@@ -83,7 +83,17 @@ class _ScriptedInferenceRunner:
         _ = context
         if self._fail:
             return InferenceGenerationOutcome(success=False, message="forced failure")
-        text = self._texts.get(request.prompt, request.prompt)
+        # Substring match, for consistency with the other capabilities'
+        # scripted runners: ``evaluation`` has no `aiodoo_contract`
+        # projection (see `aiodoo_validation.contract.adapters`), so its
+        # prompt is still the legacy raw ``problem`` string — but matching
+        # by substring rather than exact equality keeps this fixture
+        # resilient if that ever changes.
+        text = request.prompt
+        for needle, scripted in self._texts.items():
+            if needle in request.prompt:
+                text = scripted
+                break
         return InferenceGenerationOutcome(
             success=True,
             message="ok",

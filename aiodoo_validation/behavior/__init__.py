@@ -13,11 +13,13 @@ from aiodoo_validation.behavior.case_builder import (
 )
 from aiodoo_validation.behavior.exceptions import BehaviorCaseBuildError
 from aiodoo_validation.comparators import ComparatorRegistry
+from aiodoo_validation.contract.parser_bridge import ContractParseError, parse_capability_output
 from aiodoo_validation.domain.behavior import (
     BehaviorCase,
     BehaviorCorpus,
     BehaviorResult,
     BehaviorSuiteResult,
+    ExpectedOutput,
     GeneratedOutput,
 )
 from aiodoo_validation.domain.context import RunContext
@@ -110,9 +112,16 @@ class BehaviorRunner:
         inference_runner: InferenceRunnerPort,
     ) -> BehaviorResult:
         started = perf_counter()
+        contract_mapped = bool(case.metadata.get("contract_mapped"))
+        contract_prompt_text = case.metadata.get("contract_prompt_text")
+        prompt_text = (
+            contract_prompt_text
+            if contract_mapped and isinstance(contract_prompt_text, str) and contract_prompt_text
+            else case.prompt.text
+        )
         outcome = inference_runner.generate(
             context,
-            GenerationRequest(prompt=case.prompt.text),
+            GenerationRequest(prompt=prompt_text),
         )
         if not outcome.success or outcome.result is None:
             duration_ms = max(0, int((perf_counter() - started) * 1000))
@@ -125,12 +134,54 @@ class BehaviorRunner:
                 expected=case.expected,
                 findings=("inference_failure",),
                 duration_ms=duration_ms,
-                metadata=MappingProxyType({"inference_success": False}),
+                metadata=MappingProxyType(
+                    {"inference_success": False, "contract_mapped": contract_mapped}
+                ),
             )
 
         inference = outcome.result
+
+        if contract_mapped:
+            capability_id = case.metadata.get("contract_capability")
+            try:
+                parsed_output = parse_capability_output(
+                    str(capability_id), inference.generated_text
+                )
+            except ContractParseError as exc:
+                duration_ms = max(0, int((perf_counter() - started) * 1000))
+                generated = GeneratedOutput(
+                    text=inference.generated_text,
+                    prompt_tokens=inference.prompt_tokens,
+                    completion_tokens=inference.completion_tokens,
+                    total_tokens=inference.total_tokens,
+                    latency_ms=inference.latency_ms,
+                    memory_usage_mb=inference.memory_usage_mb,
+                    runtime=inference.metadata.runtime,
+                )
+                return BehaviorResult(
+                    case_id=case.case_id,
+                    passed=False,
+                    message=f"Contract-mapped generation did not decode: {exc}",
+                    comparator_kind=case.comparator_kind,
+                    generated=generated,
+                    expected=case.expected,
+                    findings=("contract_parse_failed",),
+                    duration_ms=duration_ms,
+                    metadata=MappingProxyType(
+                        {
+                            "inference_success": True,
+                            "contract_mapped": True,
+                            "contract_response_valid": False,
+                            "contract_error": str(exc),
+                        }
+                    ),
+                )
+            comparable_text = parsed_output.comparable_text
+        else:
+            comparable_text = inference.generated_text
+
         generated = GeneratedOutput(
-            text=inference.generated_text,
+            text=comparable_text,
             prompt_tokens=inference.prompt_tokens,
             completion_tokens=inference.completion_tokens,
             total_tokens=inference.total_tokens,
@@ -139,7 +190,24 @@ class BehaviorRunner:
             runtime=inference.metadata.runtime,
         )
         comparator = self.comparator_registry.get(case.comparator_kind)
-        comparison = comparator.compare(expected=case.expected, generated=generated)
+        # `aiodoo_contract`'s schemas set ``str_strip_whitespace=True`` on
+        # every string field (ADR-0007's ``ContractModel``): any text that
+        # round-trips through a contract response — ``comparable_text``
+        # above — has its surrounding whitespace normalized away by
+        # construction, regardless of what the model actually emitted.
+        # Comparing that against an un-normalized ``case.expected.text``
+        # would make an EXACT comparator spuriously fail on
+        # leading/trailing whitespace alone for every contract-mapped
+        # capability. Strip the expected side identically before
+        # comparison so both sides go through the same normalization —
+        # `BehaviorResult.expected` below still reports the original,
+        # un-normalized gold text for traceability.
+        comparison_expected = (
+            ExpectedOutput(text=case.expected.text.strip(), metadata=case.expected.metadata)
+            if contract_mapped
+            else case.expected
+        )
+        comparison = comparator.compare(expected=comparison_expected, generated=generated)
         duration_ms = max(0, int((perf_counter() - started) * 1000))
         return BehaviorResult(
             case_id=case.case_id,
@@ -155,6 +223,8 @@ class BehaviorRunner:
                 {
                     "inference_success": True,
                     "comparator_id": comparator.metadata.comparator_id,
+                    "contract_mapped": contract_mapped,
+                    **({"contract_response_valid": True} if contract_mapped else {}),
                     **dict(comparison.metadata),
                 }
             ),

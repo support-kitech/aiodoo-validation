@@ -23,6 +23,10 @@ from aiodoo_validation.certification.ids import (
     PLACEHOLDER_CERTIFIED,
 )
 from aiodoo_validation.certification.policies import default_coding_placeholder_policies
+from aiodoo_validation.contract.version_check import (
+    VALIDATION_CONTRACT_VERSION,
+    ContractVersionError,
+)
 from aiodoo_validation.domain.certification import (
     CertificationCapability,
     CertificationContext,
@@ -289,3 +293,46 @@ def test_certification_capabilities_forbid_filesystem_and_thresholds() -> None:
         assert policy.metadata.capabilities.applies_thresholds is False
         assert policy.metadata.capabilities.consumes_benchmark_result is True
         assert policy.metadata.capabilities.placeholder is True
+
+
+def test_certification_execution_result_includes_contract_metadata() -> None:
+    context = _context_ready_for_certification()
+    outcome = CertificationEngine.create_default().certify(context)
+    assert outcome.success is True
+    assert outcome.execution is not None
+    assert outcome.execution.metadata["contract_version"] == VALIDATION_CONTRACT_VERSION
+    assert outcome.execution.metadata["capability"] == "coding"
+
+
+def test_certification_fails_early_on_incompatible_contract_version(monkeypatch) -> None:
+    def _incompatible(*, consumer_version: str = VALIDATION_CONTRACT_VERSION):
+        raise ContractVersionError(
+            "aiodoo-validation is incompatible with the installed aiodoo_contract: "
+            "forced test failure"
+        )
+
+    monkeypatch.setattr(
+        "aiodoo_validation.certification.engine.ensure_contract_compatible", _incompatible
+    )
+    context = _context_ready_for_certification()
+    outcome = CertificationEngine.create_default().certify(context)
+    assert outcome.success is False
+    assert outcome.execution is None
+    assert outcome.errors[0].code is CertificationErrorCode.CONTRACT_VERSION_INCOMPATIBLE
+    assert "forced test failure" in outcome.errors[0].message
+
+
+def test_certification_version_gate_runs_before_plan_checks(monkeypatch) -> None:
+    """An incompatible contract version fails closed even with no plan/benchmark at all."""
+
+    def _incompatible(*, consumer_version: str = VALIDATION_CONTRACT_VERSION):
+        raise ContractVersionError("forced test failure")
+
+    monkeypatch.setattr(
+        "aiodoo_validation.certification.engine.ensure_contract_compatible", _incompatible
+    )
+    request = _request()
+    bare_context = RunContext.begin(request)
+    outcome = CertificationEngine.create_default().certify(bare_context)
+    assert outcome.success is False
+    assert outcome.errors[0].code is CertificationErrorCode.CONTRACT_VERSION_INCOMPATIBLE

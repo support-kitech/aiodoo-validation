@@ -43,6 +43,7 @@ REQUIRED_DIRS = [
     "aiodoo_validation/api",
     "aiodoo_validation/benchmark",
     "aiodoo_validation/certification",
+    "aiodoo_validation/contract",
 ]
 
 REQUIRED_FILES = [

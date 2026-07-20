@@ -81,7 +81,18 @@ class _ScriptedInferenceRunner:
         _ = context
         if self._fail:
             return InferenceGenerationOutcome(success=False, message="forced failure")
-        text = self._texts.get(request.prompt, request.prompt)
+        # Substring match: behavioral inference now sends the full
+        # contract-rendered + chat-templated prompt (system preamble +
+        # ``"User: {problem}\n\nAssistant:"``), not the bare ``problem``
+        # string these fixtures are keyed by. The original problem text is
+        # still guaranteed to appear verbatim inside the rendered prompt
+        # (see aiodoo_contract.prompts.builder.PromptBuilder), so scripted
+        # responses are looked up by substring rather than exact match.
+        text = request.prompt
+        for needle, scripted in self._texts.items():
+            if needle in request.prompt:
+                text = scripted
+                break
         return InferenceGenerationOutcome(
             success=True,
             message="ok",
@@ -201,9 +212,35 @@ class TestCapabilityBehavioralOracle:
         assert "behavioral_deferred" in result.findings
 
     def test_successful_end_to_end(self) -> None:
+        # Scripted responses are now the canonical ``RepairResponse`` JSON
+        # aiodoo_contract.parsers decodes model output into (see
+        # aiodoo_validation/contract/parser_bridge.py).
         texts = {
-            "Use sudo for SQL execute": "Direct SQL should use sudo when intentional.",
-            "Already correct": "No edits.",
+            "Use sudo for SQL execute": json.dumps(
+                {
+                    "request_id": "scripted-1",
+                    "fix": {
+                        "description": "Direct SQL should use sudo when intentional.",
+                        "edits": [
+                            {
+                                "path": "models/repair_target.py",
+                                "content": "Direct SQL should use sudo when intentional.",
+                            }
+                        ],
+                        "confidence": 0.85,
+                    },
+                }
+            ),
+            "Already correct": json.dumps(
+                {
+                    "request_id": "scripted-2",
+                    "fix": {
+                        "description": "No edits.",
+                        "edits": [{"path": "models/ok.py", "content": "No edits."}],
+                        "confidence": 0.85,
+                    },
+                }
+            ),
         }
         runner = _ScriptedInferenceRunner(texts=texts)
         oracle = build_capability_behavioral_oracle(

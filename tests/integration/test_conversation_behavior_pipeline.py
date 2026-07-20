@@ -83,7 +83,18 @@ class _ScriptedInferenceRunner:
         _ = context
         if self._fail:
             return InferenceGenerationOutcome(success=False, message="forced failure")
-        text = self._texts.get(request.prompt, request.prompt)
+        # Substring match: behavioral inference now sends the full
+        # contract-rendered + chat-templated prompt (system preamble +
+        # ``"User: {problem}\n\nAssistant:"``), not the bare ``problem``
+        # string these fixtures are keyed by. The original problem text is
+        # still guaranteed to appear verbatim inside the rendered prompt
+        # (see aiodoo_contract.prompts.builder.PromptBuilder), so scripted
+        # responses are looked up by substring rather than exact match.
+        text = request.prompt
+        for needle, scripted in self._texts.items():
+            if needle in request.prompt:
+                text = scripted
+                break
         return InferenceGenerationOutcome(
             success=True,
             message="ok",
@@ -244,14 +255,30 @@ class TestConversationBehaviorOracle:
         assert result.metadata["validation_kind"] == ValidationKind.BEHAVIORAL.value
 
     def test_successful_end_to_end(self) -> None:
+        # Scripted responses are now the canonical ``ConversationResponse``
+        # JSON aiodoo_contract.parsers decodes model output into (see
+        # aiodoo_validation/contract/parser_bridge.py).
         texts = {
-            "Rename the reply template label.": "Update reply template label.",
-            "Add conversation turn helper.": (
-                "class ConversationTurn:\n"
-                "    def __init__(self, text):\n"
-                "        self.text = text\n\n"
-                "    def is_user_turn(self):\n"
-                "        return bool(self.text)\n"
+            "Rename the reply template label.": json.dumps(
+                {
+                    "request_id": "scripted-1",
+                    "reply": {"role": "assistant", "content": "Update reply template label."},
+                }
+            ),
+            "Add conversation turn helper.": json.dumps(
+                {
+                    "request_id": "scripted-2",
+                    "reply": {
+                        "role": "assistant",
+                        "content": (
+                            "class ConversationTurn:\n"
+                            "    def __init__(self, text):\n"
+                            "        self.text = text\n\n"
+                            "    def is_user_turn(self):\n"
+                            "        return bool(self.text)\n"
+                        ),
+                    },
+                }
             ),
         }
         oracle = build_capability_behavioral_oracle(

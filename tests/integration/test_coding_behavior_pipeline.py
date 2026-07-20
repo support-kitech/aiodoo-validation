@@ -85,7 +85,18 @@ class _ScriptedInferenceRunner:
         _ = context
         if self._fail:
             return InferenceGenerationOutcome(success=False, message="forced failure")
-        text = self._texts.get(request.prompt, request.prompt)
+        # Substring match: behavioral inference now sends the full
+        # contract-rendered + chat-templated prompt (system preamble +
+        # ``"User: {problem}\n\nAssistant:"``), not the bare ``problem``
+        # string these fixtures are keyed by. The original problem text is
+        # still guaranteed to appear verbatim inside the rendered prompt
+        # (see aiodoo_contract.prompts.builder.PromptBuilder), so scripted
+        # responses are looked up by substring rather than exact match.
+        text = request.prompt
+        for needle, scripted in self._texts.items():
+            if needle in request.prompt:
+                text = scripted
+                break
         return InferenceGenerationOutcome(
             success=True,
             message="ok",
@@ -246,13 +257,34 @@ class TestCodingBehaviorOracle:
         assert result.metadata["validation_kind"] == ValidationKind.BEHAVIORAL.value
 
     def test_successful_end_to_end(self) -> None:
+        # Scripted responses are now the canonical ``CodingResponse`` JSON
+        # aiodoo_contract.parsers decodes model output into (see
+        # aiodoo_validation/contract/parser_bridge.py) — the same shape
+        # runtime and training expect — rather than raw comparator text.
         texts = {
-            "Rename the field label.": "Update Char field label.",
-            "Add partner helper.": (
-                "class ResPartner(models.Model):\n"
-                "    _inherit = 'res.partner'\n\n"
-                "    def is_active_partner(self):\n"
-                "        return bool(self.active)\n"
+            "Rename the field label.": json.dumps(
+                {
+                    "request_id": "scripted-1",
+                    "edits": [
+                        {"path": "models/sale.py", "content": "Update Char field label."}
+                    ],
+                }
+            ),
+            "Add partner helper.": json.dumps(
+                {
+                    "request_id": "scripted-2",
+                    "edits": [
+                        {
+                            "path": "models/partner.py",
+                            "content": (
+                                "class ResPartner(models.Model):\n"
+                                "    _inherit = 'res.partner'\n\n"
+                                "    def is_active_partner(self):\n"
+                                "        return bool(self.active)\n"
+                            ),
+                        }
+                    ],
+                }
             ),
         }
         oracle = build_capability_behavioral_oracle(
