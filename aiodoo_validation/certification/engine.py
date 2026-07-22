@@ -7,6 +7,11 @@ from time import perf_counter
 from types import MappingProxyType
 
 from aiodoo_validation.certification.registry import CertificationRegistry
+from aiodoo_validation.contract.version_check import (
+    VALIDATION_CONTRACT_VERSION,
+    ContractVersionError,
+    ensure_contract_compatible,
+)
 from aiodoo_validation.domain.benchmark import BenchmarkExecutionResult, BenchmarkResult
 from aiodoo_validation.domain.certification import (
     CertificationContext,
@@ -58,6 +63,21 @@ class CertificationEngine:
             )
 
     def _certify(self, context: RunContext) -> CertificationExecutionOutcome:
+        try:
+            ensure_contract_compatible()
+        except ContractVersionError as exc:
+            return CertificationExecutionOutcome(
+                success=False,
+                message="Certification failed.",
+                errors=(
+                    CertificationError(
+                        code=CertificationErrorCode.CONTRACT_VERSION_INCOMPATIBLE,
+                        message=str(exc),
+                        field="contract_version",
+                    ),
+                ),
+            )
+
         plan = context.validation_plan
         profile = context.validation_profile
         benchmark_execution = context.benchmark_execution
@@ -273,7 +293,13 @@ class CertificationEngine:
             aggregate_certification_score=aggregate,
             warnings=tuple(warnings),
             errors=tuple(errors),
-            metadata=MappingProxyType({"registry_pipeline": True}),
+            metadata=MappingProxyType(
+                {
+                    "registry_pipeline": True,
+                    "contract_version": VALIDATION_CONTRACT_VERSION,
+                    "capability": plan.profile_name,
+                }
+            ),
         )
         success = failure_count == 0 and not errors
         return CertificationExecutionOutcome(

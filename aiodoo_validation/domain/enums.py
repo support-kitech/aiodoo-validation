@@ -247,6 +247,7 @@ class CertificationErrorCode(StrEnum):
     EXECUTION_FAILURE = "execution_failure"
     CONFIGURATION_FAILURE = "configuration_failure"
     BENCHMARK_RESULT_MISSING = "benchmark_result_missing"
+    CONTRACT_VERSION_INCOMPATIBLE = "contract_version_incompatible"
 
 
 class ReportErrorCode(StrEnum):
